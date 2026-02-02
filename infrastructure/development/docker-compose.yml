@@ -1,0 +1,148 @@
+services:
+  # Laravel Octane com FrankenPHP
+  backend:
+    build:
+      context: ../../
+      dockerfile: infrastructure/development/Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: boilerplate-backend
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ../../:/var/www/html
+      - ./php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    ports:
+      - "${APP_PORT:-8001}:8000"
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+      - APP_DEBUG=${APP_DEBUG:-true}
+      - DB_HOST=mysql-write
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-boilerplate}
+      - DB_USERNAME=${DB_USERNAME:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - REDIS_CACHE_HOST=redis-cache
+      - REDIS_CACHE_PORT=6379
+      - REDIS_SESSION_HOST=redis-sessions
+      - REDIS_SESSION_PORT=6380
+      - REDIS_QUEUE_HOST=redis-queue
+      - REDIS_QUEUE_PORT=6381
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - OCTANE_SERVER=frankenphp
+    networks:
+      - boilerplate-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis-cache:
+        condition: service_healthy
+      redis-sessions:
+        condition: service_healthy
+      redis-queue:
+        condition: service_healthy
+
+  # MySQL 8.0 - Write Database
+  mysql:
+    image: mysql:8.0
+    container_name: boilerplate-mysql
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_DATABASE: ${DB_DATABASE:-boilerplate}
+      MYSQL_USER: ${DB_USERNAME:-boilerplate_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/mysql/conf.d/custom.cnf
+    networks:
+      - boilerplate-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-secret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Redis Cache - Application Cache
+  redis-cache:
+    image: redis:7-alpine
+    container_name: boilerplate-redis-cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-cache-data:/data
+      - ./redis/cache.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - boilerplate-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  # Redis Sessions - User Sessions
+  redis-sessions:
+    image: redis:7-alpine
+    container_name: boilerplate-redis-sessions
+    restart: unless-stopped
+    ports:
+      - "6380:6380"
+    volumes:
+      - redis-sessions-data:/data
+      - ./redis/sessions.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - boilerplate-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6380", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server /usr/local/etc/redis/redis.conf --port 6380
+
+  # Redis Queue - Background Jobs
+  redis-queue:
+    image: redis:7-alpine
+    container_name: boilerplate-redis-queue
+    restart: unless-stopped
+    ports:
+      - "6381:6381"
+    volumes:
+      - redis-queue-data:/data
+      - ./redis/queue.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - boilerplate-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6381", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server /usr/local/etc/redis/redis.conf --port 6381
+
+networks:
+  boilerplate-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
+  redis-cache-data:
+    driver: local
+  redis-sessions-data:
+    driver: local
+  redis-queue-data:
+    driver: local
