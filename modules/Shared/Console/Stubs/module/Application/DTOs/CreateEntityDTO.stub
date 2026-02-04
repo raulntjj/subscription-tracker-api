@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Application\DTOs;
+
+/**
+ * DTO para criar um novo {{MODULE_NAME_LOWER}}
+ */
+final readonly class Create{{MODULE_NAME}}DTO
+{
+    public function __construct(
+        public string $name,
+    ) {}
+
+    /**
+     * Cria DTO a partir de array
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            name: $data['name'],
+        );
+    }
+
+    /**
+     * Converte DTO para array
+     */
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+        ];
+    }
+}

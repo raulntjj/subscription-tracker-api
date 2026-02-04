@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Domain\Entities;
+
+use DateTimeImmutable;
+use Ramsey\Uuid\UuidInterface;
+
+final class {{MODULE_NAME}}
+{
+    private UuidInterface $id;
+    private string $name;
+    private DateTimeImmutable $createdAt;
+
+    public function __construct(
+        UuidInterface $id,
+        string $name,
+        DateTimeImmutable $createdAt
+    ) {
+        $this->id = $id;
+        $this->name = $name;
+        $this->createdAt = $createdAt;
+    }
+
+    public function id(): UuidInterface
+    {
+        return $this->id;
+    }
+
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    public function createdAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function changeName(string $newName): void
+    {
+        $this->name = $newName;
+    }
+}

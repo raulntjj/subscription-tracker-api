@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Support\Facades\Route;
+use Modules\{{MODULE_NAME}}\Interface\Http\Controllers\{{MODULE_NAME}}Controller;
+
+/*
+|--------------------------------------------------------------------------
+| {{MODULE_NAME}} Module Web Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('{{MODULE_NAME_SNAKE_PLURAL}}')->group(function () {
+    // Listagem paginada com busca e ordenação
+    Route::get('/', [{{MODULE_NAME}}Controller::class, 'paginated']);
+
+    // Opções para selects/autocompletes
+    Route::get('/options', [{{MODULE_NAME}}Controller::class, 'options']);
+
+    // CRUD
+    Route::post('/', [{{MODULE_NAME}}Controller::class, 'store']);
+    Route::get('/{id}', [{{MODULE_NAME}}Controller::class, 'show']);
+    Route::put('/{id}', [{{MODULE_NAME}}Controller::class, 'update']);
+    Route::patch('/{id}', [{{MODULE_NAME}}Controller::class, 'partialUpdate']);
+    Route::delete('/{id}', [{{MODULE_NAME}}Controller::class, 'destroy']);
+});

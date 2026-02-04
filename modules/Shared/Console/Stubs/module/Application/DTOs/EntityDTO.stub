@@ -1,0 +1,71 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Application\DTOs;
+
+use Modules\{{MODULE_NAME}}\Domain\Entities\{{MODULE_NAME}};
+
+/**
+ * DTO para representar dados de {{MODULE_NAME_LOWER}} nas respostas
+ */
+final readonly class {{MODULE_NAME}}DTO
+{
+    public function __construct(
+        public string $id,
+        public string $name,
+        public string $createdAt,
+        public ?string $updatedAt = null,
+    ) {}
+
+    /**
+     * Cria DTO a partir da entidade de domínio
+     */
+    public static function fromEntity({{MODULE_NAME}} $entity): self
+    {
+        return new self(
+            id: $entity->id()->toString(),
+            name: $entity->name(),
+            createdAt: $entity->createdAt()->format('Y-m-d H:i:s'),
+        );
+    }
+
+    /**
+     * Cria DTO a partir de um registro do banco (stdClass ou array)
+     */
+    public static function fromDatabase(object|array $data): self
+    {
+        $data = (array) $data;
+
+        return new self(
+            id: $data['id'],
+            name: $data['name'],
+            createdAt: $data['created_at'],
+            updatedAt: $data['updated_at'] ?? null,
+        );
+    }
+
+    /**
+     * Converte DTO para array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'created_at' => $this->createdAt,
+            'updated_at' => $this->updatedAt,
+        ];
+    }
+
+    /**
+     * Converte DTO para formato de opções
+     */
+    public function toOptions(): array
+    {
+        return [
+            'value' => $this->id,
+            'label' => $this->name,
+        ];
+    }
+}

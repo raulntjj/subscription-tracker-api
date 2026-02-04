@@ -1,0 +1,89 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Application\Queries;
+
+use Illuminate\Support\Facades\DB;
+use Modules\{{MODULE_NAME}}\Application\DTOs\{{MODULE_NAME}}DTO;
+use Modules\Shared\Application\DTOs\SearchDTO;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
+
+/**
+ * Query para buscar opções de {{MODULE_NAME_LOWER}} (sem paginação)
+ * Ideal para popular selects e autocompletes
+ */
+final readonly class Find{{MODULE_NAME}}OptionsQuery
+{
+    use Loggable;
+    use Cacheable;
+
+    private const CACHE_TTL = 300; // 5 minutos
+
+    protected function cacheTags(): array
+    {
+        return ['{{MODULE_NAME_SNAKE_PLURAL}}'];
+    }
+
+    /**
+     * @return array<{{MODULE_NAME}}DTO>
+     */
+    public function execute(?SearchDTO $search = null): array
+    {
+        $startTime = microtime(true);
+        $searchKey = $search ? $search->cacheKey() : 'search:none';
+        $cacheKey = "{{MODULE_NAME_SNAKE_PLURAL}}:options:{$searchKey}";
+
+        $this->logger()->debug('Finding {{MODULE_NAME_LOWER}} options', [
+            'search' => $search?->term,
+        ]);
+
+        $items = $this->cache()->remember(
+            $cacheKey,
+            self::CACHE_TTL,
+            function () use ($search, $startTime) {
+                $this->logger()->debug('Cache miss - fetching from database');
+
+                $query = DB::table('{{MODULE_NAME_SNAKE_PLURAL}}')
+                    ->select(['id', 'name', 'created_at', 'updated_at'])
+                    ->orderBy('name', 'asc');
+
+                // Aplica busca
+                if ($search !== null && $search->hasSearch()) {
+                    $query->where(function ($q) use ($search) {
+                        foreach ($search->columns as $column) {
+                            $q->orWhere($column, 'LIKE', "%{$search->term}%");
+                        }
+                    });
+                }
+
+                $data = $query->get();
+
+                $items = $data->map(function ($item) {
+                    return {{MODULE_NAME}}DTO::fromDatabase($item);
+                })->all();
+
+                $duration = microtime(true) - $startTime;
+
+                $this->logger()->info('{{MODULE_NAME}} options retrieved from database', [
+                    'total' => count($items),
+                    'search' => $search?->term,
+                    'cache_hit' => false,
+                    'duration_ms' => round($duration * 1000, 2),
+                ]);
+
+                return $items;
+            }
+        );
+
+        $duration = microtime(true) - $startTime;
+
+        $this->logger()->info('{{MODULE_NAME}} options returned', [
+            'total' => count($items),
+            'duration_ms' => round($duration * 1000, 2),
+        ]);
+
+        return $items;
+    }
+}

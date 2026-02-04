@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Support\Facades\Route;
+use Modules\{{MODULE_NAME}}\Interface\Http\Controllers\Mobile{{MODULE_NAME}}Controller;
+
+/*
+|--------------------------------------------------------------------------
+| {{MODULE_NAME}} Module Mobile Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('{{MODULE_NAME_SNAKE_PLURAL}}')->group(function () {
+    // Listagem com cursor pagination, busca e ordenação
+    Route::get('/', [Mobile{{MODULE_NAME}}Controller::class, 'index']);
+
+    // Opções para selects/autocompletes
+    Route::get('/options', [Mobile{{MODULE_NAME}}Controller::class, 'options']);
+});

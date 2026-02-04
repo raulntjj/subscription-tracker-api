@@ -1,0 +1,43 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Application\DTOs;
+
+/**
+ * DTO para atualizar dados do {{MODULE_NAME_LOWER}}
+ */
+final readonly class Update{{MODULE_NAME}}DTO
+{
+    public function __construct(
+        public ?string $name = null,
+    ) {}
+
+    /**
+     * Cria DTO a partir de array
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            name: $data['name'] ?? null,
+        );
+    }
+
+    /**
+     * Converte DTO para array apenas com valores preenchidos
+     */
+    public function toArray(): array
+    {
+        return array_filter([
+            'name' => $this->name,
+        ], fn($value) => $value !== null);
+    }
+
+    /**
+     * Verifica se há algum dado para atualizar
+     */
+    public function hasChanges(): bool
+    {
+        return $this->name !== null;
+    }
+}

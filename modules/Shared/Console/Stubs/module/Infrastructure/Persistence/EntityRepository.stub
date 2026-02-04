@@ -1,0 +1,75 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Infrastructure\Persistence;
+
+use Ramsey\Uuid\Uuid;
+use DateTimeImmutable;
+use Ramsey\Uuid\UuidInterface;
+use Modules\{{MODULE_NAME}}\Domain\Entities\{{MODULE_NAME}};
+use Modules\{{MODULE_NAME}}\Domain\Contracts\{{MODULE_NAME}}RepositoryInterface;
+use Modules\Shared\Infrastructure\Persistence\BaseRepository;
+use Modules\{{MODULE_NAME}}\Infrastructure\Persistence\Eloquent\{{MODULE_NAME}}Model;
+
+final class {{MODULE_NAME}}Repository extends BaseRepository implements {{MODULE_NAME}}RepositoryInterface
+{
+    protected function getCacheTags(): array
+    {
+        return ['{{MODULE_NAME_SNAKE_PLURAL}}'];
+    }
+
+    public function save({{MODULE_NAME}} $entity): void
+    {
+        $this->upsert(
+            {{MODULE_NAME}}Model::class,
+            ['id' => $entity->id()->toString()],
+            [
+                'name' => $entity->name(),
+                'created_at' => $entity->createdAt(),
+            ]
+        );
+    }
+
+    public function update({{MODULE_NAME}} $entity): void
+    {
+        $model = {{MODULE_NAME}}Model::find($entity->id()->toString());
+
+        if ($model === null) {
+            return;
+        }
+
+        $model->name = $entity->name();
+
+        $this->saveModel($model);
+    }
+
+    public function findById(UuidInterface $id): ?{{MODULE_NAME}}
+    {
+        $model = {{MODULE_NAME}}Model::find($id->toString());
+
+        if ($model === null) {
+            return null;
+        }
+
+        return $this->toDomain($model);
+    }
+
+    public function delete(UuidInterface $id): void
+    {
+        $model = {{MODULE_NAME}}Model::find($id->toString());
+
+        if ($model !== null) {
+            $this->deleteModel($model);
+        }
+    }
+
+    private function toDomain({{MODULE_NAME}}Model $model): {{MODULE_NAME}}
+    {
+        return new {{MODULE_NAME}}(
+            id: Uuid::fromString($model->id),
+            name: $model->name,
+            createdAt: new DateTimeImmutable($model->created_at->format('Y-m-d H:i:s'))
+        );
+    }
+}

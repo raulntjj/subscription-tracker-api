@@ -1,0 +1,99 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Application\Queries;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\CursorPaginator;
+use Modules\{{MODULE_NAME}}\Application\DTOs\{{MODULE_NAME}}DTO;
+use Modules\Shared\Application\DTOs\SearchDTO;
+use Modules\Shared\Application\DTOs\SortDTO;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
+
+/**
+ * Query para buscar {{MODULE_NAME_LOWER}} com cursor pagination (mobile)
+ * Suporta busca e ordenação dinâmica
+ */
+final readonly class Find{{MODULE_NAME_PLURAL}}CursorPaginatedQuery
+{
+    use Loggable;
+    use Cacheable;
+
+    private const DEFAULT_PER_PAGE = 20;
+
+    protected function cacheTags(): array
+    {
+        return ['{{MODULE_NAME_SNAKE_PLURAL}}'];
+    }
+
+    public function execute(
+        ?string $cursor = null,
+        int $perPage = self::DEFAULT_PER_PAGE,
+        ?SearchDTO $search = null,
+        ?SortDTO $sort = null,
+    ): CursorPaginator {
+        $startTime = microtime(true);
+
+        $this->logger()->debug('Finding {{MODULE_NAME_LOWER}} with cursor pagination', [
+            'cursor' => $cursor,
+            'per_page' => $perPage,
+            'search' => $search?->term,
+            'sort' => $sort?->sorts,
+        ]);
+
+        $query = DB::table('{{MODULE_NAME_SNAKE_PLURAL}}');
+
+        // Aplica busca
+        if ($search !== null && $search->hasSearch()) {
+            $query->where(function ($q) use ($search) {
+                foreach ($search->columns as $column) {
+                    $q->orWhere($column, 'LIKE', "%{$search->term}%");
+                }
+            });
+        }
+
+        // Aplica ordenação
+        if ($sort !== null && $sort->hasSorts()) {
+            foreach ($sort->sorts as $sortItem) {
+                $query->orderBy($sortItem['column'], $sortItem['direction']);
+            }
+            $query->orderBy('id', 'desc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+            $query->orderBy('id', 'desc');
+        }
+
+        $paginator = $query->cursorPaginate(
+            perPage: $perPage,
+            cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null
+        );
+
+        $paginator->through(function ($itemData) {
+            $itemCacheKey = "{{MODULE_NAME_SNAKE}}:{$itemData->id}";
+
+            $cachedData = $this->cache()->remember(
+                $itemCacheKey,
+                3600,
+                function () use ($itemData) {
+                    return (array) $itemData;
+                }
+            );
+
+            return {{MODULE_NAME}}DTO::fromDatabase($cachedData);
+        });
+
+        $duration = microtime(true) - $startTime;
+
+        $this->logger()->info('{{MODULE_NAME}} cursor paginated retrieved', [
+            'cursor' => $cursor,
+            'per_page' => $perPage,
+            'search' => $search?->term,
+            'has_more' => $paginator->hasMorePages(),
+            'duration_ms' => round($duration * 1000, 2),
+        ]);
+
+        return $paginator;
+    }
+}

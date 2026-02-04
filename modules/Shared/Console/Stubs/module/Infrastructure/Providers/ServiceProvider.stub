@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Infrastructure\Providers;
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider;
+use Modules\{{MODULE_NAME}}\Domain\Contracts\{{MODULE_NAME}}RepositoryInterface;
+use Modules\{{MODULE_NAME}}\Infrastructure\Persistence\{{MODULE_NAME}}Repository;
+
+final class {{MODULE_NAME}}ServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->bind(
+            {{MODULE_NAME}}RepositoryInterface::class,
+            {{MODULE_NAME}}Repository::class
+        );
+    }
+
+    public function boot(): void
+    {
+        // Rotas Web com prefixo '/api/web/v1'
+        Route::prefix('/api/web/v1')
+            ->group(__DIR__ . '/../../Interface/Routes/web.php');
+
+        // Rotas Mobile com prefixo '/api/mobile/v1'
+        Route::prefix('/api/mobile/v1')
+            ->group(__DIR__ . '/../../Interface/Routes/mobile.php');
+
+        $this->loadMigrationsFrom(__DIR__ . '/../Persistence/Migrations');
+    }
+}

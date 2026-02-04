@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Domain\Contracts;
+
+use Ramsey\Uuid\UuidInterface;
+use Modules\{{MODULE_NAME}}\Domain\Entities\{{MODULE_NAME}};
+
+interface {{MODULE_NAME}}RepositoryInterface
+{
+    public function save({{MODULE_NAME}} $entity): void;
+
+    public function update({{MODULE_NAME}} $entity): void;
+
+    public function findById(UuidInterface $id): ?{{MODULE_NAME}};
+
+    public function delete(UuidInterface $id): void;
+}

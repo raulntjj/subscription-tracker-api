@@ -1,0 +1,57 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Application\UseCases;
+
+use Ramsey\Uuid\Uuid;
+use Modules\{{MODULE_NAME}}\Domain\Contracts\{{MODULE_NAME}}RepositoryInterface;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+
+final readonly class Delete{{MODULE_NAME}}UseCase
+{
+    use Loggable;
+
+    public function __construct(
+        private {{MODULE_NAME}}RepositoryInterface $repository
+    ) {
+    }
+
+    public function execute(string $id): void
+    {
+        $this->logger()->info('Deleting {{MODULE_NAME_LOWER}}', [
+            '{{MODULE_NAME_SNAKE}}_id' => $id,
+        ]);
+
+        try {
+            $uuid = Uuid::fromString($id);
+
+            $entity = $this->repository->findById($uuid);
+
+            if ($entity === null) {
+                throw new \InvalidArgumentException("{{MODULE_NAME}} not found with id: {$id}");
+            }
+
+            $this->repository->delete($uuid);
+
+            $this->logger()->event('{{MODULE_NAME}}Deleted', [
+                '{{MODULE_NAME_SNAKE}}_id' => $id,
+            ]);
+
+            $this->logger()->audit(
+                action: 'delete',
+                entityType: '{{MODULE_NAME}}',
+                entityId: $id,
+                context: [
+                    'name' => $entity->name(),
+                ]
+            );
+        } catch (\Throwable $e) {
+            $this->logger()->error('Failed to delete {{MODULE_NAME_LOWER}}', [
+                '{{MODULE_NAME_SNAKE}}_id' => $id,
+            ], $e);
+
+            throw $e;
+        }
+    }
+}

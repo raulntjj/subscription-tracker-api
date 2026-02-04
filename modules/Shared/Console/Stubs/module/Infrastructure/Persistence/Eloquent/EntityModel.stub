@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\{{MODULE_NAME}}\Infrastructure\Persistence\Eloquent;
+
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Shared\Infrastructure\Persistence\Concerns\HasUserActions;
+
+final class {{MODULE_NAME}}Model extends Model
+{
+    use HasUuids;
+    use HasUserActions;
+
+    protected $table = '{{MODULE_NAME_SNAKE_PLURAL}}';
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    protected $fillable = [
+        'id',
+        'name',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    protected $hidden = [
+        'deleted_at',
+        'deleted_by',
+    ];
+
+    public function uniqueIds(): array
+    {
+        return ['id'];
+    }
+}
