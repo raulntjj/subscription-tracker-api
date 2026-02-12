@@ -29,10 +29,10 @@ final readonly class UserDTO
         return new self(
             id: $user->id()->toString(),
             name: $user->name(),
-            email: $user->email()->value(),
-            createdAt: $user->createdAt()->format('Y-m-d H:i:s'),
             surname: $user->surname(),
             profilePath: $user->profilePath(),
+            email: $user->email()->value(),
+            createdAt: $user->createdAt()->format('Y-m-d H:i:s'),
         );
     }
 
@@ -46,11 +46,11 @@ final readonly class UserDTO
         return new self(
             id: $data['id'],
             name: $data['name'],
+            surname: $data['surname'] ?? null,
+            profilePath: $data['profile_path'] ?? null,
             email: $data['email'],
             createdAt: $data['created_at'],
             updatedAt: $data['updated_at'] ?? null,
-            surname: $data['surname'] ?? null,
-            profilePath: $data['profile_path'] ?? null,
         );
     }
 
