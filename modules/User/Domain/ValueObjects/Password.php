@@ -21,7 +21,7 @@ final readonly class Password
             throw new InvalidArgumentException('Password must be at least 8 characters long');
         }
 
-        return new self(password_hash($plainPassword, PASSWORD_ARGON2ID));
+        return new self(bcrypt($plainPassword));
     }
 
     public static function fromHash(string $hashedValue): self
