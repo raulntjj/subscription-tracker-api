@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Modules\User\Interface\Http\Controllers\UserController;
+use Modules\Shared\Infrastructure\Auth\Middleware\Authenticate;
 
 /*
 |--------------------------------------------------------------------------
@@ -11,7 +12,7 @@ use Modules\User\Interface\Http\Controllers\UserController;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('users')->group(function () {
+Route::middleware(Authenticate::class)->prefix('users')->group(function () {
     // Listagem paginada com busca e ordenação
     Route::get('/', [UserController::class, 'paginated']);
 
