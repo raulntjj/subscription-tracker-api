@@ -10,7 +10,9 @@ use Modules\Shared\Console\Commands\ModuleMakeMigrationCommand;
 use Modules\Shared\Console\Commands\ModuleTestCommand;
 use Modules\Shared\Console\Commands\TestLoggerCommand;
 use Modules\Shared\Domain\Contracts\CacheServiceInterface;
+use Modules\Shared\Domain\Contracts\JwtServiceInterface;
 use Modules\Shared\Domain\Contracts\LoggerInterface;
+use Modules\Shared\Infrastructure\Auth\JwtService;
 use Modules\Shared\Infrastructure\Cache\CacheServiceFactory;
 use Modules\Shared\Infrastructure\Logging\LoggerFactory;
 
@@ -27,6 +29,9 @@ final class SharedServiceProvider extends ServiceProvider
         $this->app->singleton(CacheServiceInterface::class, function ($app) {
             return CacheServiceFactory::create();
         });
+
+        // Registra o JwtService como singleton
+        $this->app->singleton(JwtServiceInterface::class, JwtService::class);
     }
 
     public function boot(): void
