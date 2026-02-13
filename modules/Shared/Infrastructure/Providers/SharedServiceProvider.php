@@ -46,6 +46,8 @@ final class SharedServiceProvider extends ServiceProvider
                 ModuleMakeMigrationCommand::class,
                 ModuleTestCommand::class,
                 TestLoggerCommand::class,
+                \Modules\Shared\Console\Commands\TestSchedulerCommand::class,
+                \Modules\Shared\Console\Commands\TestRabbitMQCommand::class,
             ]);
         }
     }
