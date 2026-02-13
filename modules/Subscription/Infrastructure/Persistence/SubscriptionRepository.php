@@ -132,7 +132,7 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
             price: (int) $model->price,
             currency: CurrencyEnum::from($model->currency),
             billingCycle: BillingCycleEnum::from($model->billing_cycle),
-            nextBillingDate: new DateTimeImmutable($model->next_billing_date),
+            nextBillingDate: new DateTimeImmutable($model->next_billing_date->format('Y-m-d')),
             category: $model->category,
             status: SubscriptionStatusEnum::from($model->status),
             userId: Uuid::fromString($model->user_id),

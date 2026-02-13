@@ -27,12 +27,18 @@ final readonly class CreateSubscriptionDTO
      */
     public static function fromArray(array $data): self
     {
+        // Converte next_billing_date para string se vier como Carbon
+        $nextBillingDate = $data['next_billing_date'];
+        if ($nextBillingDate instanceof \DateTimeInterface) {
+            $nextBillingDate = $nextBillingDate->format('Y-m-d');
+        }
+
         return new self(
             name: $data['name'],
             price: (int) $data['price'],
             currency: $data['currency'] ?? 'BRL',
             billingCycle: $data['billing_cycle'] ?? 'monthly',
-            nextBillingDate: $data['next_billing_date'],
+            nextBillingDate: $nextBillingDate,
             category: $data['category'],
             status: $data['status'] ?? 'active',
             userId: $data['user_id'],
