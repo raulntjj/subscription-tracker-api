@@ -50,8 +50,6 @@ final readonly class CalculateMonthlyBudgetUseCase
             $breakdown = [];
 
             $today = new DateTimeImmutable('today');
-            $startOfMonth = new DateTimeImmutable('first day of this month');
-            $endOfMonth = new DateTimeImmutable('last day of this month');
 
             foreach ($subscriptions as $subscription) {
                 // Normaliza o preço para valor mensal
@@ -72,14 +70,14 @@ final readonly class CalculateMonthlyBudgetUseCase
                 }
                 $breakdown[$category] += $monthlyPrice;
 
-                // Determina se é committed ou upcoming
-                $nextBillingDate = new DateTimeImmutable($subscription->next_billing_date);
+                $nextBillingDate = new DateTimeImmutable($subscription->next_billing_date->format('Y-m-d'));
 
-                if ($nextBillingDate >= $startOfMonth && $nextBillingDate <= $today) {
-                    // Já venceu neste mês
+                // Se já venceu (data passada), conta como committed
+                if ($nextBillingDate <= $today) {
                     $totalCommitted += $monthlyPrice;
-                } elseif ($nextBillingDate > $today && $nextBillingDate <= $endOfMonth) {
-                    // Ainda vai vencer neste mês
+                } 
+                // Se ainda vai vencer, conta como upcoming
+                else {
                     $upcomingBills += $monthlyPrice;
                 }
             }
