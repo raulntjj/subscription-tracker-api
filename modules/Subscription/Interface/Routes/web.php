@@ -25,6 +25,5 @@ Route::prefix('subscriptions')->group(function () {
     Route::post('/', [SubscriptionController::class, 'store']);
     Route::get('/{id}', [SubscriptionController::class, 'show']);
     Route::put('/{id}', [SubscriptionController::class, 'update']);
-    Route::patch('/{id}', [SubscriptionController::class, 'partialUpdate']);
     Route::delete('/{id}', [SubscriptionController::class, 'destroy']);
 });

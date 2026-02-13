@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
+use DateTimeImmutable;
 use Ramsey\Uuid\Uuid;
+use InvalidArgumentException;
+use Modules\Subscription\Domain\Enums\BillingCycleEnum;
+use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
 use Modules\Subscription\Application\DTOs\UpdateSubscriptionDTO;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
@@ -30,19 +34,34 @@ final readonly class UpdateSubscriptionUseCase
         ]);
 
         try {
+            // Valida a data de próximo faturamento
+            if (!$dto->validateNextBillingDate()) {
+                throw new InvalidArgumentException('Next billing date must be in the future or today');
+            }
+
             $uuid = Uuid::fromString($id);
 
             $entity = $this->repository->findById($uuid);
 
-            if ($entity === null) {
-                throw new \InvalidArgumentException("Subscription not found with id: {$id}");
-            }
+            if ($entity === null) 
+                throw new InvalidArgumentException("Subscription not found with id: {$id}");
 
-            if ($dto->name === null) {
-                throw new \InvalidArgumentException('All fields (name) are required for full update');
-            }
-
+            // Atualiza todos os campos
             $entity->changeName($dto->name);
+            $entity->changePrice($dto->price);
+            $entity->changeBillingCycle(
+                BillingCycleEnum::from($dto->billingCycle)
+            );
+            $entity->changeCategory($dto->category);
+            $entity->updateNextBillingDate(new DateTimeImmutable($dto->nextBillingDate));
+            
+            // Atualiza status
+            $status = SubscriptionStatusEnum::from($dto->status);
+            match ($status) {
+                SubscriptionStatusEnum::ACTIVE => $entity->activate(),
+                SubscriptionStatusEnum::PAUSED => $entity->pause(),
+                SubscriptionStatusEnum::CANCELLED => $entity->cancel(),
+            };
 
             $this->repository->update($entity);
 
@@ -56,6 +75,8 @@ final readonly class UpdateSubscriptionUseCase
                 entityId: $id,
                 context: [
                     'name' => $entity->name(),
+                    'price' => $entity->price(),
+                    'status' => $entity->status()->value,
                 ]
             );
 

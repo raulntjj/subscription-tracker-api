@@ -4,13 +4,21 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\DTOs;
 
+use DateTimeImmutable;
+
 /**
  * DTO para atualizar dados do subscription
  */
 final readonly class UpdateSubscriptionDTO
 {
     public function __construct(
-        public ?string $name = null,
+        public string $name,
+        public int $price, // Em centavos
+        public string $currency,
+        public string $billingCycle,
+        public string $nextBillingDate,
+        public string $category,
+        public string $status,
     ) {}
 
     /**
@@ -18,26 +26,47 @@ final readonly class UpdateSubscriptionDTO
      */
     public static function fromArray(array $data): self
     {
+        // Converte next_billing_date para string se vier como Carbon
+        $nextBillingDate = $data['next_billing_date'];
+        if ($nextBillingDate instanceof \DateTimeInterface) {
+            $nextBillingDate = $nextBillingDate->format('Y-m-d');
+        }
+
         return new self(
-            name: $data['name'] ?? null,
+            name: $data['name'],
+            price: (int) $data['price'],
+            currency: $data['currency'],
+            billingCycle: $data['billing_cycle'],
+            nextBillingDate: $nextBillingDate,
+            category: $data['category'],
+            status: $data['status'],
         );
     }
 
     /**
-     * Converte DTO para array apenas com valores preenchidos
+     * Converte DTO para array
      */
     public function toArray(): array
     {
-        return array_filter([
+        return [
             'name' => $this->name,
-        ], fn($value) => $value !== null);
+            'price' => $this->price,
+            'currency' => $this->currency,
+            'billing_cycle' => $this->billingCycle,
+            'next_billing_date' => $this->nextBillingDate,
+            'category' => $this->category,
+            'status' => $this->status,
+        ];
     }
 
     /**
-     * Verifica se há algum dado para atualizar
+     * Valida se a data de próximo faturamento é futura
      */
-    public function hasChanges(): bool
+    public function validateNextBillingDate(): bool
     {
-        return $this->name !== null;
+        $nextDate = new DateTimeImmutable($this->nextBillingDate);
+        $today = new DateTimeImmutable('today');
+        
+        return $nextDate >= $today;
     }
 }

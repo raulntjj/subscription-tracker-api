@@ -23,7 +23,6 @@ use Modules\Subscription\Application\UseCases\CreateSubscriptionUseCase;
 use Modules\Subscription\Application\UseCases\UpdateSubscriptionUseCase;
 use Modules\Subscription\Application\UseCases\DeleteSubscriptionUseCase;
 use Modules\Subscription\Application\Queries\FindSubscriptionsPaginatedQuery;
-use Modules\Subscription\Application\UseCases\PartialUpdateSubscriptionUseCase;
 
 final class SubscriptionController extends Controller
 {
@@ -44,7 +43,6 @@ final class SubscriptionController extends Controller
         private readonly FindSubscriptionByIdQuery $findByIdQuery,
         private readonly FindSubscriptionOptionsQuery $findOptionsQuery,
         private readonly FindSubscriptionsPaginatedQuery $findPaginatedQuery,
-        private readonly PartialUpdateSubscriptionUseCase $partialUpdateUseCase,
         private readonly CalculateMonthlyBudgetUseCase $calculateBudgetUseCase,
     ) {
     }
@@ -160,8 +158,9 @@ final class SubscriptionController extends Controller
                 'next_billing_date' => 'required|date|after_or_equal:today',
                 'category' => 'required|string|max:255',
                 'status' => 'sometimes|string|in:active,paused,cancelled',
-                'user_id' => 'required|uuid',
             ]);
+
+            $validated['user_id'] = auth('api')->id();
 
             $dto = CreateSubscriptionDTO::fromArray($validated);
 
@@ -186,7 +185,13 @@ final class SubscriptionController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'sometimes|string|max:255',
+                'price' => 'sometimes|integer|min:0',
+                'currency' => 'sometimes|string|in:BRL,USD,EUR',
+                'billing_cycle' => 'sometimes|string|in:monthly,yearly',
+                'next_billing_date' => 'sometimes|date|after_or_equal:today',
+                'category' => 'sometimes|string|max:255',
+                'status' => 'sometimes|string|in:active,paused,cancelled',
             ]);
 
             $dto = UpdateSubscriptionDTO::fromArray($validated);
@@ -196,34 +201,6 @@ final class SubscriptionController extends Controller
             return ApiResponse::success(
                 $item->toArray(),
                 'Subscription updated successfully'
-            );
-        } catch (ValidationException $e) {
-            return ApiResponse::validationError($e->errors());
-        } catch (\InvalidArgumentException $e) {
-            return ApiResponse::notFound($e->getMessage());
-        } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
-        }
-    }
-
-    /**
-     * PATCH /api/web/v1/subscriptions/{id}
-     * Atualização parcial
-     */
-    public function partialUpdate(Request $request, string $id): JsonResponse
-    {
-        try {
-            $validated = $request->validate([
-                'name' => 'sometimes|string|max:255',
-            ]);
-
-            $dto = UpdateSubscriptionDTO::fromArray($validated);
-
-            $item = $this->partialUpdateUseCase->execute($id, $dto);
-
-            return ApiResponse::success(
-                $item->toArray(),
-                'Subscription patched successfully'
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError($e->errors());
