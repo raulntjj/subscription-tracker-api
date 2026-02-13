@@ -6,4 +6,7 @@ return [
 
     // User Module
     Modules\User\Infrastructure\Providers\UserServiceProvider::class,
+
+    // Subscription Module
+    Modules\Subscription\Infrastructure\Providers\SubscriptionServiceProvider::class,
 ];

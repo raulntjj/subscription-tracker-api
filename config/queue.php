@@ -73,6 +73,38 @@ return [
             'after_commit' => false,
         ],
 
+        'rabbitmq' => [
+            'driver' => 'rabbitmq',
+            'host' => env('RABBITMQ_HOST', 'localhost'),
+            'port' => env('RABBITMQ_PORT', 5672),
+            'vhost' => env('RABBITMQ_VHOST', '/'),
+            'login' => env('RABBITMQ_USER', 'guest'),
+            'password' => env('RABBITMQ_PASSWORD', 'guest'),
+            'queue' => env('RABBITMQ_QUEUE', 'default'),
+            'options' => [
+                'exchange' => [
+                    'name' => env('RABBITMQ_EXCHANGE_NAME', 'laravel'),
+                    'declare' => env('RABBITMQ_EXCHANGE_DECLARE', true),
+                    'type' => env('RABBITMQ_EXCHANGE_TYPE', 'direct'),
+                    'passive' => env('RABBITMQ_EXCHANGE_PASSIVE', false),
+                    'durable' => env('RABBITMQ_EXCHANGE_DURABLE', true),
+                    'auto_delete' => env('RABBITMQ_EXCHANGE_AUTODELETE', false),
+                    'alternate' => env('RABBITMQ_EXCHANGE_ALTERNATE'),
+                ],
+                'queue' => [
+                    'declare' => env('RABBITMQ_QUEUE_DECLARE', true),
+                    'bind' => env('RABBITMQ_QUEUE_BIND', true),
+                    'passive' => env('RABBITMQ_QUEUE_PASSIVE', false),
+                    'durable' => env('RABBITMQ_QUEUE_DURABLE', true),
+                    'exclusive' => env('RABBITMQ_QUEUE_EXCLUSIVE', false),
+                    'auto_delete' => env('RABBITMQ_QUEUE_AUTODELETE', false),
+                    'arguments' => env('RABBITMQ_QUEUE_ARGUMENTS'),
+                ],
+            ],
+            'sleep_on_error' => env('RABBITMQ_ERROR_SLEEP', 5),
+            'worker' => env('RABBITMQ_WORKER', 'default'),
+        ],
+
         'deferred' => [
             'driver' => 'deferred',
         ],
