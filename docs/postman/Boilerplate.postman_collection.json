@@ -1,8 +1,8 @@
 {
 	"info": {
 		"_postman_id": "76f0f848-ad03-4fab-afc5-80fa8e7d3ffe",
-		"name": "BoilerPlate",
-		"description": "Collection para testar API do boilerplate com arquitetura DDD",
+		"name": "Subscription Tracker API",
+		"description": "Subscription Tracker API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "34921459",
 		"_collection_link": "https://morar-legal.postman.co/workspace/My-Workspace~70a6ab84-315b-4f89-854c-dfffcf9af18f/collection/34921459-76f0f848-ad03-4fab-afc5-80fa8e7d3ffe?action=share&source=collection_link&creator=34921459"
@@ -203,12 +203,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/status",
+							"raw": "{{base_url}}/status",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"api",
 								"status"
 							]
 						},
@@ -628,6 +627,427 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Subscriptions - Web",
+			"item": [
+				{
+					"name": "Get Subscriptions Pagination",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/subscriptions?page=1&per_page=15&search=&sort_by=name&sort_direction=asc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"subscriptions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "15"
+								},
+								{
+									"key": "search",
+									"value": ""
+								},
+								{
+									"key": "sort_by",
+									"value": "name"
+								},
+								{
+									"key": "sort_direction",
+									"value": "asc"
+								}
+							]
+						},
+						"description": "Lista assinaturas com paginação, busca e ordenação"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscriptions Options",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/subscriptions/options",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"subscriptions",
+								"options"
+							]
+						},
+						"description": "Lista assinaturas em formato simplificado para selects"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Monthly Budget",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/subscriptions/budget",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"subscriptions",
+								"budget"
+							]
+						},
+						"description": "Retorna o orçamento mensal total de assinaturas"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscription By Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/subscriptions/{{subscription_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"subscriptions",
+								"{{subscription_id}}"
+							]
+						},
+						"description": "Retorna detalhes de uma assinatura específica"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Subscription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Netflix Premium\",\n    \"price\": 55.90,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-13\",\n    \"category\": \"entertainment\",\n    \"status\": \"active\",\n    \"user_id\": \"{{user_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/subscriptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"subscriptions"
+							]
+						},
+						"description": "Cria uma nova assinatura"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Subscription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Netflix Premium\",\n    \"price\": 59.90,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-13\",\n    \"category\": \"entertainment\",\n    \"status\": \"active\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/subscriptions/{{subscription_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"subscriptions",
+								"{{subscription_id}}"
+							]
+						},
+						"description": "Atualiza todos os campos de uma assinatura (todos campos são obrigatórios)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Subscription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/subscriptions/{{subscription_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"subscriptions",
+								"{{subscription_id}}"
+							]
+						},
+						"description": "Remove uma assinatura"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subscriptions - Mobile",
+			"item": [
+				{
+					"name": "Get Subscriptions Cursor",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/mobile/v1/subscriptions?limit=20&search=&sort_by=name&sort_direction=asc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"mobile",
+								"v1",
+								"subscriptions"
+							],
+							"query": [
+								{
+									"key": "cursor",
+									"value": "",
+									"description": "Cursor retornado pela resposta anterior (next_cursor)",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "search",
+									"value": ""
+								},
+								{
+									"key": "sort_by",
+									"value": "name"
+								},
+								{
+									"key": "sort_direction",
+									"value": "asc"
+								}
+							]
+						},
+						"description": "Lista assinaturas com cursor pagination (ideal para infinite scroll)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscriptions Options",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/mobile/v1/subscriptions/options",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"mobile",
+								"v1",
+								"subscriptions",
+								"options"
+							],
+							"query": [
+								{
+									"key": "cursor",
+									"value": "",
+									"description": "Cursor retornado pela resposta anterior (next_cursor)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Lista assinaturas com cursor pagination em formato simplificado"
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -672,6 +1092,12 @@
 			"value": "",
 			"type": "string",
 			"description": "Cursor para próxima página (mobile)"
+		},
+		{
+			"key": "subscription_id",
+			"value": "",
+			"type": "string",
+			"description": "ID da assinatura para testes"
 		}
 	]
 }
