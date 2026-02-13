@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
+use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
@@ -29,7 +30,7 @@ final readonly class DeleteSubscriptionUseCase
             $entity = $this->repository->findById($uuid);
 
             if ($entity === null) {
-                throw new \InvalidArgumentException("Subscription not found with id: {$id}");
+                throw new InvalidArgumentException("Subscription not found with id: {$id}");
             }
 
             $this->repository->delete($uuid);

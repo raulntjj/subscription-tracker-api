@@ -35,7 +35,6 @@ final readonly class CreateSubscriptionUseCase
         ]);
 
         try {
-            // Valida a data de próximo faturamento
             if (!$dto->validateNextBillingDate()) {
                 throw new \InvalidArgumentException('Next billing date must be in the future or today');
             }

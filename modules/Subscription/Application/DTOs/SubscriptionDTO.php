@@ -50,27 +50,25 @@ final readonly class SubscriptionDTO
     /**
      * Cria DTO a partir de um registro do banco (stdClass ou array)
      */
-    public static function fromDatabase(object|array $data): self
+    public static function fromDatabase(object $data): self
     {
-        $data = (array) $data;
-        
         // Formata o preço baseado na moeda
-        $price = (int) $data['price'];
-        $priceFormatted = self::formatPrice($price, $data['currency']);
+        $price = (int) $data->price;
+        $priceFormatted = self::formatPrice($price, $data->currency);
 
         return new self(
-            id: $data['id'],
-            name: $data['name'],
+            id: $data->id,
+            name: $data->name,
             price: $price,
             priceFormatted: $priceFormatted,
-            currency: $data['currency'],
-            billingCycle: $data['billing_cycle'],
-            nextBillingDate: $data['next_billing_date'],
-            category: $data['category'],
-            status: $data['status'],
-            userId: $data['user_id'],
-            createdAt: $data['created_at'],
-            updatedAt: $data['updated_at'] ?? null,
+            currency: $data->currency,
+            billingCycle: $data->billing_cycle,
+            nextBillingDate: $data->next_billing_date->format('Y-m-d'),
+            category: $data->category,
+            status: $data->status,
+            userId: $data->user_id,
+            createdAt: $data->created_at->format('Y-m-d H:i:s'),
+            updatedAt: $data->updated_at?->format('Y-m-d H:i:s'),
         );
     }
 

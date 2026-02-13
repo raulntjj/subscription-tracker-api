@@ -4,23 +4,22 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Jobs;
 
+use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Ramsey\Uuid\Uuid;
-use Modules\Shared\Infrastructure\Logging\StructuredLogger;
-use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
-use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Modules\Subscription\Domain\Entities\BillingHistory;
+use Modules\Shared\Infrastructure\Logging\StructuredLogger;
+use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
+use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
 
 /**
  * Job para verificar e processar assinaturas que vencem hoje
  * 
- * Este job deve ser executado diariamente via cron/scheduler
- * Ele identifica faturamentos do dia, registra no BillingHistory,
+ * Este job identifica faturamentos do dia, registra no BillingHistory,
  * atualiza a next_billing_date da assinatura e loga todas as ações.
  */
 final class CheckBillingJob implements ShouldQueue
