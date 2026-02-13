@@ -3,10 +3,10 @@ services:
   backend:
     build:
       context: ../../
-      dockerfile: infrastructure/development/Dockerfile
+      dockerfile: ops/development/Dockerfile
       args:
-        USER_ID: ${USER_ID:-1000}
-        GROUP_ID: ${GROUP_ID:-1000}
+        USER_ID: 1000
+        GROUP_ID: 1000
     container_name: subs-tracker-backend
     restart: unless-stopped
     working_dir: /var/www/html
@@ -14,35 +14,32 @@ services:
       - ../../:/var/www/html
       - ./php/php.ini:/usr/local/etc/php/conf.d/custom.ini
     ports:
-      - "${APP_PORT:-8001}:8000"
+      - "8001:8000"
     environment:
-      - APP_ENV=${APP_ENV:-local}
-      - APP_DEBUG=${APP_DEBUG:-true}
+      - APP_ENV=local
+      - APP_DEBUG=true
 
       - DB_HOST=mysql
       - DB_PORT=3306
-      - DB_DATABASE=${DB_DATABASE:-subs-tracker}
-      - DB_USERNAME=${DB_USERNAME:-root}
-      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - DB_DATABASE=subs-tracker
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
 
       - REDIS_CACHE_HOST=redis-cache
-      - REDIS_CACHE_PORT=${REDIS_CACHE_PORT:-6380}
+      - REDIS_CACHE_PORT=6379
 
       - REDIS_SESSION_HOST=redis-sessions
-      - REDIS_SESSION_PORT=${REDIS_SESSION_PORT:-6381}
-
-      - REDIS_QUEUE_HOST=redis-queue
-      - REDIS_QUEUE_PORT=${REDIS_QUEUE_PORT:-6382}
+      - REDIS_SESSION_PORT=6379
 
       - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
-      - RABBITMQ_USER=${RABBITMQ_USER:-admin}
-      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-secret}
-      - RABBITMQ_VHOST=${RABBITMQ_VHOST:-/}
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASSWORD=secret
+      - RABBITMQ_VHOST=/
       
       - CACHE_DRIVER=redis
       - SESSION_DRIVER=redis
-      - QUEUE_CONNECTION=redis
+      - QUEUE_CONNECTION=rabbitmq
       - OCTANE_SERVER=frankenphp
     networks:
       - subs-tracker-network
@@ -59,30 +56,25 @@ services:
         condition: service_healthy
       redis-sessions:
         condition: service_healthy
-      redis-queue:
-        condition: service_healthy
       rabbitmq:
         condition: service_healthy
 
-  # MySQL 8.0 - Write Database
+  # MySQL 8.0
   mysql:
     image: mysql:8.0
     container_name: subs-tracker-mysql
     restart: unless-stopped
     ports:
-      - "${DB_PORT:-3307}:3306"
+      - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
-      MYSQL_DATABASE: ${DB_DATABASE:-subs-tracker}
-      MYSQL_USER: ${DB_USERNAME:-subs-tracker_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: root
     volumes:
       - mysql-data:/var/lib/mysql
       - ./mysql/my.cnf:/etc/mysql/conf.d/custom.cnf
     networks:
       - subs-tracker-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-secret}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p root"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -95,67 +87,50 @@ services:
     container_name: subs-tracker-redis-cache
     restart: unless-stopped
     ports:
-      - "${REDIS_CACHE_PORT:-6380}:6379"
+      - "6380:6379"
     volumes:
       - redis-cache-data:/data
       - ./redis/cache.conf:/usr/local/etc/redis/redis.conf
     networks:
       - subs-tracker-network
     healthcheck:
-      test: ["CMD", "redis-cli", "-p", "${REDIS_CACHE_PORT:-6380}", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-    command: redis-server /usr/local/etc/redis/redis.conf --port ${REDIS_CACHE_PORT:-6380}
+    command: redis-server /usr/local/etc/redis/redis.conf
+
   # Redis Sessions - User Sessions
   redis-sessions:
     image: redis:7-alpine
     container_name: subs-tracker-redis-sessions
     restart: unless-stopped
     ports:
-      - "${REDIS_SESSION_PORT:-6381}:6379"
+      - "6381:6379"
     volumes:
       - redis-sessions-data:/data
       - ./redis/sessions.conf:/usr/local/etc/redis/redis.conf
     networks:
       - subs-tracker-network
     healthcheck:
-      test: ["CMD", "redis-cli", "-p", "${REDIS_SESSION_PORT:-6381}", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-    command: redis-server /usr/local/etc/redis/redis.conf --port ${REDIS_SESSION_PORT:-6381}
-  # Redis Queue - Background Jobs
-  redis-queue:
-    image: redis:7-alpine
-    container_name: subs-tracker-redis-queue
-    restart: unless-stopped
-    ports:
-      - "${REDIS_QUEUE_PORT:-6382}:6379"
-    volumes:
-      - redis-queue-data:/data
-      - ./redis/queue.conf:/usr/local/etc/redis/redis.conf
-    networks:
-      - subs-tracker-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "-p", "${REDIS_QUEUE_PORT:-6382}", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    command: redis-server /usr/local/etc/redis/redis.conf --port ${REDIS_QUEUE_PORT:-6382}
-
+    command: redis-server /usr/local/etc/redis/redis.conf
+    
   # RabbitMQ - Message Broker for Background Jobs
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
     container_name: subs-tracker-rabbitmq
     restart: unless-stopped
     ports:
-      - "${RABBITMQ_PORT:-5672}:5672"        # AMQP protocol
-      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"  # Management UI
+      - "5672:5672"        # AMQP protocol
+      - "15672:15672"      # Management UI
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-secret}
-      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST:-/}
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: secret
+      RABBITMQ_DEFAULT_VHOST: /
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
@@ -173,19 +148,17 @@ services:
     container_name: subs-tracker-redis-commander
     restart: unless-stopped
     ports:
-      - "${REDIS_COMMANDER_PORT:-8081}:8081"
+      - "8081:8081"
     environment:
-      - REDIS_HOSTS=cache:redis-cache:6380,sessions:redis-sessions:6381,queue:redis-queue:6382
-      - HTTP_USER=${REDIS_COMMANDER_USER:-admin}
-      - HTTP_PASSWORD=${REDIS_COMMANDER_PASSWORD:-secret}
+      - REDIS_HOSTS=cache:redis-cache:6380,sessions:redis-sessions:6381
+      - HTTP_USER=admin
+      - HTTP_PASSWORD=secret
     networks:
       - subs-tracker-network
     depends_on:
       redis-cache:
         condition: service_healthy
       redis-sessions:
-        condition: service_healthy
-      redis-queue:
         condition: service_healthy
 
 networks:
@@ -198,8 +171,6 @@ volumes:
   redis-cache-data:
     driver: local
   redis-sessions-data:
-    driver: local
-  redis-queue-data:
     driver: local
   rabbitmq-data:
     driver: local

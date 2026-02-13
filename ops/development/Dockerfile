@@ -45,6 +45,13 @@ WORKDIR /var/www/html
 # Copiar arquivos da aplicação
 COPY --chown=appuser:appuser . .
 
+# Copiar configurações do supervisor
+COPY --chown=root:root ops/development/supervisor/*.conf /etc/supervisor/conf.d/
+
+# Criar script de entrypoint
+COPY --chown=appuser:appuser ops/development/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Configurar permissões
 RUN chown -R appuser:appuser /var/www/html && \
     chmod -R 755 /var/www/html/storage && \
@@ -53,8 +60,5 @@ RUN chown -R appuser:appuser /var/www/html && \
 # Expor porta para FrankenPHP
 EXPOSE 8000
 
-# Mudar para usuário não-root
-USER appuser
-
-# Comando para iniciar FrankenPHP diretamente (sem octane:start para evitar problemas de permissão)
-CMD ["frankenphp", "php-server", "--listen", "0.0.0.0:8000", "--root", "/var/www/html/public"]
+# Comando para iniciar tudo via entrypoint
+CMD ["/usr/local/bin/entrypoint.sh"]
