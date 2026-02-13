@@ -23,13 +23,12 @@ final readonly class CreateUserUseCase
     }
 
     public function execute(
-        string $name, 
-        string $email, 
+        string $name,
+        string $email,
         string $password,
         ?string $surname = null,
         ?string $profilePath = null
-    ): UserDTO
-    {
+    ): UserDTO {
         $this->logger()->info('Creating new user', [
             'email' => $email,
             'name' => $name,

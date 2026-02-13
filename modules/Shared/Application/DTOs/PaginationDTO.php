@@ -6,7 +6,7 @@ namespace Modules\Shared\Application\DTOs;
 
 /**
  * DTO base para paginação
- * 
+ *
  * Usado para transferir dados de paginação entre camadas
  */
 final readonly class PaginationDTO
@@ -18,7 +18,8 @@ final readonly class PaginationDTO
         public int $lastPage,
         public ?string $nextPageUrl = null,
         public ?string $prevPageUrl = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir de um paginator Laravel

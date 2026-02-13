@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Trait para adicionar campos de auditoria de usuário aos models
- * 
+ *
  * Adiciona automaticamente:
  * - created_by (quem criou)
  * - updated_by (quem atualizou)

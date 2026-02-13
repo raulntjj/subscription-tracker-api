@@ -48,7 +48,7 @@ final readonly class FindUserByIdQuery
 
                 if ($userData !== null) {
                     $duration = microtime(true) - $startTime;
-                    
+
                     $this->logger()->info('User found in database', [
                         'user_id' => $userId,
                         'cache_hit' => false,
@@ -60,7 +60,7 @@ final readonly class FindUserByIdQuery
                 }
 
                 $duration = microtime(true) - $startTime;
-                
+
                 $this->logger()->warning('User not found', [
                     'user_id' => $userId,
                     'duration_ms' => round($duration * 1000, 2),
@@ -77,7 +77,7 @@ final readonly class FindUserByIdQuery
         // Se veio do cache, loga
         if (is_array($userData)) {
             $duration = microtime(true) - $startTime;
-            
+
             $this->logger()->info('User found in cache', [
                 'user_id' => $userId,
                 'cache_hit' => true,

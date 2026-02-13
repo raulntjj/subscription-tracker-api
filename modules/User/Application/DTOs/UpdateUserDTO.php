@@ -15,7 +15,8 @@ final readonly class UpdateUserDTO
         public ?string $password = null,
         public ?string $surname = null,
         public ?string $profilePath = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir de array
@@ -42,7 +43,7 @@ final readonly class UpdateUserDTO
             'password' => $this->password,
             'surname' => $this->surname,
             'profile_path' => $this->profilePath,
-        ], fn($value) => $value !== null);
+        ], fn ($value) => $value !== null);
     }
 
     /**
@@ -50,8 +51,8 @@ final readonly class UpdateUserDTO
      */
     public function hasChanges(): bool
     {
-        return $this->name !== null 
-            || $this->email !== null 
+        return $this->name !== null
+            || $this->email !== null
             || $this->password !== null
             || $this->surname !== null
             || $this->profilePath !== null;

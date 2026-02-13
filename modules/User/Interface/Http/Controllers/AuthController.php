@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\User\Interface\Http\Controllers;
 
 use Throwable;
-use InvalidArgumentException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Modules\User\Application\DTOs\LoginDTO;
@@ -25,7 +24,8 @@ final class AuthController
         private readonly LogoutUseCase $logoutUseCase,
         private readonly RefreshTokenUseCase $refreshTokenUseCase,
         private readonly GetAuthenticatedUserQuery $getAuthenticatedUserQuery,
-    ) {}
+    ) {
+    }
 
     /**
      * POST /auth/login

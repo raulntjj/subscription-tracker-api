@@ -14,7 +14,8 @@ final class RefreshTokenUseCase
 
     public function __construct(
         private readonly JwtServiceInterface $jwtService,
-    ) {}
+    ) {
+    }
 
     /**
      * Renova o token JWT atual (rotação de token).

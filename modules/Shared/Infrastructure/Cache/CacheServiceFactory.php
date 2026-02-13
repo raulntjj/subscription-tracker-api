@@ -34,7 +34,7 @@ final class CacheServiceFactory
     {
         $logger = LoggerFactory::forInfrastructure($moduleName);
         $tags = [strtolower($moduleName)];
-        
+
         return new CacheService($logger, $tags);
     }
 }

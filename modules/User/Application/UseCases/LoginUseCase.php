@@ -16,7 +16,8 @@ final class LoginUseCase
 
     public function __construct(
         private readonly JwtServiceInterface $jwtService,
-    ) {}
+    ) {
+    }
 
     /**
      * Autentica o usuário e retorna o token JWT.
@@ -27,19 +28,19 @@ final class LoginUseCase
     {
         try {
             $token = $this->jwtService->attemptLogin($dto->toCredentials());
-    
+
             if ($token === null) {
                 $this->logger()->warning('Login failed: invalid credentials', [
                     'email' => $dto->email,
                 ]);
-    
+
                 throw new InvalidArgumentException('Credenciais inválidas.');
             }
-    
+
             $this->logger()->event('user.logged_in', [
                 'email' => $dto->email,
             ]);
-    
+
             return AuthTokenDTO::fromToken($token, $this->jwtService->getTokenTtl());
         } catch (\Throwable $e) {
             $this->logger()->error('Login error', [

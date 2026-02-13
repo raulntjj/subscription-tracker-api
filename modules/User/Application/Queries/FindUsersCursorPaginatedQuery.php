@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\User\Application\Queries;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Pagination\CursorPaginator;
 use Modules\User\Application\DTOs\UserDTO;
 use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\Shared\Application\DTOs\SortDTO;
@@ -76,16 +75,17 @@ final readonly class FindUsersCursorPaginatedQuery
         $usersData = [];
         foreach ($paginator->items() as $userData) {
             $userCacheKey = "user:{$userData->id}";
-            
-            $cachedUser = $this->cache()->remember(
+
+            // Tenta buscar do cache individual
+            $cachedUserData = $this->cache()->remember(
                 $userCacheKey,
                 3600,
                 function () use ($userData) {
                     return UserDTO::fromDatabase($userData)->toArray();
                 }
             );
-            
-            $usersData[] = $cachedUser;
+
+            $usersData[] = $cachedUserData;
         }
 
         $duration = microtime(true) - $startTime;

@@ -79,7 +79,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
     public function delete(UuidInterface $id): void
     {
         $model = UserModel::find($id->toString());
-        
+
         if ($model !== null) {
             $this->deleteModel($model);
         }

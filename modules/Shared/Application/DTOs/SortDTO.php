@@ -6,7 +6,7 @@ namespace Modules\Shared\Application\DTOs;
 
 /**
  * DTO para parâmetros de ordenação
- * 
+ *
  * Usado para transferir critérios de ordenação entre camadas.
  * Suporta múltiplas colunas de ordenação.
  */
@@ -17,11 +17,12 @@ final readonly class SortDTO
      */
     public function __construct(
         public array $sorts = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir de Request query params
-     * 
+     *
      * Formato esperado:
      * - sort_by=name&sort_direction=asc (simples)
      * - sort_by=name,email&sort_direction=asc,desc (múltiplo)
@@ -109,7 +110,7 @@ final readonly class SortDTO
         }
 
         $parts = array_map(
-            fn(array $sort) => "{$sort['column']}:{$sort['direction']}",
+            fn (array $sort) => "{$sort['column']}:{$sort['direction']}",
             $this->sorts
         );
 

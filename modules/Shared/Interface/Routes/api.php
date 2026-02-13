@@ -18,21 +18,21 @@ use Illuminate\Support\Facades\Cache;
 Route::get('/status', function () {
     $dbStatus = 'disconnected';
     $cacheStatus = 'disconnected';
-    
+
     try {
         DB::connection()->getPdo();
         $dbStatus = 'connected';
     } catch (\Exception $e) {
         $dbStatus = 'error: ' . $e->getMessage();
     }
-    
+
     try {
         Cache::set('health_check', true, 10);
         $cacheStatus = Cache::get('health_check') ? 'connected' : 'error';
     } catch (\Exception $e) {
         $cacheStatus = 'error: ' . $e->getMessage();
     }
-    
+
     return response()->json([
         'status' => 'ok',
         'app' => config('app.name'),

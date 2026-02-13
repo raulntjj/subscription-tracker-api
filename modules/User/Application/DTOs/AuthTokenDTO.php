@@ -10,7 +10,8 @@ final readonly class AuthTokenDTO
         public string $accessToken,
         public string $tokenType,
         public int $expiresIn,
-    ) {}
+    ) {
+    }
 
     public static function fromToken(string $token, int $ttlMinutes): self
     {

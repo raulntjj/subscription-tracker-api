@@ -19,7 +19,8 @@ final readonly class UserDTO
         public ?string $updatedAt = null,
         public ?string $surname = null,
         public ?string $profilePath = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir da entidade de domínio User

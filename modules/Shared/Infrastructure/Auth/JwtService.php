@@ -14,7 +14,8 @@ final class JwtService implements JwtServiceInterface
 
     public function __construct(
         private readonly JWTAuth $jwtAuth,
-    ) {}
+    ) {
+    }
 
     public function attemptLogin(array $credentials): ?string
     {

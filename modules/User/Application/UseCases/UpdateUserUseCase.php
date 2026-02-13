@@ -6,7 +6,6 @@ namespace Modules\User\Application\UseCases;
 
 use Modules\User\Application\DTOs\UserDTO;
 use Ramsey\Uuid\Uuid;
-use Modules\User\Domain\Entities\User;
 use Modules\User\Domain\ValueObjects\Email;
 use Modules\User\Domain\ValueObjects\Password;
 use Modules\User\Application\DTOs\UpdateUserDTO;
@@ -48,11 +47,11 @@ final readonly class UpdateUserUseCase
             $user->changeName($dto->name);
             $user->changeEmail(new Email($dto->email));
             $user->changePassword(Password::fromPlainText($dto->password));
-            
+
             if ($dto->surname !== null) {
                 $user->changeSurname($dto->surname);
             }
-            
+
             if ($dto->profilePath !== null) {
                 $user->changeProfilePath($dto->profilePath);
             }

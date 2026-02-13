@@ -6,7 +6,7 @@ namespace Modules\Shared\Application\DTOs;
 
 /**
  * DTO para paginação com cursor (ideal para mobile)
- * 
+ *
  * Cursor pagination é mais eficiente para grandes datasets
  * e evita problemas de duplicação quando novos itens são adicionados
  */
@@ -18,7 +18,8 @@ final readonly class CursorPaginationDTO
         public int $perPage,
         public bool $hasMore,
         public ?string $path = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir de um cursor paginator Laravel

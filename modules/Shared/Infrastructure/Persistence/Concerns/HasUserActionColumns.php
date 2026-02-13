@@ -8,7 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 
 /**
  * Trait para adicionar colunas de auditoria de usuário nas migrations
- * 
+ *
  * Adiciona:
  * - created_by (UUID nullable)
  * - updated_by (UUID nullable)
@@ -45,7 +45,7 @@ trait HasUserActionColumns
 
     /**
      * Adiciona colunas de auditoria de usuário à tabela (para ALTER TABLE)
-     * 
+     *
      * @param Blueprint $table
      * @param bool $useAfter Se true, usa after() para posicionar colunas
      */

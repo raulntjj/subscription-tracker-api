@@ -50,7 +50,7 @@ final class UserController extends Controller
     /**
      * GET /api/web/v1/users
      * Lista usuários com paginação offset, busca e ordenação (web)
-     * 
+     *
      * Query params:
      * - page: número da página (default: 1)
      * - per_page: itens por página (default: 15)
@@ -77,7 +77,7 @@ final class UserController extends Controller
             $paginator = $this->findUsersPaginatedQuery->execute($page, $perPage, $search, $sort);
 
             $usersData = array_map(
-                fn(UserDTO $user) => $user->toArray(),
+                fn (UserDTO $user) => $user->toArray(),
                 $paginator->items()
             );
 
@@ -96,7 +96,7 @@ final class UserController extends Controller
      * GET /api/web/v1/users/options
      * Lista opções de usuários para selects/autocompletes
      * Retorna lista leve sem paginação, com suporte a busca
-     * 
+     *
      * Query params:
      * - search: termo de busca (busca em name e email)
      */
@@ -111,7 +111,7 @@ final class UserController extends Controller
             $users = $this->findUserOptionsQuery->execute($search);
 
             $usersData = array_map(
-                fn(UserDTO $user) => $user->toOptions(),
+                fn (UserDTO $user) => $user->toOptions(),
                 $users
             );
 

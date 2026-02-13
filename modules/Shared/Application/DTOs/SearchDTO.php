@@ -6,7 +6,7 @@ namespace Modules\Shared\Application\DTOs;
 
 /**
  * DTO para parâmetros de busca
- * 
+ *
  * Usado para transferir critérios de pesquisa entre camadas.
  * Suporta busca por termo em múltiplas colunas.
  */
@@ -19,7 +19,8 @@ final readonly class SearchDTO
     public function __construct(
         public ?string $term = null,
         public array $columns = [],
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir de Request query params

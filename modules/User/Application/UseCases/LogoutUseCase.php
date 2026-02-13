@@ -13,7 +13,8 @@ final class LogoutUseCase
 
     public function __construct(
         private readonly JwtServiceInterface $jwtService,
-    ) {}
+    ) {
+    }
 
     /**
      * Invalida o token JWT atual, realizando o logout.

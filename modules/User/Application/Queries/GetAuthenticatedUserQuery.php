@@ -11,7 +11,8 @@ final class GetAuthenticatedUserQuery
 {
     public function __construct(
         private readonly JwtServiceInterface $jwtService,
-    ) {}
+    ) {
+    }
 
     /**
      * Retorna os dados do usuário autenticado.

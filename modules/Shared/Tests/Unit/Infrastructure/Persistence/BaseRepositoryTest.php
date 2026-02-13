@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Tests\Unit\Infrastructure\Persistence;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Modules\Shared\Infrastructure\Persistence\BaseRepository;
 use PHPUnit\Framework\TestCase;
 
 final class BaseRepositoryTest extends TestCase

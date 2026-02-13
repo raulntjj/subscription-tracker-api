@@ -41,7 +41,7 @@ abstract class BaseRepository
     protected function invalidateCache(): void
     {
         $tags = $this->getCacheTags();
-        
+
         if (!empty($tags)) {
             $this->cache->invalidateTags($tags);
         }
@@ -73,7 +73,7 @@ abstract class BaseRepository
     protected function upsert(string $modelClass, array $attributes, array $values): Model
     {
         $model = null;
-        
+
         $this->executeInTransaction(function () use ($modelClass, $attributes, $values, &$model) {
             $model = $modelClass::updateOrCreate($attributes, $values);
         });

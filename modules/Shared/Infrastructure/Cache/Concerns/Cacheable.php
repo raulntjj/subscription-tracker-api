@@ -16,7 +16,7 @@ trait Cacheable
      * Tags de cache para invalidação.
      * Sobrescreva este método para usar tags específicas
      * que sejam consistentes com o repositório do módulo.
-     * 
+     *
      * @return array<string>
      */
     protected function cacheTags(): array

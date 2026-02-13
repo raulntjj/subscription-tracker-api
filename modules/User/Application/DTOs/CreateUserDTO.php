@@ -15,7 +15,8 @@ final readonly class CreateUserDTO
         public string $password,
         public ?string $surname = null,
         public ?string $profilePath = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir de array

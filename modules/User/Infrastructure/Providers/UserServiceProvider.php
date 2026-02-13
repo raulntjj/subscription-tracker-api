@@ -32,7 +32,7 @@ final class UserServiceProvider extends ServiceProvider
         // Rotas de Autenticação com prefixo '/api/auth/v1'
         Route::prefix('/api/auth/v1')
             ->group(__DIR__ . '/../../Interface/Routes/auth.php');
-        
+
         $this->loadMigrationsFrom(__DIR__ . '/../Persistence/Migrations');
     }
 }
