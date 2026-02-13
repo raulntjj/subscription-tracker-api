@@ -58,9 +58,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
     {
         $model = UserModel::find($id->toString());
 
-        if ($model === null) {
-            return null;
-        }
+        if ($model === null) return null;
 
         return $this->toDomain($model);
     }

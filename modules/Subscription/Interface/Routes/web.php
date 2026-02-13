@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Modules\Subscription\Interface\Http\Controllers\SubscriptionController;
+use Modules\Subscription\Interface\Http\Controllers\WebhookConfigController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,4 +27,20 @@ Route::prefix('subscriptions')->group(function () {
     Route::get('/{id}', [SubscriptionController::class, 'show']);
     Route::put('/{id}', [SubscriptionController::class, 'update']);
     Route::delete('/{id}', [SubscriptionController::class, 'destroy']);
+});
+
+Route::prefix('webhooks')->group(function () {
+    // Listagem
+    Route::get('/', [WebhookConfigController::class, 'index']);
+
+    // CRUD
+    Route::post('/', [WebhookConfigController::class, 'store']);
+    Route::get('/{id}', [WebhookConfigController::class, 'show']);
+    Route::put('/{id}', [WebhookConfigController::class, 'update']);
+    Route::delete('/{id}', [WebhookConfigController::class, 'destroy']);
+
+    // Ações especiais
+    Route::patch('/{id}/activate', [WebhookConfigController::class, 'activate']);
+    Route::patch('/{id}/deactivate', [WebhookConfigController::class, 'deactivate']);
+    Route::post('/{id}/test', [WebhookConfigController::class, 'test']);
 });

@@ -1,11 +1,11 @@
 {
 	"info": {
-		"_postman_id": "76f0f848-ad03-4fab-afc5-80fa8e7d3ffe",
+		"_postman_id": "79a03ffd-d5b9-4b5e-948b-61be611895b8",
 		"name": "Subscription Tracker API",
 		"description": "Subscription Tracker API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "34921459",
-		"_collection_link": "https://morar-legal.postman.co/workspace/My-Workspace~70a6ab84-315b-4f89-854c-dfffcf9af18f/collection/34921459-76f0f848-ad03-4fab-afc5-80fa8e7d3ffe?action=share&source=collection_link&creator=34921459"
+		"_collection_link": "https://morar-legal.postman.co/workspace/My-Workspace~70a6ab84-315b-4f89-854c-dfffcf9af18f/collection/34921459-79a03ffd-d5b9-4b5e-948b-61be611895b8?action=share&source=collection_link&creator=34921459"
 	},
 	"item": [
 		{
@@ -26,7 +26,9 @@
 									"    }",
 									"}"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -46,7 +48,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"john.doe1@example.com\",\n    \"password\": \"secret123\"\n}"
+							"raw": "{\n    \"email\": \"raulntjj@gmail.com\",\n    \"password\": \"12345678\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/auth/v1/login",
@@ -538,6 +540,16 @@
 				{
 					"name": "Get Users Cursed",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [
 							{
@@ -566,7 +578,13 @@
 								}
 							]
 						},
-						"description": "Lista usuários com cursor pagination (ideal para mobile) - infinite scroll",
+						"description": "Lista usuários com cursor pagination (ideal para mobile) - infinite scroll"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Users Options",
+					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
@@ -576,13 +594,7 @@
 									"type": "string"
 								}
 							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Users Options",
-					"request": {
+						},
 						"method": "GET",
 						"header": [
 							{
@@ -612,17 +624,7 @@
 								}
 							]
 						},
-						"description": "Lista usuários com cursor pagination (ideal para mobile) - infinite scroll",
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_token}}",
-									"type": "string"
-								}
-							]
-						}
+						"description": "Lista usuários com cursor pagination (ideal para mobile) - infinite scroll"
 					},
 					"response": []
 				}
@@ -832,7 +834,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Netflix Premium\",\n    \"price\": 55.90,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-13\",\n    \"category\": \"entertainment\",\n    \"status\": \"active\",\n    \"user_id\": \"{{user_id}}\"\n}"
+							"raw": "{\n    \"name\": \"Amazon\",\n    \"price\": 99999,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-13\",\n    \"category\": \"entertainment\",\n    \"description\": \"Plano Premium 4 telas\",\n    \"status\": \"active\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/subscriptions",
@@ -851,7 +853,7 @@
 					"response": []
 				},
 				{
-					"name": "Update Subscription",
+					"name": "Update Subscription (PUT)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -878,7 +880,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Netflix Premium\",\n    \"price\": 59.90,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-13\",\n    \"category\": \"entertainment\",\n    \"status\": \"active\"\n}"
+							"raw": "{\n    \"name\": \"Unimed\",\n    \"price\": 30000,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-20\",\n    \"category\": \"health\",\n    \"description\": \"Plano de Saúde\",\n    \"status\": \"paused\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/subscriptions/{{subscription_id}}",
@@ -893,7 +895,7 @@
 								"{{subscription_id}}"
 							]
 						},
-						"description": "Atualiza todos os campos de uma assinatura (todos campos são obrigatórios)"
+						"description": "Atualiza todos os campos de uma assinatura"
 					},
 					"response": []
 				},
@@ -1048,6 +1050,351 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Webhooks",
+			"item": [
+				{
+					"name": "Create Webhook Config",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.id) {",
+									"        pm.environment.set(\"webhook_id\", response.data.id);",
+									"        console.log(\"Webhook ID salvo:\", response.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"url\": \"https://webhook.site/unique-url\",\n    \"secret\": \"my-secret-key-123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/webhooks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"webhooks"
+							]
+						},
+						"description": "Cria uma nova configuração de webhook para receber notificações de renovação de assinaturas"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Webhook Configs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/webhooks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"webhooks"
+							]
+						},
+						"description": "Lista todas as configurações de webhook do usuário"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Webhook Config by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"webhooks",
+								"{{webhook_id}}"
+							]
+						},
+						"description": "Retorna detalhes de uma configuração de webhook específica"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Webhook Config",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"url\": \"https://webhook.site/new-url\",\n    \"secret\": \"new-secret-key-456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"webhooks",
+								"{{webhook_id}}"
+							]
+						},
+						"description": "Atualiza URL e/ou secret de uma configuração de webhook"
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Webhook",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}/activate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"webhooks",
+								"{{webhook_id}}",
+								"activate"
+							]
+						},
+						"description": "Ativa um webhook para começar a receber notificações"
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Webhook",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}/deactivate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"webhooks",
+								"{{webhook_id}}",
+								"deactivate"
+							]
+						},
+						"description": "Desativa um webhook para parar de receber notificações"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Webhook Config",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"webhooks",
+								"{{webhook_id}}"
+							]
+						},
+						"description": "Remove uma configuração de webhook (soft delete)"
+					},
+					"response": []
+				},
+				{
+					"name": "Test Webhook",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}/test",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"webhooks",
+								"{{webhook_id}}",
+								"test"
+							]
+						},
+						"description": "Envia um payload de teste para o webhook para validar a configuração"
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -1098,6 +1445,12 @@
 			"value": "",
 			"type": "string",
 			"description": "ID da assinatura para testes"
+		},
+		{
+			"key": "webhook_id",
+			"value": "",
+			"type": "string",
+			"description": "ID do webhook para testes"
 		}
 	]
 }

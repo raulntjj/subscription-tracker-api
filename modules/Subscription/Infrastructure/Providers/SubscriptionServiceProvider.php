@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace Modules\Subscription\Infrastructure\Providers;
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Modules\Subscription\Console\Commands\CheckBillingCommand;
 use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
+use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 use Modules\Subscription\Infrastructure\Persistence\BillingHistoryRepository;
 use Modules\Subscription\Infrastructure\Persistence\SubscriptionRepository;
+use Modules\Subscription\Infrastructure\Persistence\WebhookConfigRepository;
+use Modules\Subscription\Domain\Events\SubscriptionRenewed;
+use Modules\Subscription\Application\Listeners\DispatchWebhookOnSubscriptionRenewed;
 
 final class SubscriptionServiceProvider extends ServiceProvider
 {
@@ -25,6 +30,11 @@ final class SubscriptionServiceProvider extends ServiceProvider
             BillingHistoryRepositoryInterface::class,
             BillingHistoryRepository::class
         );
+
+        $this->app->bind(
+            WebhookConfigRepositoryInterface::class,
+            WebhookConfigRepository::class
+        );
     }
 
     public function boot(): void
@@ -38,6 +48,12 @@ final class SubscriptionServiceProvider extends ServiceProvider
             ->group(__DIR__ . '/../../Interface/Routes/mobile.php');
 
         $this->loadMigrationsFrom(__DIR__ . '/../Persistence/Migrations');
+
+        // Registra event listeners
+        Event::listen(
+            SubscriptionRenewed::class,
+            DispatchWebhookOnSubscriptionRenewed::class
+        );
 
         // Registra comandos do console
         if ($this->app->runningInConsole()) {
