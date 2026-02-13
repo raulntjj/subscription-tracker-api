@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Modules\User\Application\Queries;
 
-use Illuminate\Support\Facades\DB;
 use Modules\User\Application\DTOs\UserDTO;
+use Modules\User\Infrastructure\Persistence\Eloquent\UserModel;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 
 /**
  * Query para buscar um usuário por ID
+ * 
+ * CQRS: Queries podem usar Eloquent Models diretamente para leitura
+ * Benefícios: soft deletes automático, casts, scopes, relations
  */
 final readonly class FindUserByIdQuery
 {
@@ -42,9 +45,8 @@ final readonly class FindUserByIdQuery
                     'user_id' => $userId,
                 ]);
 
-                $userData = DB::table('users')
-                    ->where('id', $userId)
-                    ->first();
+                // Usa Eloquent Model - soft deletes automático!
+                $userData = UserModel::where('id', $userId)->first();
 
                 if ($userData !== null) {
                     $duration = microtime(true) - $startTime;

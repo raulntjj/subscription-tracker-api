@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Queries;
 
-use Illuminate\Support\Facades\DB;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
+use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
 use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
@@ -43,10 +43,7 @@ final readonly class FindSubscriptionOptionsQuery
             $cacheKey,
             self::CACHE_TTL,
             function () use ($search, $startTime) {
-                $this->logger()->debug('Cache miss - fetching from database');
-
-                $query = DB::table('subscriptions')
-                    ->select(['id', 'name', 'created_at', 'updated_at'])
+                $query = SubscriptionModel::query()
                     ->orderBy('name', 'asc');
 
                 // Aplica busca
@@ -63,15 +60,6 @@ final readonly class FindSubscriptionOptionsQuery
                 $items = $data->map(function ($item) {
                     return SubscriptionDTO::fromDatabase($item);
                 })->all();
-
-                $duration = microtime(true) - $startTime;
-
-                $this->logger()->info('Subscription options retrieved from database', [
-                    'total' => count($items),
-                    'search' => $search?->term,
-                    'cache_hit' => false,
-                    'duration_ms' => round($duration * 1000, 2),
-                ]);
 
                 return $items;
             }

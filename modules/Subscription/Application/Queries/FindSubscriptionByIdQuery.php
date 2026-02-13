@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Queries;
 
-use Illuminate\Support\Facades\DB;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
+use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
 
 /**
  * Query para buscar um subscription por ID
@@ -37,37 +37,13 @@ final readonly class FindSubscriptionByIdQuery
             $cacheKey,
             self::CACHE_TTL,
             function () use ($id, $startTime) {
-                $this->logger()->debug('Cache miss - fetching from database', [
-                    'subscription_id' => $id,
-                ]);
-
-                $data = DB::table('subscriptions')
+                return SubscriptionModel::query()
                     ->where('id', $id)
                     ->first();
-
-                if ($data !== null) {
-                    $duration = microtime(true) - $startTime;
-
-                    $this->logger()->info('Subscription found in database', [
-                        'subscription_id' => $id,
-                        'cache_hit' => false,
-                        'duration_ms' => round($duration * 1000, 2),
-                    ]);
-
-                    return (array) $data;
-                }
-
-                $this->logger()->warning('Subscription not found', [
-                    'subscription_id' => $id,
-                ]);
-
-                return null;
             }
         );
 
-        if ($data === null) {
-            return null;
-        }
+        if ($data === null) return null;
 
         return SubscriptionDTO::fromDatabase($data);
     }

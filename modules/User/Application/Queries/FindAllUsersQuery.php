@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\User\Application\Queries;
 
-use Illuminate\Support\Facades\DB;
 use Modules\User\Application\DTOs\UserDTO;
+use Modules\User\Infrastructure\Persistence\Eloquent\UserModel;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 
@@ -41,9 +41,7 @@ final readonly class FindAllUsersQuery
             function () use ($startTime) {
                 $this->logger()->debug('Cache miss - fetching from database');
 
-                $usersData = DB::table('users')
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+                $usersData = UserModel::orderBy('created_at', 'desc')->get();
 
                 $users = $usersData->map(function ($userData) {
                     return UserDTO::fromDatabase($userData);

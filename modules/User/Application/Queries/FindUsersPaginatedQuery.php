@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\User\Application\Queries;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 use Modules\User\Application\DTOs\UserDTO;
+use Modules\User\Infrastructure\Persistence\Eloquent\UserModel;
 use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\Shared\Application\DTOs\SortDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
@@ -15,6 +15,9 @@ use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 /**
  * Query para buscar usuários com paginação offset (web)
  * Suporta busca e ordenação dinâmica
+ * 
+ * CQRS: Queries podem usar Eloquent Models diretamente para leitura
+ * Benefícios: soft deletes automático, casts, scopes, relations
  */
 final readonly class FindUsersPaginatedQuery
 {
@@ -47,85 +50,66 @@ final readonly class FindUsersPaginatedQuery
             'sort' => $sort?->sorts,
         ]);
 
-        // Cache da paginação (apenas IDs e total)
+        // Cache completo da paginação (dados + metadados)
         $result = $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
             function () use ($page, $perPage, $search, $sort, $startTime) {
-                $this->logger()->debug('Cache miss - fetching IDs from database');
+                $this->logger()->debug('Cache miss - fetching from database');
 
-                $baseQuery = DB::table('users');
+                // Usa Eloquent Model - soft deletes automático!
+                $query = UserModel::select(['id', 'name', 'surname', 'email', 'profile_path', 'created_at', 'updated_at']);
 
                 // Aplica busca
                 if ($search !== null && $search->hasSearch()) {
-                    $baseQuery->where(function ($q) use ($search) {
+                    $query->where(function ($q) use ($search) {
                         foreach ($search->columns as $column) {
                             $q->orWhere($column, 'LIKE', "%{$search->term}%");
                         }
                     });
                 }
 
-                $total = (clone $baseQuery)->count();
-
                 // Aplica ordenação
                 if ($sort !== null && $sort->hasSorts()) {
                     foreach ($sort->sorts as $sortItem) {
-                        $baseQuery->orderBy($sortItem['column'], $sortItem['direction']);
+                        $query->orderBy($sortItem['column'], $sortItem['direction']);
                     }
                 } else {
-                    $baseQuery->orderBy('created_at', 'desc');
+                    $query->orderBy('created_at', 'desc');
                 }
 
-                $userIds = $baseQuery
-                    ->skip(($page - 1) * $perPage)
-                    ->take($perPage)
-                    ->pluck('id')
+                // UMA ÚNICA query com paginate() - resolve N+1
+                $paginator = $query->paginate($perPage, ['*'], 'page', $page);
+
+                // Converte para DTOs
+                $users = $paginator->getCollection()
+                    ->map(fn($model) => UserDTO::fromDatabase($model))
                     ->all();
 
                 $duration = microtime(true) - $startTime;
 
-                $this->logger()->info('User IDs paginated retrieved', [
+                $this->logger()->info('Users paginated retrieved', [
                     'page' => $page,
                     'per_page' => $perPage,
-                    'total' => $total,
+                    'total' => $paginator->total(),
                     'search' => $search?->term,
                     'cache_hit' => false,
                     'duration_ms' => round($duration * 1000, 2),
                 ]);
 
                 return [
-                    'ids' => $userIds,
-                    'total' => $total,
+                    'items' => $users,
+                    'total' => $paginator->total(),
+                    'per_page' => $paginator->perPage(),
+                    'current_page' => $paginator->currentPage(),
+                    'last_page' => $paginator->lastPage(),
                 ];
             }
         );
 
-        // Busca cada usuário do cache individual
-        $users = [];
-        foreach ($result['ids'] as $userId) {
-            $userCacheKey = "user:{$userId}";
-
-            $userData = $this->cache()->remember(
-                $userCacheKey,
-                3600, // 1 hora (mesmo TTL do FindUserByIdQuery)
-                function () use ($userId) {
-                    $userData = DB::table('users')
-                        ->select(['id', 'name', 'surname', 'email', 'profile_path', 'created_at', 'updated_at'])
-                        ->where('id', $userId)
-                        ->first();
-
-                    return $userData ? (array) $userData : null;
-                }
-            );
-
-            if ($userData !== null) {
-                $users[] = UserDTO::fromDatabase($userData);
-            }
-        }
-
         $duration = microtime(true) - $startTime;
 
-        $this->logger()->info('Users paginated returned', [
+        $this->logger()->info('Users paginated returned from cache', [
             'page' => $page,
             'per_page' => $perPage,
             'total' => $result['total'],
@@ -134,10 +118,10 @@ final readonly class FindUsersPaginatedQuery
         ]);
 
         return new LengthAwarePaginator(
-            items: $users,
+            items: $result['items'],
             total: $result['total'],
-            perPage: $perPage,
-            currentPage: $page,
+            perPage: $result['per_page'],
+            currentPage: $result['current_page'],
             options: [
                 'path' => request()->url(),
                 'query' => request()->query(),

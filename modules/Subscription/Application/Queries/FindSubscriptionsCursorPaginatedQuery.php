@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Queries;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\CursorPaginator;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
+use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
 use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\Shared\Application\DTOs\SortDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
@@ -35,6 +35,10 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
         ?SortDTO $sort = null,
     ): CursorPaginator {
         $startTime = microtime(true);
+        $searchKey = $search ? $search->cacheKey() : 'search:none';
+        $sortKey = $sort ? $sort->cacheKey() : 'sort:default';
+        $cursorKey = $cursor ?? 'cursor:none';
+        $cacheKey = "subscriptions:cursor_paginated:cursor:{$cursorKey}:per_page:{$perPage}:{$searchKey}:{$sortKey}";
 
         $this->logger()->debug('Finding subscription with cursor pagination', [
             'cursor' => $cursor,
@@ -43,57 +47,75 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
             'sort' => $sort?->sorts,
         ]);
 
-        $query = DB::table('subscriptions');
+        // Cache completo do resultado
+        $result = $this->cache()->remember(
+            $cacheKey,
+            300, // 5 minutos
+            function () use ($cursor, $perPage, $search, $sort, $startTime) {
+                $query = SubscriptionModel::query();
 
-        // Aplica busca
-        if ($search !== null && $search->hasSearch()) {
-            $query->where(function ($q) use ($search) {
-                foreach ($search->columns as $column) {
-                    $q->orWhere($column, 'LIKE', "%{$search->term}%");
+                // Aplica busca
+                if ($search !== null && $search->hasSearch()) {
+                    $query->where(function ($q) use ($search) {
+                        foreach ($search->columns as $column) {
+                            $q->orWhere($column, 'LIKE', "%{$search->term}%");
+                        }
+                    });
                 }
-            });
-        }
 
-        // Aplica ordenação
-        if ($sort !== null && $sort->hasSorts()) {
-            foreach ($sort->sorts as $sortItem) {
-                $query->orderBy($sortItem['column'], $sortItem['direction']);
+                // Aplica ordenação
+                if ($sort !== null && $sort->hasSorts()) {
+                    foreach ($sort->sorts as $sortItem) {
+                        $query->orderBy($sortItem['column'], $sortItem['direction']);
+                    }
+                    $query->orderBy('id', 'desc');
+                } else {
+                    $query->orderBy('created_at', 'desc');
+                    $query->orderBy('id', 'desc');
+                }
+
+                // UMA ÚNICA query com cursorPaginate() - resolve N+1
+                $paginator = $query->cursorPaginate(
+                    perPage: $perPage,
+                    cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null
+                );
+
+                // Converte para DTOs
+                $items = $paginator->getCollection()
+                    ->map(fn($model) => SubscriptionDTO::fromDatabase($model))
+                    ->all();
+
+                return [
+                    'items' => $items,
+                    'next_cursor' => $paginator->nextCursor()?->encode(),
+                    'prev_cursor' => $paginator->previousCursor()?->encode(),
+                    'has_more' => $paginator->hasMorePages(),
+                    'per_page' => $paginator->perPage(),
+                ];
             }
-            $query->orderBy('id', 'desc');
-        } else {
-            $query->orderBy('created_at', 'desc');
-            $query->orderBy('id', 'desc');
-        }
-
-        $paginator = $query->cursorPaginate(
-            perPage: $perPage,
-            cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null
         );
-
-        $paginator->through(function ($itemData) {
-            $itemCacheKey = "subscription:{$itemData->id}";
-
-            $cachedData = $this->cache()->remember(
-                $itemCacheKey,
-                3600,
-                function () use ($itemData) {
-                    return (array) $itemData;
-                }
-            );
-
-            return SubscriptionDTO::fromDatabase($cachedData);
-        });
 
         $duration = microtime(true) - $startTime;
 
-        $this->logger()->info('Subscription cursor paginated retrieved', [
+        $this->logger()->info('Subscription cursor paginated returned from cache', [
             'cursor' => $cursor,
             'per_page' => $perPage,
             'search' => $search?->term,
-            'has_more' => $paginator->hasMorePages(),
             'duration_ms' => round($duration * 1000, 2),
         ]);
 
-        return $paginator;
+        // Reconstrói o CursorPaginator para manter a interface
+        return new CursorPaginator(
+            items: $result['items'],
+            perPage: $result['per_page'],
+            cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null,
+            options: [
+                'path' => request()->url(),
+                'parameters' => [
+                    'next' => $result['next_cursor'],
+                    'prev' => $result['prev_cursor'],
+                ],
+            ]
+        );
     }
 }

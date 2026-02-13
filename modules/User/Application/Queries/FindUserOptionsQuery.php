@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\User\Application\Queries;
 
-use Illuminate\Support\Facades\DB;
 use Modules\User\Application\DTOs\UserDTO;
+use Modules\User\Infrastructure\Persistence\Eloquent\UserModel;
 use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
@@ -13,6 +13,9 @@ use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 /**
  * Query para buscar opções de usuários (sem paginação)
  * Ideal para popular selects e autocompletes
+ * 
+ * CQRS: Queries podem usar Eloquent Models diretamente para leitura
+ * Benefícios: soft deletes automático, casts, scopes, relations
  */
 final readonly class FindUserOptionsQuery
 {
@@ -45,8 +48,8 @@ final readonly class FindUserOptionsQuery
             function () use ($search, $startTime) {
                 $this->logger()->debug('Cache miss - fetching from database');
 
-                $query = DB::table('users')
-                    ->select(['id', 'name', 'surname', 'email', 'created_at', 'updated_at'])
+                // Usa Eloquent Model - soft deletes automático!
+                $query = UserModel::select(['id', 'name', 'surname', 'email', 'created_at', 'updated_at'])
                     ->orderBy('name', 'asc');
 
                 // Aplica busca

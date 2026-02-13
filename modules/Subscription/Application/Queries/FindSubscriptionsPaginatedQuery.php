@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Subscription\Application\Queries;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
+use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
 use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\Shared\Application\DTOs\SortDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
@@ -47,84 +47,51 @@ final readonly class FindSubscriptionsPaginatedQuery
             'sort' => $sort?->sorts,
         ]);
 
-        // Cache da paginação (apenas IDs e total)
+        // Cache do resultado completo (dados + total)
         $result = $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
             function () use ($page, $perPage, $search, $sort, $startTime) {
-                $this->logger()->debug('Cache miss - fetching IDs from database');
-
-                $baseQuery = DB::table('subscriptions');
+                $query = SubscriptionModel::query();
 
                 // Aplica busca
                 if ($search !== null && $search->hasSearch()) {
-                    $baseQuery->where(function ($q) use ($search) {
+                    $query->where(function ($q) use ($search) {
                         foreach ($search->columns as $column) {
                             $q->orWhere($column, 'LIKE', "%{$search->term}%");
                         }
                     });
                 }
 
-                $total = (clone $baseQuery)->count();
-
                 // Aplica ordenação
                 if ($sort !== null && $sort->hasSorts()) {
                     foreach ($sort->sorts as $sortItem) {
-                        $baseQuery->orderBy($sortItem['column'], $sortItem['direction']);
+                        $query->orderBy($sortItem['column'], $sortItem['direction']);
                     }
                 } else {
-                    $baseQuery->orderBy('created_at', 'desc');
+                    $query->orderBy('created_at', 'desc');
                 }
 
-                $ids = $baseQuery
-                    ->skip(($page - 1) * $perPage)
-                    ->take($perPage)
-                    ->pluck('id')
-                    ->all();
+                $paginator = $query->paginate(
+                    perPage: $perPage,
+                    page: $page
+                );
 
-                $duration = microtime(true) - $startTime;
-
-                $this->logger()->info('Subscription IDs paginated retrieved', [
-                    'page' => $page,
-                    'per_page' => $perPage,
-                    'total' => $total,
-                    'search' => $search?->term,
-                    'cache_hit' => false,
-                    'duration_ms' => round($duration * 1000, 2),
-                ]);
+                // Converte para DTOs
+                $items = $paginator->getCollection()->map(function ($model) {
+                    return SubscriptionDTO::fromDatabase($model);
+                })->all();
 
                 return [
-                    'ids' => $ids,
-                    'total' => $total,
+                    'items' => $items,
+                    'total' => $paginator->total(),
                 ];
             }
         );
 
-        // Busca cada item do cache individual
-        $items = [];
-        foreach ($result['ids'] as $itemId) {
-            $itemCacheKey = "subscription:{$itemId}";
-
-            $itemData = $this->cache()->remember(
-                $itemCacheKey,
-                3600,
-                function () use ($itemId) {
-                    $data = DB::table('subscriptions')
-                        ->where('id', $itemId)
-                        ->first();
-
-                    return $data ? (array) $data : null;
-                }
-            );
-
-            if ($itemData !== null) {
-                $items[] = SubscriptionDTO::fromDatabase($itemData);
-            }
-        }
-
         $duration = microtime(true) - $startTime;
 
-        $this->logger()->info('Subscription paginated returned', [
+        $this->logger()->info('Subscriptions paginated returned', [
             'page' => $page,
             'per_page' => $perPage,
             'total' => $result['total'],
@@ -133,7 +100,7 @@ final readonly class FindSubscriptionsPaginatedQuery
         ]);
 
         return new LengthAwarePaginator(
-            items: $items,
+            items: $result['items'],
             total: $result['total'],
             perPage: $perPage,
             currentPage: $page,
