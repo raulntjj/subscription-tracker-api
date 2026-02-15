@@ -9,7 +9,7 @@ use Modules\Subscription\Application\Jobs\CheckBillingJob;
 
 /**
  * Comando para verificar e processar assinaturas que vencem hoje
- * 
+ *
  * Este comando deve ser agendado no Kernel para rodar diariamente
  * Exemplo: $schedule->command('subscription:check-billing')->daily();
  */
@@ -49,7 +49,7 @@ final class CheckBillingCommand extends Command
             }
 
             $this->info('✅ Billing check job dispatched successfully!');
-            
+
             return self::SUCCESS;
         } catch (\Throwable $e) {
             $this->error('❌ Failed to dispatch billing check job:');

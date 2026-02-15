@@ -7,8 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\Shared\Infrastructure\Persistence\Concerns\HasUserActionColumns;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     use HasUserActionColumns;
 
     public function up(): void
@@ -23,7 +22,7 @@ return new class extends Migration
             $table->string('category')->comment('Category like Streaming, DevTools, Work, etc');
             $table->enum('status', ['active', 'paused', 'cancelled'])->default('active');
             $table->uuid('user_id');
-            
+
             $this->addTimestampsWithUserActions($table);
 
             // Índices para otimização de queries
@@ -32,7 +31,7 @@ return new class extends Migration
             $table->index('next_billing_date');
             $table->index(['user_id', 'status']);
             $table->index(['user_id', 'next_billing_date']);
-            
+
             // Foreign key
             $table->foreign('user_id')
                 ->references('id')

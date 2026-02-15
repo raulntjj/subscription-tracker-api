@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class BillingHistoryModel extends Model
 {
-    use HasUuids, SoftDeletes;
+    use HasUuids;
+    use SoftDeletes;
 
     protected $table = 'billing_histories';
 

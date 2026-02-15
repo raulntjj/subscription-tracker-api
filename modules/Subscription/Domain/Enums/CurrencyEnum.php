@@ -47,7 +47,7 @@ enum CurrencyEnum: string
      */
     public static function values(): array
     {
-        return array_map(fn($case) => $case->value, self::cases());
+        return array_map(fn ($case) => $case->value, self::cases());
     }
 
     /**
@@ -56,7 +56,7 @@ enum CurrencyEnum: string
     public function format(int $amountInCents): string
     {
         $amount = $amountInCents / 100;
-        
+
         return match ($this) {
             self::BRL => sprintf('R$ %.2f', $amount),
             self::USD => sprintf('$ %.2f', $amount),

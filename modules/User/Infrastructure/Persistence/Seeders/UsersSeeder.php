@@ -6,7 +6,6 @@ namespace Modules\User\Infrastructure\Persistence\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Modules\User\Infrastructure\Persistence\Eloquent\UsersModel;
 use Ramsey\Uuid\Uuid;
 
 final class UsersSeeder extends Seeder

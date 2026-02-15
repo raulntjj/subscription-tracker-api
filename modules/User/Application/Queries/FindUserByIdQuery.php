@@ -11,7 +11,7 @@ use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 
 /**
  * Query para buscar um usuário por ID
- * 
+ *
  * CQRS: Queries podem usar Eloquent Models diretamente para leitura
  * Benefícios: soft deletes automático, casts, scopes, relations
  */

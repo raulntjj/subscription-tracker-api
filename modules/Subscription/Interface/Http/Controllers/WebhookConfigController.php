@@ -47,7 +47,7 @@ final class WebhookConfigController extends Controller
             $items = $this->getConfigsQuery->execute($userId);
 
             $data = array_map(
-                fn(WebhookConfigDTO $item) => $item->toArray(),
+                fn (WebhookConfigDTO $item) => $item->toArray(),
                 $items
             );
 

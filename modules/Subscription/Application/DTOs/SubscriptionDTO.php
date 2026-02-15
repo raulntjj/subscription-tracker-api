@@ -24,7 +24,8 @@ final readonly class SubscriptionDTO
         public string $userId,
         public string $createdAt,
         public ?string $updatedAt = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir da entidade de domínio
@@ -110,7 +111,7 @@ final readonly class SubscriptionDTO
     private static function formatPrice(int $priceInCents, string $currency): string
     {
         $amount = $priceInCents / 100;
-        
+
         return match ($currency) {
             'BRL' => sprintf('R$ %.2f', $amount),
             'USD' => sprintf('$ %.2f', $amount),

@@ -44,7 +44,7 @@ final readonly class TestWebhookUseCase
             ];
 
             $payloadJson = json_encode($payload);
-            
+
             $headers = [
                 'Content-Type' => 'application/json',
                 'X-Event-Type' => 'webhook.test',

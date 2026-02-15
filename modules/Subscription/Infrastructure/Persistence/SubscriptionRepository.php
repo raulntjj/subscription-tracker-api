@@ -88,7 +88,7 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
             ->where('status', 'active')
             ->whereNull('deleted_at')
             ->get()
-            ->map(fn($model) => (object) [
+            ->map(fn ($model) => (object) [
                 'id' => $model->id,
                 'name' => $model->name,
                 'price' => (int) $model->price,
@@ -110,7 +110,7 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
             ->whereDate('next_billing_date', $today)
             ->whereNull('deleted_at')
             ->get()
-            ->map(fn($model) => (object) [
+            ->map(fn ($model) => (object) [
                 'id' => $model->id,
                 'name' => $model->name,
                 'price' => (int) $model->price,

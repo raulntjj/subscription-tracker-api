@@ -50,7 +50,7 @@ final class BillingHistoryRepository extends BaseRepository implements BillingHi
             ->whereNull('deleted_at')
             ->orderBy('paid_at', 'desc')
             ->get()
-            ->map(fn($model) => (object) [
+            ->map(fn ($model) => (object) [
                 'id' => $model->id,
                 'subscription_id' => $model->subscription_id,
                 'amount_paid' => (int) $model->amount_paid,

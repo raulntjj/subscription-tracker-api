@@ -13,7 +13,8 @@ final readonly class UpdateWebhookConfigDTO
         public string $id,
         public ?string $url = null,
         public ?string $secret = null,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir de array

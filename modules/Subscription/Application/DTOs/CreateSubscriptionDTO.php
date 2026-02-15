@@ -20,7 +20,8 @@ final readonly class CreateSubscriptionDTO
         public string $category,
         public string $status,
         public string $userId,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir de array
@@ -69,7 +70,7 @@ final readonly class CreateSubscriptionDTO
     {
         $nextDate = new DateTimeImmutable($this->nextBillingDate);
         $today = new DateTimeImmutable('today');
-        
+
         return $nextDate >= $today;
     }
 }

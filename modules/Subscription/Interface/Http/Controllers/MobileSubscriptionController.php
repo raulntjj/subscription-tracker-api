@@ -67,7 +67,7 @@ final class MobileSubscriptionController extends Controller
             $paginator = $this->findCursorPaginatedQuery->execute($cursor, $perPage, $search, $sort);
 
             $data = array_map(
-                fn(SubscriptionDTO $item) => $item->toOptions(),
+                fn (SubscriptionDTO $item) => $item->toOptions(),
                 $paginator->items()
             );
 
@@ -100,7 +100,7 @@ final class MobileSubscriptionController extends Controller
             $items = $this->findOptionsQuery->execute($search);
 
             $data = array_map(
-                fn(SubscriptionDTO $item) => $item->toArray(),
+                fn (SubscriptionDTO $item) => $item->toArray(),
                 $items
             );
 

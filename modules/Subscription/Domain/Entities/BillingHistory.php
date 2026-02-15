@@ -23,7 +23,7 @@ final class BillingHistory
         DateTimeImmutable $createdAt
     ) {
         $this->validateAmount($amountPaid);
-        
+
         $this->id = $id;
         $this->subscriptionId = $subscriptionId;
         $this->amountPaid = $amountPaid;

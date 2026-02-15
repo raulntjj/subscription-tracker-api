@@ -59,7 +59,9 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
     {
         $model = WebhookConfigModel::find($id->toString());
 
-        if($model === null) return null;
+        if ($model === null) {
+            return null;
+        }
 
         return $this->toDomain($model);
     }
@@ -83,8 +85,10 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
     public function delete(UuidInterface $id): void
     {
         $model = WebhookConfigModel::find($id->toString());
-    
-        if ($model !== null) $this->deleteModel($model);
+
+        if ($model !== null) {
+            $this->deleteModel($model);
+        }
     }
 
     /**

@@ -23,7 +23,7 @@ final class ModuleSeedCommand extends Command
     {
         $module = $this->argument('module');
         $class = $this->option('class');
-        
+
         if (!$this->confirmToProceed()) {
             return self::FAILURE;
         }
@@ -66,7 +66,7 @@ final class ModuleSeedCommand extends Command
     {
         $modulesPath = base_path('modules');
         $modules = File::directories($modulesPath);
-        
+
         if (empty($modules)) {
             $this->warn('⚠️  Nenhum módulo encontrado!');
             return self::SUCCESS;
@@ -77,7 +77,7 @@ final class ModuleSeedCommand extends Command
 
         foreach ($modules as $modulePath) {
             $moduleName = basename($modulePath);
-            
+
             // Pula o módulo Shared
             if ($moduleName === 'Shared') {
                 continue;
@@ -92,19 +92,19 @@ final class ModuleSeedCommand extends Command
             }
 
             $this->info("📦 Módulo: {$moduleName}");
-            
+
             $result = $this->runModuleSeeders($moduleName, $seedersPath);
-            
+
             if ($result === self::SUCCESS) {
                 $seededCount++;
             }
-            
+
             $this->newLine();
         }
 
         $this->newLine();
         $this->info("✅ Seeders executados: {$seededCount} módulo(s)");
-        
+
         if ($skippedCount > 0) {
             $this->comment("⏭️  Módulos sem seeders: {$skippedCount}");
         }
@@ -133,16 +133,20 @@ final class ModuleSeedCommand extends Command
         usort($seederFiles, function ($a, $b) {
             $aIsDatabaseSeeder = str_contains($a, 'DatabaseSeeder');
             $bIsDatabaseSeeder = str_contains($b, 'DatabaseSeeder');
-            
-            if ($aIsDatabaseSeeder && !$bIsDatabaseSeeder) return 1;
-            if (!$aIsDatabaseSeeder && $bIsDatabaseSeeder) return -1;
-            
+
+            if ($aIsDatabaseSeeder && !$bIsDatabaseSeeder) {
+                return 1;
+            }
+            if (!$aIsDatabaseSeeder && $bIsDatabaseSeeder) {
+                return -1;
+            }
+
             return strcmp($a, $b);
         });
 
         foreach ($seederFiles as $seederFile) {
             $className = $this->getSeederClassName($module, $seederFile);
-            
+
             if (!$className) {
                 $this->warn("   ⚠️  Não foi possível determinar a classe: " . basename($seederFile));
                 continue;
@@ -188,26 +192,26 @@ final class ModuleSeedCommand extends Command
     private function executeSeeder(string $className): void
     {
         $seederName = class_basename($className);
-        
+
         try {
             $this->line("   🌱 Executando: {$seederName}...");
-            
+
             $seeder = $this->laravel->make($className);
-            
+
             // Suporta tanto run() quanto __invoke()
             if (method_exists($seeder, 'run')) {
                 $seeder->run();
             } elseif (method_exists($seeder, '__invoke')) {
                 $seeder->__invoke();
             }
-            
+
             $this->seededClasses[] = $className;
             $this->info("   ✅ {$seederName} executado com sucesso!");
-            
+
         } catch (\Throwable $e) {
             $this->error("   ❌ Erro ao executar {$seederName}:");
             $this->error("   {$e->getMessage()}");
-            
+
             if ($this->output->isVerbose()) {
                 $this->newLine();
                 $this->line($e->getTraceAsString());
@@ -218,10 +222,10 @@ final class ModuleSeedCommand extends Command
     private function getSeederClassName(string $module, string $filePath): ?string
     {
         $filename = basename($filePath, '.php');
-        
+
         // Remove qualquer prefixo numérico de ordem (ex: 01_UserSeeder.php)
         $filename = preg_replace('/^\d+_/', '', $filename);
-        
+
         return "Modules\\{$module}\\Infrastructure\\Persistence\\Seeders\\{$filename}";
     }
 
@@ -233,7 +237,7 @@ final class ModuleSeedCommand extends Command
 
         if ($this->laravel->environment() === 'production') {
             $this->warn('🚨 Aplicação está em ambiente de PRODUÇÃO!');
-            
+
             return $this->confirm('Deseja realmente executar os seeders em produção?', false);
         }
 

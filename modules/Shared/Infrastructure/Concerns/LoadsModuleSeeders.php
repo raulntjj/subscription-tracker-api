@@ -45,7 +45,7 @@ trait LoadsModuleSeeders
 
         foreach ($seederFiles as $seederFile) {
             $className = $this->getSeederClassNameFromFile($seederFile);
-            
+
             if ($className && class_exists($className)) {
                 // Registra o seeder no container para que possa ser chamado
                 $this->app->singleton($className, function ($app) use ($className) {
@@ -64,18 +64,18 @@ trait LoadsModuleSeeders
     private function getSeederClassNameFromFile(string $filePath): ?string
     {
         $content = file_get_contents($filePath);
-        
+
         // Extrai o namespace
         if (preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatches)) {
             $namespace = $namespaceMatches[1];
-            
+
             // Extrai o nome da classe
             if (preg_match('/class\s+(\w+)/', $content, $classMatches)) {
                 $className = $classMatches[1];
                 return "{$namespace}\\{$className}";
             }
         }
-        
+
         return null;
     }
 }

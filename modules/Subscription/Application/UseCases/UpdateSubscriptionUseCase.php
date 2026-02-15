@@ -43,8 +43,9 @@ final readonly class UpdateSubscriptionUseCase
 
             $entity = $this->repository->findById($uuid);
 
-            if ($entity === null) 
+            if ($entity === null) {
                 throw new InvalidArgumentException("Subscription not found with id: {$id}");
+            }
 
             // Atualiza todos os campos
             $entity->changeName($dto->name);
@@ -54,7 +55,7 @@ final readonly class UpdateSubscriptionUseCase
             );
             $entity->changeCategory($dto->category);
             $entity->updateNextBillingDate(new DateTimeImmutable($dto->nextBillingDate));
-            
+
             // Atualiza status
             $status = SubscriptionStatusEnum::from($dto->status);
             match ($status) {

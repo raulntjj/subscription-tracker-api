@@ -22,7 +22,8 @@ final readonly class MonthlyBudgetDTO
         public array $breakdown,
         public string $currency,
         public int $totalMonthly,
-    ) {}
+    ) {
+    }
 
     /**
      * Converte DTO para array com valores formatados
@@ -47,21 +48,21 @@ final readonly class MonthlyBudgetDTO
     private function formatBreakdown(): array
     {
         $formatted = [];
-        
+
         foreach ($this->breakdown as $category => $amount) {
             $formatted[] = [
                 'category' => $category,
                 'amount' => $amount,
                 'amount_formatted' => $this->formatPrice($amount),
-                'percentage' => $this->totalMonthly > 0 
-                    ? round(($amount / $this->totalMonthly) * 100, 2) 
+                'percentage' => $this->totalMonthly > 0
+                    ? round(($amount / $this->totalMonthly) * 100, 2)
                     : 0,
             ];
         }
-        
+
         // Ordena por valor decrescente
-        usort($formatted, fn($a, $b) => $b['amount'] <=> $a['amount']);
-        
+        usort($formatted, fn ($a, $b) => $b['amount'] <=> $a['amount']);
+
         return $formatted;
     }
 
@@ -71,7 +72,7 @@ final readonly class MonthlyBudgetDTO
     private function formatPrice(int $priceInCents): string
     {
         $amount = $priceInCents / 100;
-        
+
         return match ($this->currency) {
             'BRL' => sprintf('R$ %.2f', $amount),
             'USD' => sprintf('$ %.2f', $amount),

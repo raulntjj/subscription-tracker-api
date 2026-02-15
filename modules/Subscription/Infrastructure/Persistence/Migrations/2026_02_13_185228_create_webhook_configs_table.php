@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Modules\Shared\Infrastructure\Persistence\Concerns\HasUserActionColumns;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     use HasUserActionColumns;
     /**
      * Run the migrations.
@@ -19,15 +18,15 @@ return new class extends Migration
             $table->string('url', 500);
             $table->string('secret', 255)->nullable();
             $table->boolean('is_active')->default(true);
-            
+
             $this->addTimestampsWithUserActions($table);
-            
+
             // Foreign keys
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
-                
+
             // Indexes
             $table->index('user_id');
             $table->index('is_active');

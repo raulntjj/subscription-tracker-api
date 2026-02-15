@@ -25,9 +25,9 @@ Route::get('/', function () {
 // Rota de teste para RabbitMQ
 Route::post('/test/rabbitmq', function () {
     $message = request('message', 'Teste de Job no RabbitMQ');
-    
+
     TestRabbitMQJob::dispatch($message);
-    
+
     return response()->json([
         'status' => 'success',
         'message' => 'Job despachado para o RabbitMQ',

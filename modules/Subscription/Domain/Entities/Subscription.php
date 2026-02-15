@@ -39,7 +39,7 @@ final class Subscription
     ) {
         $this->validatePrice($price);
         $this->validateNextBillingDate($nextBillingDate);
-        
+
         $this->id = $id;
         $this->name = $name;
         $this->price = $price;
@@ -164,7 +164,7 @@ final class Subscription
     {
         $months = $this->billingCycle->months();
         $interval = new \DateInterval("P{$months}M");
-        
+
         return $this->nextBillingDate->add($interval);
     }
 

@@ -13,7 +13,7 @@ use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 /**
  * Query para buscar opções de usuários (sem paginação)
  * Ideal para popular selects e autocompletes
- * 
+ *
  * CQRS: Queries podem usar Eloquent Models diretamente para leitura
  * Benefícios: soft deletes automático, casts, scopes, relations
  */

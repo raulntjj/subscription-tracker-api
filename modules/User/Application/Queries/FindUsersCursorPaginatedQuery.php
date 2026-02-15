@@ -14,7 +14,7 @@ use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 /**
  * Query para buscar usuários com cursor pagination (mobile)
  * Suporta busca e ordenação dinâmica
- * 
+ *
  * CQRS: Queries podem usar Eloquent Models diretamente para leitura
  * Benefícios: soft deletes automático, casts, scopes, relations
  */
@@ -86,7 +86,7 @@ final readonly class FindUsersCursorPaginatedQuery
 
                 // Converte para DTOs
                 $users = $paginator->getCollection()
-                    ->map(fn($model) => UserDTO::fromDatabase($model))
+                    ->map(fn ($model) => UserDTO::fromDatabase($model))
                     ->all();
 
                 $duration = microtime(true) - $startTime;

@@ -43,7 +43,9 @@ final readonly class FindSubscriptionByIdQuery
             }
         );
 
-        if ($data === null) return null;
+        if ($data === null) {
+            return null;
+        }
 
         return SubscriptionDTO::fromDatabase($data);
     }

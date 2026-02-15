@@ -82,7 +82,7 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
 
                 // Converte para DTOs
                 $items = $paginator->getCollection()
-                    ->map(fn($model) => SubscriptionDTO::fromDatabase($model))
+                    ->map(fn ($model) => SubscriptionDTO::fromDatabase($model))
                     ->all();
 
                 return [

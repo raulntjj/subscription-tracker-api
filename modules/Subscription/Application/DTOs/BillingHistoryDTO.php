@@ -18,7 +18,8 @@ final readonly class BillingHistoryDTO
         public string $amountPaidFormatted,
         public string $paidAt,
         public string $createdAt,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir da entidade de domínio
@@ -73,7 +74,7 @@ final readonly class BillingHistoryDTO
     private static function formatPrice(int $priceInCents, string $currency): string
     {
         $amount = $priceInCents / 100;
-        
+
         return match ($currency) {
             'BRL' => sprintf('R$ %.2f', $amount),
             'USD' => sprintf('$ %.2f', $amount),

@@ -13,7 +13,8 @@ final readonly class CreateWebhookConfigDTO
         public string $url,
         public ?string $secret,
         public string $userId,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir de array

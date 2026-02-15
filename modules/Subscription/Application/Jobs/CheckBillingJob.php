@@ -18,13 +18,16 @@ use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
 
 /**
  * Job para verificar e processar assinaturas que vencem hoje
- * 
+ *
  * Este job identifica faturamentos do dia, registra no BillingHistory,
  * atualiza a next_billing_date da assinatura e loga todas as ações.
  */
 final class CheckBillingJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Número de tentativas em caso de falha
@@ -49,7 +52,7 @@ final class CheckBillingJob implements ShouldQueue
         BillingHistoryRepositoryInterface $billingHistoryRepository,
     ): void {
         $logger = new StructuredLogger('Subscription');
-        
+
         $logger->info('Starting billing check job');
 
         try {

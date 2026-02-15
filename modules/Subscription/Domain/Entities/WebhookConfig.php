@@ -27,7 +27,7 @@ final class WebhookConfig
         ?DateTimeImmutable $updatedAt = null
     ) {
         $this->validateUrl($url);
-        
+
         $this->id = $id;
         $this->userId = $userId;
         $this->url = $url;

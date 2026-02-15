@@ -16,7 +16,8 @@ final readonly class WebhookConfigDTO
         public bool $isActive,
         public string $createdAt,
         public string $updatedAt,
-    ) {}
+    ) {
+    }
 
     /**
      * Cria DTO a partir de array

@@ -13,11 +13,15 @@ use Illuminate\Support\Facades\Log;
 
 class TestRabbitMQJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public function __construct(
         private readonly string $message
-    ) {}
+    ) {
+    }
 
     public function handle(): void
     {

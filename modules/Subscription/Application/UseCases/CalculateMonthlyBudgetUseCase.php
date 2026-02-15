@@ -11,7 +11,7 @@ use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 
 /**
  * Caso de uso para calcular o orçamento mensal de assinaturas
- * 
+ *
  * Este é o diferencial técnico que calcula:
  * - total_committed: O que já venceu/foi pago no mês
  * - upcoming_bills: O que ainda vai vencer no mês
@@ -75,7 +75,7 @@ final readonly class CalculateMonthlyBudgetUseCase
                 // Se já venceu (data passada), conta como committed
                 if ($nextBillingDate <= $today) {
                     $totalCommitted += $monthlyPrice;
-                } 
+                }
                 // Se ainda vai vencer, conta como upcoming
                 else {
                     $upcomingBills += $monthlyPrice;

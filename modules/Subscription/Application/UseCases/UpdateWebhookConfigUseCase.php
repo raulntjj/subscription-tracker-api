@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\Subscription\Application\UseCases;
 
 use Ramsey\Uuid\Uuid;
-use DateTimeImmutable;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Subscription\Application\DTOs\UpdateWebhookConfigDTO;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;

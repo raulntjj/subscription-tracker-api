@@ -16,14 +16,17 @@ use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
 
 /**
  * Job para despachar webhooks de renovação de subscrição
- * 
+ *
  * Este job recupera a configuração de webhook ativa do utilizador,
  * monta o payload com assinatura HMAC e envia via POST assíncrono.
  * Implementa retentativas automáticas com backoff progressivo.
  */
 final class DispatchWebhookJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Número de tentativas em caso de falha
@@ -88,7 +91,7 @@ final class DispatchWebhookJob implements ShouldQueue
         $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         // 3. Gerar assinatura HMAC SHA256 (apenas se secret existir)
-        $signature = $webhookConfig->secret 
+        $signature = $webhookConfig->secret
             ? hash_hmac('sha256', $payloadJson, $webhookConfig->secret)
             : null;
 
@@ -215,7 +218,7 @@ final class DispatchWebhookJob implements ShouldQueue
             if ($this->attempts() < 3) {
                 throw new \RuntimeException("Webhook returned client error: {$statusCode}");
             }
-            
+
             $logger->error('Webhook permanently failed with client error', [
                 'webhook_url' => $url,
                 'status_code' => $statusCode,
