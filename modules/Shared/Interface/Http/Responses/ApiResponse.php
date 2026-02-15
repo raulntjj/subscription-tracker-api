@@ -28,15 +28,55 @@ final class ApiResponse
      * Resposta de erro genérica
      */
     public static function error(
-        string $message = 'An error occurred',
+        ?string $message = 'An error occurred',
         mixed $errors = null,
+        ?\Throwable $exception = null,
         int $status = Response::HTTP_BAD_REQUEST
     ): JsonResponse {
-        return response()->json([
+        if ($exception !== null) {
+            $message = $exception->getMessage();
+        }
+
+        $payload = [
             'success' => false,
             'message' => $message,
             'errors' => $errors,
-        ], $status);
+        ];
+
+        if(config('app.debug')) {
+            $payload['details'] = [
+                'exception' => $exception ? [
+                    'type' => get_class($exception),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                ] : null,
+                'debug_backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5),
+                'request' => [
+                    'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                    'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
+                    'uri' => $_SERVER['REQUEST_URI'] ?? 'unknown',
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+                    'request_time' => $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime(true),
+                ],
+                'server' => [
+                    'os' => PHP_OS,
+                    'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
+                ],
+                'benchmark' => [
+                    'memory_peak_usage' => memory_get_peak_usage(),
+                    'memory_limit' => ini_get('memory_limit'),
+                    'memory_usage' => memory_get_usage(),
+                    'execution_time' => microtime(true) - LARAVEL_START,
+                ],
+                'application' => [
+                    'environment' => app()->environment(),
+                    'php_version' => PHP_VERSION,
+                ],
+                'timestamp' => now()->toIso8601String(),
+            ];
+        }
+        
+        return response()->json($payload, $status);
     }
 
     /**

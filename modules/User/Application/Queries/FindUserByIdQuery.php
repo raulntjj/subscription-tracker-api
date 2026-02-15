@@ -45,7 +45,7 @@ final readonly class FindUserByIdQuery
                     return null;
                 }
 
-                return UserDTO::fromDatabase((array) $userData);
+                return UserDTO::fromDatabase($userData);
             }
         );
     }

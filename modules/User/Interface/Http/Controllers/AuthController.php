@@ -52,7 +52,7 @@ final class AuthController
                 'error' => $e->getMessage(),
             ]);
 
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -74,7 +74,7 @@ final class AuthController
                 'error' => $e->getMessage(),
             ]);
 
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -97,7 +97,7 @@ final class AuthController
                 'error' => $e->getMessage(),
             ]);
 
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -124,7 +124,7 @@ final class AuthController
                 'error' => $e->getMessage(),
             ]);
 
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 }

@@ -38,20 +38,18 @@ final readonly class UserDTO
     }
 
     /**
-     * Cria DTO a partir de um registro do banco (stdClass ou array)
+     * Cria DTO a partir de um registro do banco (stdClass)
      */
-    public static function fromDatabase(object|array $data): self
+    public static function fromDatabase(object $data): self
     {
-        $data = (array) $data;
-
         return new self(
-            id: $data['id'],
-            name: $data['name'],
-            surname: $data['surname'] ?? null,
-            profilePath: $data['profile_path'] ?? null,
-            email: $data['email'],
-            createdAt: $data['created_at'],
-            updatedAt: $data['updated_at'] ?? null,
+            id: $data->id,
+            name: $data->name,
+            surname: $data->surname ?? null,
+            profilePath: $data->profile_path ?? null,
+            email: $data->email,
+            createdAt: $data->created_at->format('Y-m-d H:i:s'),
+            updatedAt: $data->updated_at?->format('Y-m-d H:i:s') ?? null,
         );
     }
 

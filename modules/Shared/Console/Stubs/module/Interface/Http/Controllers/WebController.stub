@@ -88,7 +88,7 @@ final class {{MODULE_NAME}}Controller extends Controller
                 'pagination' => $pagination->toArray(),
             ], '{{MODULE_NAME_PLURAL}} retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -119,7 +119,7 @@ final class {{MODULE_NAME}}Controller extends Controller
                 'total' => count($data),
             ], '{{MODULE_NAME}} options retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -140,7 +140,7 @@ final class {{MODULE_NAME}}Controller extends Controller
                 '{{MODULE_NAME}} retrieved successfully'
             );
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -165,7 +165,7 @@ final class {{MODULE_NAME}}Controller extends Controller
         } catch (ValidationException $e) {
             return ApiResponse::validationError($e->errors());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -193,7 +193,7 @@ final class {{MODULE_NAME}}Controller extends Controller
         } catch (\InvalidArgumentException $e) {
             return ApiResponse::notFound($e->getMessage());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -221,7 +221,7 @@ final class {{MODULE_NAME}}Controller extends Controller
         } catch (\InvalidArgumentException $e) {
             return ApiResponse::notFound($e->getMessage());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -237,7 +237,7 @@ final class {{MODULE_NAME}}Controller extends Controller
         } catch (\InvalidArgumentException $e) {
             return ApiResponse::notFound($e->getMessage());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 }

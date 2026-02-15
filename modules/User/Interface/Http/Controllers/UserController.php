@@ -88,7 +88,7 @@ final class UserController extends Controller
                 'pagination' => $pagination->toArray(),
             ], 'Users retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -120,7 +120,7 @@ final class UserController extends Controller
                 'total' => count($usersData),
             ], 'User options retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -141,7 +141,7 @@ final class UserController extends Controller
                 'User retrieved successfully'
             );
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -176,7 +176,7 @@ final class UserController extends Controller
         } catch (ValidationException $e) {
             return ApiResponse::validationError($e->errors());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -208,7 +208,7 @@ final class UserController extends Controller
         } catch (\InvalidArgumentException $e) {
             return ApiResponse::notFound($e->getMessage());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -240,7 +240,7 @@ final class UserController extends Controller
         } catch (\InvalidArgumentException $e) {
             return ApiResponse::notFound($e->getMessage());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -256,7 +256,7 @@ final class UserController extends Controller
         } catch (\InvalidArgumentException $e) {
             return ApiResponse::notFound($e->getMessage());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 }

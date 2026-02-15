@@ -78,7 +78,7 @@ final class MobileSubscriptionController extends Controller
                 'pagination' => $pagination->toArray(),
             ], 'Subscriptions retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -109,7 +109,7 @@ final class MobileSubscriptionController extends Controller
                 'total' => count($data),
             ], 'Subscription options retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 }

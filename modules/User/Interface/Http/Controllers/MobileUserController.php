@@ -67,7 +67,7 @@ final class MobileUserController extends Controller
 
             return ApiResponse::success($result, 'Users retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -98,7 +98,7 @@ final class MobileUserController extends Controller
                 'total' => count($usersData),
             ], 'User options retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 }

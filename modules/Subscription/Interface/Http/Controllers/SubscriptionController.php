@@ -88,7 +88,7 @@ final class SubscriptionController extends Controller
                 'pagination' => $pagination->toArray(),
             ], 'Subscriptions retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -119,7 +119,7 @@ final class SubscriptionController extends Controller
                 'total' => count($data),
             ], 'Subscription options retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -140,7 +140,7 @@ final class SubscriptionController extends Controller
                 'Subscription retrieved successfully'
             );
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -173,7 +173,7 @@ final class SubscriptionController extends Controller
         } catch (ValidationException $e) {
             return ApiResponse::validationError($e->errors());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -207,7 +207,7 @@ final class SubscriptionController extends Controller
         } catch (\InvalidArgumentException $e) {
             return ApiResponse::notFound($e->getMessage());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -237,7 +237,7 @@ final class SubscriptionController extends Controller
                 'Monthly budget calculated successfully'
             );
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -253,7 +253,7 @@ final class SubscriptionController extends Controller
         } catch (\InvalidArgumentException $e) {
             return ApiResponse::notFound($e->getMessage());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 }

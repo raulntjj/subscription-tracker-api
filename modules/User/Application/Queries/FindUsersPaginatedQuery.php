@@ -76,7 +76,7 @@ final readonly class FindUsersPaginatedQuery
 
                 $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
-                // Converte para DTOs
+                // Converte para DTOs 
                 $users = $paginator->getCollection()
                     ->map(fn ($model) => UserDTO::fromDatabase($model))
                     ->all();

@@ -56,7 +56,7 @@ final class WebhookConfigController extends Controller
                 'total' => count($data),
             ], 'Webhook configs retrieved successfully');
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -79,7 +79,7 @@ final class WebhookConfigController extends Controller
                 'Webhook config retrieved successfully'
             );
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -108,7 +108,7 @@ final class WebhookConfigController extends Controller
             return ApiResponse::validationError($e->errors());
         } catch (Throwable $e) {
             dd($e);
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -147,7 +147,7 @@ final class WebhookConfigController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return ApiResponse::validationError($e->errors());
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -173,7 +173,7 @@ final class WebhookConfigController extends Controller
                 'Webhook config deleted successfully'
             );
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -199,7 +199,7 @@ final class WebhookConfigController extends Controller
                 'Webhook config activated successfully'
             );
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -225,7 +225,7 @@ final class WebhookConfigController extends Controller
                 'Webhook config deactivated successfully'
             );
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 
@@ -251,7 +251,7 @@ final class WebhookConfigController extends Controller
                 'Webhook test completed'
             );
         } catch (Throwable $e) {
-            return ApiResponse::error($e->getMessage());
+            return ApiResponse::error(exception: $e);
         }
     }
 }
