@@ -24,6 +24,7 @@ final readonly class FindUsersCursorPaginatedQuery
     use Cacheable;
 
     private const DEFAULT_PER_PAGE = 20;
+    private const CACHE_TTL = 300; // 5 minutos
 
     protected function cacheTags(): array
     {
@@ -36,7 +37,6 @@ final readonly class FindUsersCursorPaginatedQuery
         ?SearchDTO $search = null,
         ?SortDTO $sort = null,
     ): array {
-        $startTime = microtime(true);
         $searchKey = $search ? $search->cacheKey() : 'search:none';
         $sortKey = $sort ? $sort->cacheKey() : 'sort:default';
         $cursorKey = $cursor ?? 'cursor:none';
@@ -49,13 +49,10 @@ final readonly class FindUsersCursorPaginatedQuery
             'sort' => $sort?->sorts,
         ]);
 
-        // Cache completo do resultado
-        $result = $this->cache()->remember(
+        return $this->cache()->remember(
             $cacheKey,
-            300,
-            function () use ($cursor, $perPage, $search, $sort, $startTime) {
-                $this->logger()->debug('Cache miss - fetching from database');
-
+            self::CACHE_TTL,
+            function () use ($cursor, $perPage, $search, $sort) {
                 $query = UserModel::query();
 
                 // Aplica busca
@@ -89,17 +86,6 @@ final readonly class FindUsersCursorPaginatedQuery
                     ->map(fn ($model) => UserDTO::fromDatabase($model))
                     ->all();
 
-                $duration = microtime(true) - $startTime;
-
-                $this->logger()->info('Users cursor paginated retrieved', [
-                    'cursor' => $cursor,
-                    'per_page' => $perPage,
-                    'search' => $search?->term,
-                    'has_more' => $paginator->hasMorePages(),
-                    'cache_hit' => false,
-                    'duration_ms' => round($duration * 1000, 2),
-                ]);
-
                 return [
                     'users' => $users,
                     'pagination' => [
@@ -111,16 +97,5 @@ final readonly class FindUsersCursorPaginatedQuery
                 ];
             }
         );
-
-        $duration = microtime(true) - $startTime;
-
-        $this->logger()->info('Users cursor paginated returned from cache', [
-            'cursor' => $cursor,
-            'per_page' => $perPage,
-            'search' => $search?->term,
-            'duration_ms' => round($duration * 1000, 2),
-        ]);
-
-        return $result;
     }
 }

@@ -50,14 +50,10 @@ final readonly class FindUsersPaginatedQuery
             'sort' => $sort?->sorts,
         ]);
 
-        // Cache completo da paginação (dados + metadados)
-        $result = $this->cache()->remember(
+        return $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
             function () use ($page, $perPage, $search, $sort, $startTime) {
-                $this->logger()->debug('Cache miss - fetching from database');
-
-                // Usa Eloquent Model - soft deletes automático!
                 $query = UserModel::select(['id', 'name', 'surname', 'email', 'profile_path', 'created_at', 'updated_at']);
 
                 // Aplica busca
@@ -78,7 +74,6 @@ final readonly class FindUsersPaginatedQuery
                     $query->orderBy('created_at', 'desc');
                 }
 
-                // UMA ÚNICA query com paginate() - resolve N+1
                 $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
                 // Converte para DTOs
@@ -86,46 +81,17 @@ final readonly class FindUsersPaginatedQuery
                     ->map(fn ($model) => UserDTO::fromDatabase($model))
                     ->all();
 
-                $duration = microtime(true) - $startTime;
-
-                $this->logger()->info('Users paginated retrieved', [
-                    'page' => $page,
-                    'per_page' => $perPage,
-                    'total' => $paginator->total(),
-                    'search' => $search?->term,
-                    'cache_hit' => false,
-                    'duration_ms' => round($duration * 1000, 2),
-                ]);
-
-                return [
-                    'items' => $users,
-                    'total' => $paginator->total(),
-                    'per_page' => $paginator->perPage(),
-                    'current_page' => $paginator->currentPage(),
-                    'last_page' => $paginator->lastPage(),
-                ];
+                return new LengthAwarePaginator(
+                    items: $users,
+                    total: $paginator->total(),
+                    perPage: $paginator->perPage(),
+                    currentPage: $paginator->currentPage(),
+                    options: [
+                         'path' => request()->url(),
+                         'query' => request()->query(),
+                     ]
+                );
             }
-        );
-
-        $duration = microtime(true) - $startTime;
-
-        $this->logger()->info('Users paginated returned from cache', [
-            'page' => $page,
-            'per_page' => $perPage,
-            'total' => $result['total'],
-            'search' => $search?->term,
-            'duration_ms' => round($duration * 1000, 2),
-        ]);
-
-        return new LengthAwarePaginator(
-            items: $result['items'],
-            total: $result['total'],
-            perPage: $result['per_page'],
-            currentPage: $result['current_page'],
-            options: [
-                'path' => request()->url(),
-                'query' => request()->query(),
-            ]
         );
     }
 }

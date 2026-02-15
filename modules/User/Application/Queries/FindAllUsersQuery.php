@@ -29,43 +29,21 @@ final readonly class FindAllUsersQuery
      */
     public function execute(): array
     {
-        $startTime = microtime(true);
         $cacheKey = "users:all";
 
         $this->logger()->debug('Finding all users');
 
         // Usa cache com remember
-        $users = $this->cache()->remember(
+        return $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
-            function () use ($startTime) {
-                $this->logger()->debug('Cache miss - fetching from database');
-
+            function () {
                 $usersData = UserModel::orderBy('created_at', 'desc')->get();
 
-                $users = $usersData->map(function ($userData) {
+                return $usersData->map(function ($userData) {
                     return UserDTO::fromDatabase($userData);
                 })->all();
-
-                $duration = microtime(true) - $startTime;
-
-                $this->logger()->info('All users retrieved from database', [
-                    'total' => count($users),
-                    'cache_hit' => false,
-                    'duration_ms' => round($duration * 1000, 2),
-                ]);
-
-                return $users;
             }
         );
-
-        $duration = microtime(true) - $startTime;
-
-        $this->logger()->info('All users returned', [
-            'total' => count($users),
-            'duration_ms' => round($duration * 1000, 2),
-        ]);
-
-        return $users;
     }
 }

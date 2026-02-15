@@ -26,7 +26,6 @@ final readonly class GetWebhookConfigByIdQuery
 
     public function execute(string $id, string $userId): ?WebhookConfigDTO
     {
-        $startTime = microtime(true);
         $cacheKey = "webhook_config:id:{$id}";
 
         $this->logger()->debug('Finding webhook config by ID', [
@@ -34,7 +33,7 @@ final readonly class GetWebhookConfigByIdQuery
             'user_id' => $userId,
         ]);
 
-        $result = $this->cache()->remember(
+        return $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
             function () use ($id, $userId) {
@@ -56,20 +55,5 @@ final readonly class GetWebhookConfigByIdQuery
                 ]);
             }
         );
-
-        $duration = microtime(true) - $startTime;
-
-        if ($result) {
-            $this->logger()->info('Webhook config found', [
-                'webhook_config_id' => $id,
-                'duration_ms' => round($duration * 1000, 2),
-            ]);
-        } else {
-            $this->logger()->info('Webhook config not found', [
-                'webhook_config_id' => $id,
-            ]);
-        }
-
-        return $result;
     }
 }

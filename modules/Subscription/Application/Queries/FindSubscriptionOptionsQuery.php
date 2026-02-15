@@ -31,7 +31,6 @@ final readonly class FindSubscriptionOptionsQuery
      */
     public function execute(?SearchDTO $search = null): array
     {
-        $startTime = microtime(true);
         $searchKey = $search ? $search->cacheKey() : 'search:none';
         $cacheKey = "subscriptions:options:{$searchKey}";
 
@@ -39,10 +38,10 @@ final readonly class FindSubscriptionOptionsQuery
             'search' => $search?->term,
         ]);
 
-        $items = $this->cache()->remember(
+        return $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
-            function () use ($search, $startTime) {
+            function () use ($search) {
                 $query = SubscriptionModel::query()
                     ->orderBy('name', 'asc');
 
@@ -64,14 +63,5 @@ final readonly class FindSubscriptionOptionsQuery
                 return $items;
             }
         );
-
-        $duration = microtime(true) - $startTime;
-
-        $this->logger()->info('Subscription options returned', [
-            'total' => count($items),
-            'duration_ms' => round($duration * 1000, 2),
-        ]);
-
-        return $items;
     }
 }

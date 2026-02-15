@@ -22,6 +22,7 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
     use Cacheable;
 
     private const DEFAULT_PER_PAGE = 20;
+    private const CACHE_TTL = 300; // 5 minutos
 
     protected function cacheTags(): array
     {
@@ -34,7 +35,6 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
         ?SearchDTO $search = null,
         ?SortDTO $sort = null,
     ): CursorPaginator {
-        $startTime = microtime(true);
         $searchKey = $search ? $search->cacheKey() : 'search:none';
         $sortKey = $sort ? $sort->cacheKey() : 'sort:default';
         $cursorKey = $cursor ?? 'cursor:none';
@@ -47,11 +47,10 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
             'sort' => $sort?->sorts,
         ]);
 
-        // Cache completo do resultado
-        $result = $this->cache()->remember(
+        return $this->cache()->remember(
             $cacheKey,
-            300, // 5 minutos
-            function () use ($cursor, $perPage, $search, $sort, $startTime) {
+            self::CACHE_TTL,
+            function () use ($cursor, $perPage, $search, $sort) {
                 $query = SubscriptionModel::query();
 
                 // Aplica busca
@@ -85,37 +84,19 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
                     ->map(fn ($model) => SubscriptionDTO::fromDatabase($model))
                     ->all();
 
-                return [
-                    'items' => $items,
-                    'next_cursor' => $paginator->nextCursor()?->encode(),
-                    'prev_cursor' => $paginator->previousCursor()?->encode(),
-                    'has_more' => $paginator->hasMorePages(),
-                    'per_page' => $paginator->perPage(),
-                ];
+                return new CursorPaginator(
+                    items: $items,
+                    perPage: $paginator->perPage(),
+                    cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null,
+                    options: [
+                        'path' => request()->url(),
+                        'parameters' => [
+                            'next' => $paginator->nextCursor()?->encode(),
+                            'prev' => $paginator->previousCursor()?->encode(),
+                        ],
+                    ]
+                );
             }
-        );
-
-        $duration = microtime(true) - $startTime;
-
-        $this->logger()->info('Subscription cursor paginated returned from cache', [
-            'cursor' => $cursor,
-            'per_page' => $perPage,
-            'search' => $search?->term,
-            'duration_ms' => round($duration * 1000, 2),
-        ]);
-
-        // Reconstrói o CursorPaginator para manter a interface
-        return new CursorPaginator(
-            items: $result['items'],
-            perPage: $result['per_page'],
-            cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null,
-            options: [
-                'path' => request()->url(),
-                'parameters' => [
-                    'next' => $result['next_cursor'],
-                    'prev' => $result['prev_cursor'],
-                ],
-            ]
         );
     }
 }

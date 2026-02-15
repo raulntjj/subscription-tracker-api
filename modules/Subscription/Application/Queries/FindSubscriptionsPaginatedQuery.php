@@ -35,7 +35,6 @@ final readonly class FindSubscriptionsPaginatedQuery
         ?SearchDTO $search = null,
         ?SortDTO $sort = null,
     ): LengthAwarePaginator {
-        $startTime = microtime(true);
         $searchKey = $search ? $search->cacheKey() : 'search:none';
         $sortKey = $sort ? $sort->cacheKey() : 'sort:default';
         $cacheKey = "subscriptions:paginated:page:{$page}:per_page:{$perPage}:{$searchKey}:{$sortKey}";
@@ -47,11 +46,10 @@ final readonly class FindSubscriptionsPaginatedQuery
             'sort' => $sort?->sorts,
         ]);
 
-        // Cache do resultado completo (dados + total)
-        $result = $this->cache()->remember(
+        return $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
-            function () use ($page, $perPage, $search, $sort, $startTime) {
+            function () use ($page, $perPage, $search, $sort) {
                 $query = SubscriptionModel::query();
 
                 // Aplica busca
@@ -82,32 +80,17 @@ final readonly class FindSubscriptionsPaginatedQuery
                     return SubscriptionDTO::fromDatabase($model);
                 })->all();
 
-                return [
-                    'items' => $items,
-                    'total' => $paginator->total(),
-                ];
+                return new LengthAwarePaginator(
+                    items: $items,
+                    total: $paginator->total(),
+                    perPage: $paginator->perPage(),
+                    currentPage: $paginator->currentPage(),
+                    options: [
+                        'path' => request()->url(),
+                        'query' => request()->query(),
+                    ]
+                );
             }
-        );
-
-        $duration = microtime(true) - $startTime;
-
-        $this->logger()->info('Subscriptions paginated returned', [
-            'page' => $page,
-            'per_page' => $perPage,
-            'total' => $result['total'],
-            'search' => $search?->term,
-            'duration_ms' => round($duration * 1000, 2),
-        ]);
-
-        return new LengthAwarePaginator(
-            items: $result['items'],
-            total: $result['total'],
-            perPage: $perPage,
-            currentPage: $page,
-            options: [
-                'path' => request()->url(),
-                'query' => request()->query(),
-            ]
         );
     }
 }

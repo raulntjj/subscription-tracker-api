@@ -26,7 +26,6 @@ final readonly class FindSubscriptionByIdQuery
 
     public function execute(string $id): ?SubscriptionDTO
     {
-        $startTime = microtime(true);
         $cacheKey = "subscription:{$id}";
 
         $this->logger()->debug('Finding subscription by ID', [
@@ -36,7 +35,7 @@ final readonly class FindSubscriptionByIdQuery
         $data = $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
-            function () use ($id, $startTime) {
+            function () use ($id) {
                 return SubscriptionModel::query()
                     ->where('id', $id)
                     ->first();

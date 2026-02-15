@@ -26,14 +26,13 @@ final readonly class GetWebhookConfigsQuery
 
     public function execute(string $userId): array
     {
-        $startTime = microtime(true);
         $cacheKey = "webhook_configs:user:{$userId}";
 
         $this->logger()->debug('Finding webhook configs for user', [
             'user_id' => $userId,
         ]);
 
-        $result = $this->cache()->remember(
+        return $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
             function () use ($userId) {
@@ -53,15 +52,5 @@ final readonly class GetWebhookConfigsQuery
                 })->all();
             }
         );
-
-        $duration = microtime(true) - $startTime;
-
-        $this->logger()->info('Webhook configs returned', [
-            'user_id' => $userId,
-            'count' => count($result),
-            'duration_ms' => round($duration * 1000, 2),
-        ]);
-
-        return $result;
     }
 }

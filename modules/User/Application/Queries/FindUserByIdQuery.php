@@ -29,64 +29,24 @@ final readonly class FindUserByIdQuery
 
     public function execute(string $userId): ?UserDTO
     {
-        $startTime = microtime(true);
         $cacheKey = "user:{$userId}";
 
         $this->logger()->debug('Finding user by ID', [
             'user_id' => $userId,
         ]);
 
-        // Usa CacheService com remember para buscar ou popular cache
-        $userData = $this->cache()->remember(
+        return $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
-            function () use ($userId, $startTime) {
-                $this->logger()->debug('Cache miss - fetching from database', [
-                    'user_id' => $userId,
-                ]);
-
-                // Usa Eloquent Model - soft deletes automático!
+            function () use ($userId) {
                 $userData = UserModel::where('id', $userId)->first();
 
-                if ($userData !== null) {
-                    $duration = microtime(true) - $startTime;
-
-                    $this->logger()->info('User found in database', [
-                        'user_id' => $userId,
-                        'cache_hit' => false,
-                        'cache_populated' => true,
-                        'duration_ms' => round($duration * 1000, 2),
-                    ]);
-
-                    return (array) $userData;
+                if ($userData == null) {
+                    return null;
                 }
 
-                $duration = microtime(true) - $startTime;
-
-                $this->logger()->warning('User not found', [
-                    'user_id' => $userId,
-                    'duration_ms' => round($duration * 1000, 2),
-                ]);
-
-                return null;
+                return UserDTO::fromDatabase((array) $userData);
             }
         );
-
-        if ($userData === null) {
-            return null;
-        }
-
-        // Se veio do cache, loga
-        if (is_array($userData)) {
-            $duration = microtime(true) - $startTime;
-
-            $this->logger()->info('User found in cache', [
-                'user_id' => $userId,
-                'cache_hit' => true,
-                'duration_ms' => round($duration * 1000, 2),
-            ]);
-        }
-
-        return UserDTO::fromDatabase($userData);
     }
 }

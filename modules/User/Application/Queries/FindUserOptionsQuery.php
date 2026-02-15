@@ -34,7 +34,6 @@ final readonly class FindUserOptionsQuery
      */
     public function execute(?SearchDTO $search = null): array
     {
-        $startTime = microtime(true);
         $searchKey = $search ? $search->cacheKey() : 'search:none';
         $cacheKey = "users:options:{$searchKey}";
 
@@ -42,13 +41,10 @@ final readonly class FindUserOptionsQuery
             'search' => $search?->term,
         ]);
 
-        $users = $this->cache()->remember(
+        return $this->cache()->remember(
             $cacheKey,
             self::CACHE_TTL,
-            function () use ($search, $startTime) {
-                $this->logger()->debug('Cache miss - fetching from database');
-
-                // Usa Eloquent Model - soft deletes automático!
+            function () use ($search) {
                 $query = UserModel::select(['id', 'name', 'surname', 'email', 'created_at', 'updated_at'])
                     ->orderBy('name', 'asc');
 
@@ -63,30 +59,10 @@ final readonly class FindUserOptionsQuery
 
                 $usersData = $query->get();
 
-                $users = $usersData->map(function ($userData) {
+                return $usersData->map(function ($userData) {
                     return UserDTO::fromDatabase($userData);
                 })->all();
-
-                $duration = microtime(true) - $startTime;
-
-                $this->logger()->info('User options retrieved from database', [
-                    'total' => count($users),
-                    'search' => $search?->term,
-                    'cache_hit' => false,
-                    'duration_ms' => round($duration * 1000, 2),
-                ]);
-
-                return $users;
             }
         );
-
-        $duration = microtime(true) - $startTime;
-
-        $this->logger()->info('User options returned', [
-            'total' => count($users),
-            'duration_ms' => round($duration * 1000, 2),
-        ]);
-
-        return $users;
     }
 }
