@@ -7,6 +7,7 @@ namespace Modules\Subscription\Infrastructure\Providers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Modules\Shared\Infrastructure\Concerns\LoadsModuleSeeders;
 use Modules\Subscription\Console\Commands\CheckBillingCommand;
 use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
@@ -19,6 +20,7 @@ use Modules\Subscription\Application\Listeners\DispatchWebhookOnSubscriptionRene
 
 final class SubscriptionServiceProvider extends ServiceProvider
 {
+    use LoadsModuleSeeders;
     public function register(): void
     {
         $this->app->bind(
@@ -48,6 +50,7 @@ final class SubscriptionServiceProvider extends ServiceProvider
             ->group(__DIR__ . '/../../Interface/Routes/mobile.php');
 
         $this->loadMigrationsFrom(__DIR__ . '/../Persistence/Migrations');
+        $this->loadSeedersFrom(__DIR__ . '/../Persistence/Seeders');
 
         // Registra event listeners
         Event::listen(

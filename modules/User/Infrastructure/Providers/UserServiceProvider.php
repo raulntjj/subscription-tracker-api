@@ -6,11 +6,13 @@ namespace Modules\User\Infrastructure\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Modules\Shared\Infrastructure\Concerns\LoadsModuleSeeders;
 use Modules\User\Domain\Contracts\UserRepositoryInterface;
 use Modules\User\Infrastructure\Persistence\UserRepository;
 
 final class UserServiceProvider extends ServiceProvider
 {
+    use LoadsModuleSeeders;
     public function register(): void
     {
         $this->app->bind(
@@ -34,5 +36,6 @@ final class UserServiceProvider extends ServiceProvider
             ->group(__DIR__ . '/../../Interface/Routes/auth.php');
 
         $this->loadMigrationsFrom(__DIR__ . '/../Persistence/Migrations');
+        $this->loadSeedersFrom(__DIR__ . '/../Persistence/Seeders');
     }
 }

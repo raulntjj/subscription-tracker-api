@@ -3,9 +3,11 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Modules\Shared\Infrastructure\Persistence\Concerns\HasUserActionColumns;
 
 return new class extends Migration
 {
+    use HasUserActionColumns;
     /**
      * Run the migrations.
      */
@@ -18,13 +20,7 @@ return new class extends Migration
             $table->string('secret', 255)->nullable();
             $table->boolean('is_active')->default(true);
             
-            // Audit columns
-            $table->uuid('created_by')->nullable();
-            $table->uuid('updated_by')->nullable();
-            $table->uuid('deleted_by')->nullable();
-            
-            $table->timestamps();
-            $table->softDeletes();
+            $this->addTimestampsWithUserActions($table);
             
             // Foreign keys
             $table->foreign('user_id')

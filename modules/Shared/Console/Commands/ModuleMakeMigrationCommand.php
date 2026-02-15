@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 final class ModuleMakeMigrationCommand extends Command
 {
-    protected $signature = 'module:make-migration 
+    protected $signature = 'module:make:migration 
                             {name : Nome da migration (ex: create_users_table)} 
                             {module : Nome do módulo (ex: User)}';
 
@@ -69,30 +69,30 @@ final class ModuleMakeMigrationCommand extends Command
     private function getMigrationStub(string $className, string $tableName): string
     {
         return <<<PHP
-<?php
+        <?php
 
-declare(strict_types=1);
+        declare(strict_types=1);
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+        use Illuminate\Database\Migrations\Migration;
+        use Illuminate\Database\Schema\Blueprint;
+        use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    public function up(): void
-    {
-        Schema::create('{$tableName}', function (Blueprint \$table) {
-            \$table->uuid('id')->primary();
-            \$table->timestamps();
-        });
-    }
+        return new class extends Migration
+        {
+            public function up(): void
+            {
+                Schema::create('{$tableName}', function (Blueprint \$table) {
+                    \$table->uuid('id')->primary();
+                    \$table->timestamps();
+                });
+            }
 
-    public function down(): void
-    {
-        Schema::dropIfExists('{$tableName}');
-    }
-};
+            public function down(): void
+            {
+                Schema::dropIfExists('{$tableName}');
+            }
+        };
 
-PHP;
+        PHP;
     }
 }

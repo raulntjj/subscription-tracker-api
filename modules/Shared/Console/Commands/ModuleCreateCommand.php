@@ -7,9 +7,9 @@ namespace Modules\Shared\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
-final class ModuleMakeCommand extends Command
+final class ModuleCreateCommand extends Command
 {
-    protected $signature = 'module:make 
+    protected $signature = 'module:create 
                             {name : Nome do módulo (ex: Company)}';
 
     protected $description = 'Cria a estrutura completa de um novo módulo DDD a partir de stubs';
@@ -181,6 +181,7 @@ final class ModuleMakeCommand extends Command
     {
         $emptyDirs = [
             'Domain/ValueObjects',
+            'Infrastructure/Persistence/Seeders',
             'Tests/Unit',
             'Tests/Feature',
             'Tests/Integration',

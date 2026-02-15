@@ -6,11 +6,13 @@ namespace Modules\{{MODULE_NAME}}\Infrastructure\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Modules\Shared\Infrastructure\Concerns\LoadsModuleSeeders;
 use Modules\{{MODULE_NAME}}\Domain\Contracts\{{MODULE_NAME}}RepositoryInterface;
 use Modules\{{MODULE_NAME}}\Infrastructure\Persistence\{{MODULE_NAME}}Repository;
 
 final class {{MODULE_NAME}}ServiceProvider extends ServiceProvider
 {
+    use LoadsModuleSeeders;
     public function register(): void
     {
         $this->app->bind(
@@ -30,5 +32,6 @@ final class {{MODULE_NAME}}ServiceProvider extends ServiceProvider
             ->group(__DIR__ . '/../../Interface/Routes/mobile.php');
 
         $this->loadMigrationsFrom(__DIR__ . '/../Persistence/Migrations');
+        $this->loadSeedersFrom(__DIR__ . '/../Persistence/Seeders');
     }
 }

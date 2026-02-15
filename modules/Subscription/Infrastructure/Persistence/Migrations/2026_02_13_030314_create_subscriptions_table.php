@@ -24,8 +24,6 @@ return new class extends Migration
             $table->enum('status', ['active', 'paused', 'cancelled'])->default('active');
             $table->uuid('user_id');
             
-            // Adiciona timestamps + colunas de auditoria organizadas
-            // created_at + created_by, updated_at + updated_by, deleted_at + deleted_by
             $this->addTimestampsWithUserActions($table);
 
             // Índices para otimização de queries
