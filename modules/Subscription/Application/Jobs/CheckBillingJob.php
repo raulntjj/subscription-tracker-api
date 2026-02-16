@@ -151,6 +151,61 @@ final class CheckBillingJob implements ShouldQueue
             'old_billing_date' => $subscription->next_billing_date,
             'new_billing_date' => $nextBillingDate->format('Y-m-d'),
         ]);
+
+        // 3. Despachar webhook de renovação
+        $this->dispatchWebhook(
+            $subscription,
+            $subscriptionEntity,
+            $billingHistory,
+            $nextBillingDate,
+            $logger
+        );
+    }
+
+    /**
+     * Despacha webhook de renovação de assinatura
+     */
+    private function dispatchWebhook(
+        object $subscription,
+        object $subscriptionEntity,
+        BillingHistory $billingHistory,
+        \DateTimeImmutable $nextBillingDate,
+        StructuredLogger $logger
+    ): void {
+        try {
+            $eventData = [
+                'subscription_id' => $subscription->id,
+                'subscription_name' => $subscription->name,
+                'amount' => $subscription->price,
+                'currency' => $subscription->currency,
+                'billing_cycle' => $subscription->billing_cycle,
+                'billing_history_id' => $billingHistory->id()->toString(),
+                'billing_date' => $billingHistory->paidAt()->format('Y-m-d H:i:s'),
+                'next_billing_date' => $nextBillingDate->format('Y-m-d'),
+                'user_id' => $subscription->user_id,
+                'occurred_at' => now()->toIso8601String(),
+                'status' => $subscription->status,
+            ];
+
+            DispatchWebhookJob::dispatch(
+                $subscription->id,
+                $subscription->user_id,
+                $billingHistory->id()->toString(),
+                $eventData
+            );
+
+            $logger->info('Webhook dispatched for subscription renewal', [
+                'subscription_id' => $subscription->id,
+                'user_id' => $subscription->user_id,
+                'billing_history_id' => $billingHistory->id()->toString(),
+            ]);
+        } catch (\Throwable $e) {
+            // Não falhar o billing por causa do webhook
+            $logger->warning('Failed to dispatch webhook for subscription renewal', [
+                'subscription_id' => $subscription->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**

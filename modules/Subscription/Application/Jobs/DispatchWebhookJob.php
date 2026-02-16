@@ -64,8 +64,10 @@ final class DispatchWebhookJob implements ShouldQueue
     /**
      * Executa o job
      */
-    public function handle(StructuredLogger $logger): void
+    public function handle(): void
     {
+        $logger = new StructuredLogger('Subscription');
+        
         $logger->info('Processing webhook dispatch', [
             'subscription_id' => $this->subscriptionId,
             'user_id' => $this->userId,
@@ -162,7 +164,33 @@ final class DispatchWebhookJob implements ShouldQueue
      */
     private function buildPayload(): array
     {
+        $subscriptionName = $this->eventData['subscription_name'];
+        $amount = number_format($this->eventData['amount'] / 100, 2, ',', '.');
+        $currency = strtoupper($this->eventData['currency']);
+        $billingDate = \DateTime::createFromFormat('Y-m-d H:i:s', $this->eventData['billing_date'])->format('d/m/Y');
+        $nextBillingDate = \DateTime::createFromFormat('Y-m-d', $this->eventData['next_billing_date'])->format('d/m/Y');
+        $billingCycle = $this->eventData['billing_cycle'];
+
+        // Traduzir billing cycle para português
+        $billingCycleText = match($billingCycle) {
+            'monthly' => 'mensal',
+            'yearly' => 'anual',
+            'weekly' => 'semanal',
+            'daily' => 'diário',
+            default => $billingCycle,
+        };
+
+        // Mensagem amigável
+        $message = "💰 Fatura da assinatura {$subscriptionName} processada com sucesso!\n\n" .
+                   "Detalhes da cobrança:\n" .
+                   "• Valor debitado: {$currency} {$amount}\n" .
+                   "• Data do débito: {$billingDate}\n" .
+                   "• Ciclo de cobrança: {$billingCycleText}\n" .
+                   "• Próxima cobrança: {$nextBillingDate}\n\n" .
+                   "✅ A data do próximo pagamento foi atualizada automaticamente.";
+
         return [
+            'content' => $message, // Para Discord/Slack
             'event' => 'subscription.renewed',
             'timestamp' => now()->toIso8601String(),
             'data' => [
@@ -170,20 +198,30 @@ final class DispatchWebhookJob implements ShouldQueue
                     'id' => $this->eventData['subscription_id'],
                     'name' => $this->eventData['subscription_name'],
                     'amount' => $this->eventData['amount'],
+                    'amount_formatted' => "{$currency} {$amount}",
                     'currency' => $this->eventData['currency'],
+                    'billing_cycle' => $this->eventData['billing_cycle'],
+                    'billing_cycle_text' => $billingCycleText,
                     'next_billing_date' => $this->eventData['next_billing_date'],
+                    'next_billing_date_formatted' => $nextBillingDate,
+                    'status' => $this->eventData['status'] ?? 'active',
                 ],
                 'billing' => [
                     'id' => $this->eventData['billing_history_id'],
                     'date' => $this->eventData['billing_date'],
+                    'date_formatted' => $billingDate,
                     'amount' => $this->eventData['amount'],
+                    'amount_formatted' => "{$currency} {$amount}",
                     'currency' => $this->eventData['currency'],
                 ],
                 'user_id' => $this->eventData['user_id'],
+                'message' => $message,
             ],
             'metadata' => [
                 'occurred_at' => $this->eventData['occurred_at'],
                 'attempt' => $this->attempts(),
+                'source' => 'subscription-tracker',
+                'version' => '1.0',
             ],
         ];
     }
@@ -243,10 +281,5 @@ final class DispatchWebhookJob implements ShouldQueue
             'trace' => $exception->getTraceAsString(),
             'total_attempts' => $this->attempts(),
         ]);
-
-        // Aqui você pode implementar lógica adicional como:
-        // - Notificar o utilizador por email
-        // - Desativar o webhook automaticamente após muitas falhas
-        // - Registrar em tabela de webhooks falhos para retry manual
     }
 }

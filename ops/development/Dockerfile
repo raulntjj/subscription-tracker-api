@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     supervisor \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar extensões PHP necessárias
@@ -52,10 +53,11 @@ COPY --chown=root:root ops/development/supervisor/*.conf /etc/supervisor/conf.d/
 COPY --chown=appuser:appuser ops/development/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Configurar permissões
+# Configurar permissões com sticky bit para herdar grupo
 RUN chown -R appuser:appuser /var/www/html && \
-    chmod -R 755 /var/www/html/storage && \
-    chmod -R 755 /var/www/html/bootstrap/cache
+    chmod -R 775 /var/www/html/storage && \
+    chmod -R 775 /var/www/html/bootstrap/cache && \
+    chmod 2775 /var/www/html/storage/logs
 
 # Expor porta para FrankenPHP
 EXPOSE 8000
