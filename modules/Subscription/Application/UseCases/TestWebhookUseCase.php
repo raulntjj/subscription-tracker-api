@@ -6,6 +6,7 @@ namespace Modules\Subscription\Application\UseCases;
 
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Http;
+use Modules\Subscription\Application\Jobs\TestWebhookJob;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 
@@ -18,12 +19,70 @@ final readonly class TestWebhookUseCase
     ) {
     }
 
-    public function execute(string $id): array
+    /**
+     * Executa o teste de webhook
+     *
+     * @param string $id ID do webhook config
+     * @param bool $async Se true, despacha para fila RabbitMQ; se false, executa sincronamente
+     * @return array Resultado do teste (síncrono) ou confirmação de despacho (assíncrono)
+     */
+    public function execute(string $id, bool $async = false): array
     {
         $this->logger()->info('Testing webhook config', [
             'webhook_config_id' => $id,
+            'async' => $async,
         ]);
 
+        // Se assíncrono, despacha para fila RabbitMQ
+        if ($async) {
+            return $this->executeAsync($id);
+        }
+
+        // Execução síncrona (comportamento original)
+        return $this->executeSync($id);
+    }
+
+    /**
+     * Executa o teste assincronamente via RabbitMQ
+     */
+    private function executeAsync(string $id): array
+    {
+        try {
+            // Valida se o webhook existe antes de despachar
+            $entity = $this->repository->findById(Uuid::fromString($id));
+
+            if (!$entity) {
+                throw new \InvalidArgumentException('Webhook config not found');
+            }
+
+            // Despacha job para fila RabbitMQ
+            TestWebhookJob::dispatch($id);
+
+            $this->logger()->info('Webhook test job dispatched to queue', [
+                'webhook_config_id' => $id,
+                'queue' => 'webhooks',
+            ]);
+
+            return [
+                'dispatched' => true,
+                'queue' => 'webhooks',
+                'webhook_config_id' => $id,
+                'message' => 'Webhook test dispatched to RabbitMQ queue. Check logs for results.',
+            ];
+        } catch (\Throwable $e) {
+            $this->logger()->error('Failed to dispatch webhook test job', [
+                'webhook_config_id' => $id,
+            ], $e);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Executa o teste sincronamente
+     */
+    private function executeSync(string $id): array
+    {
         try {
             $entity = $this->repository->findById(Uuid::fromString($id));
 

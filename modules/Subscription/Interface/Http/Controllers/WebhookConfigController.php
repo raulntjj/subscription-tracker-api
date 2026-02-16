@@ -9,29 +9,29 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Modules\Shared\Interface\Http\Responses\ApiResponse;
+use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Subscription\Application\DTOs\CreateWebhookConfigDTO;
 use Modules\Subscription\Application\DTOs\UpdateWebhookConfigDTO;
-use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
+use Modules\Subscription\Application\UseCases\TestWebhookUseCase;
+use Modules\Subscription\Application\Queries\GetWebhookConfigsQuery;
+use Modules\Subscription\Application\UseCases\ActivateWebhookUseCase;
+use Modules\Subscription\Application\UseCases\DeactivateWebhookUseCase;
+use Modules\Subscription\Application\Queries\GetWebhookConfigByIdQuery;
 use Modules\Subscription\Application\UseCases\CreateWebhookConfigUseCase;
 use Modules\Subscription\Application\UseCases\UpdateWebhookConfigUseCase;
 use Modules\Subscription\Application\UseCases\DeleteWebhookConfigUseCase;
-use Modules\Subscription\Application\UseCases\ActivateWebhookUseCase;
-use Modules\Subscription\Application\UseCases\DeactivateWebhookUseCase;
-use Modules\Subscription\Application\UseCases\TestWebhookUseCase;
-use Modules\Subscription\Application\Queries\GetWebhookConfigsQuery;
-use Modules\Subscription\Application\Queries\GetWebhookConfigByIdQuery;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
 
 final class WebhookConfigController extends Controller
 {
     public function __construct(
+        private readonly TestWebhookUseCase $testUseCase,
+        private readonly ActivateWebhookUseCase $activateUseCase,
+        private readonly GetWebhookConfigsQuery $getConfigsQuery,
         private readonly CreateWebhookConfigUseCase $createUseCase,
         private readonly UpdateWebhookConfigUseCase $updateUseCase,
         private readonly DeleteWebhookConfigUseCase $deleteUseCase,
-        private readonly ActivateWebhookUseCase $activateUseCase,
         private readonly DeactivateWebhookUseCase $deactivateUseCase,
-        private readonly TestWebhookUseCase $testUseCase,
-        private readonly GetWebhookConfigsQuery $getConfigsQuery,
         private readonly GetWebhookConfigByIdQuery $getConfigByIdQuery,
     ) {
     }
@@ -107,7 +107,6 @@ final class WebhookConfigController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return ApiResponse::validationError($e->errors());
         } catch (Throwable $e) {
-            dd($e);
             return ApiResponse::error(exception: $e);
         }
     }
@@ -232,23 +231,33 @@ final class WebhookConfigController extends Controller
     /**
      * POST /api/web/v1/webhooks/{id}/test
      * Envia um payload de teste para o webhook
+     *
+     * Query params:
+     * - async: boolean (opcional) - Se true, despacha para fila RabbitMQ
      */
-    public function test(string $id): JsonResponse
+    public function test(Request $request, string $id): JsonResponse
     {
         try {
             // Verifica se o webhook pertence ao usuário
-            $userId = Auth::id();
+            $userId = auth('api')->id();
             $existing = $this->getConfigByIdQuery->execute($id, $userId);
 
             if ($existing === null) {
                 return ApiResponse::notFound('Webhook config not found');
             }
 
-            $result = $this->testUseCase->execute($id);
+            // Verifica se deve executar assincronamente via RabbitMQ
+            $async = $request->boolean('async', false);
+
+            $result = $this->testUseCase->execute($id, $async);
+
+            $message = $async
+                ? 'Webhook test dispatched to queue. Check logs for results.'
+                : 'Webhook test completed';
 
             return ApiResponse::success(
                 $result,
-                'Webhook test completed'
+                $message
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);

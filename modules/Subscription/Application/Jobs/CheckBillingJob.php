@@ -24,10 +24,10 @@ use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
  */
 final class CheckBillingJob implements ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
     use Queueable;
+    use Dispatchable;
     use SerializesModels;
+    use InteractsWithQueue;
 
     /**
      * Número de tentativas em caso de falha

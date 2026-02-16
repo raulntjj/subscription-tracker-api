@@ -7,15 +7,15 @@ namespace Modules\Subscription\Infrastructure\Providers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Modules\Subscription\Domain\Events\SubscriptionRenewed;
 use Modules\Shared\Infrastructure\Concerns\LoadsModuleSeeders;
 use Modules\Subscription\Console\Commands\CheckBillingCommand;
-use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
-use Modules\Subscription\Infrastructure\Persistence\BillingHistoryRepository;
 use Modules\Subscription\Infrastructure\Persistence\SubscriptionRepository;
+use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
 use Modules\Subscription\Infrastructure\Persistence\WebhookConfigRepository;
-use Modules\Subscription\Domain\Events\SubscriptionRenewed;
+use Modules\Subscription\Infrastructure\Persistence\BillingHistoryRepository;
 use Modules\Subscription\Application\Listeners\DispatchWebhookOnSubscriptionRenewed;
 
 final class SubscriptionServiceProvider extends ServiceProvider

@@ -1,10 +1,10 @@
 # Padrão de Endpoints Web vs Mobile
 
-## 📋 Visão Geral
+## Visão Geral
 
 Este documento define o padrão para criação de endpoints separados para **Web** e **Mobile**, com estratégias de paginação, busca e ordenação diferentes para cada plataforma.
 
-## 🎯 Motivação
+## Motivação
 
 ### Por que separar Web e Mobile?
 
@@ -14,7 +14,7 @@ Este documento define o padrão para criação de endpoints separados para **Web
 4. **Evolução independente**: Mudanças em um não afetam o outro
 
 
-## 🌐 Padrão de Rotas
+## Padrão de Rotas
 
 ### Configuração no Service Provider
 
@@ -85,7 +85,7 @@ Route::prefix('{resource}')->group(function () {
 | GET    | `/api/mobile/v1/users`         | `MobileUserController@index`   |
 | GET    | `/api/mobile/v1/users/options` | `MobileUserController@options` |
 
-## 🔍 Busca e Ordenação
+## Busca e Ordenação
 
 ### SearchDTO
 
@@ -125,7 +125,7 @@ $sort = SortDTO::fromRequest(
 - Simples: `?sort_by=name&sort_direction=asc`
 - Múltiplo: `?sort_by=name,email&sort_direction=asc,desc`
 
-## 📊 Tipos de Endpoint
+## Tipos de Endpoint
 
 ### 1. Index (Listagem Principal)
 
@@ -160,7 +160,7 @@ GET /api/mobile/v1/{resource}/options?search=termo
 | PATCH  | `/{resource}/{id}` | Atualizar (parcial)  |
 | DELETE | `/{resource}/{id}` | Deletar              |
 
-## 🏗️ Criando um Novo Módulo
+## Criando um Novo Módulo
 
 ### Via Artisan Command
 
@@ -183,7 +183,7 @@ O comando cria automaticamente toda a estrutura DDD completa:
 3. Executar `php artisan migrate`
 4. Personalizar entidade, DTOs e validações
 
-## ✅ Checklist para Novos Módulos
+## Checklist para Novos Módulos
 
 - [ ] Executar `php artisan module:make {Nome}`
 - [ ] Personalizar Entity no Domain

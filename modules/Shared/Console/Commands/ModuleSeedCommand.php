@@ -28,7 +28,7 @@ final class ModuleSeedCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info('🌱 Executando seeders dos módulos...');
+        $this->info('Executando seeders dos módulos...');
         $this->newLine();
 
         if ($module) {
@@ -44,14 +44,14 @@ final class ModuleSeedCommand extends Command
         $modulePath = base_path("modules/{$module}");
 
         if (!is_dir($modulePath)) {
-            $this->error("❌ Módulo '{$module}' não encontrado!");
+            $this->error("Módulo '{$module}' não encontrado!");
             return self::FAILURE;
         }
 
         $seedersPath = "{$modulePath}/Infrastructure/Persistence/Seeders";
 
         if (!is_dir($seedersPath)) {
-            $this->warn("⚠️  Diretório de seeders não encontrado em: {$module}/Infrastructure/Persistence/Seeders");
+            $this->warn("Diretório de seeders não encontrado em: {$module}/Infrastructure/Persistence/Seeders");
             return self::SUCCESS;
         }
 
@@ -68,7 +68,7 @@ final class ModuleSeedCommand extends Command
         $modules = File::directories($modulesPath);
 
         if (empty($modules)) {
-            $this->warn('⚠️  Nenhum módulo encontrado!');
+            $this->warn('Nenhum módulo encontrado!');
             return self::SUCCESS;
         }
 
@@ -86,12 +86,12 @@ final class ModuleSeedCommand extends Command
             $seedersPath = "{$modulePath}/Infrastructure/Persistence/Seeders";
 
             if (!is_dir($seedersPath)) {
-                $this->comment("⏭️  {$moduleName}: Sem seeders");
+                $this->comment("{$moduleName}: Sem seeders");
                 $skippedCount++;
                 continue;
             }
 
-            $this->info("📦 Módulo: {$moduleName}");
+            $this->info("Módulo: {$moduleName}");
 
             $result = $this->runModuleSeeders($moduleName, $seedersPath);
 
@@ -103,15 +103,15 @@ final class ModuleSeedCommand extends Command
         }
 
         $this->newLine();
-        $this->info("✅ Seeders executados: {$seededCount} módulo(s)");
+        $this->info("Seeders executados: {$seededCount} módulo(s)");
 
         if ($skippedCount > 0) {
-            $this->comment("⏭️  Módulos sem seeders: {$skippedCount}");
+            $this->comment("Módulos sem seeders: {$skippedCount}");
         }
 
         if (!empty($this->seededClasses)) {
             $this->newLine();
-            $this->info('📋 Classes executadas:');
+            $this->info('Classes executadas:');
             foreach ($this->seededClasses as $class) {
                 $this->line("   • {$class}");
             }
@@ -125,7 +125,7 @@ final class ModuleSeedCommand extends Command
         $seederFiles = File::glob("{$seedersPath}/*Seeder.php");
 
         if (empty($seederFiles)) {
-            $this->comment("   ⏭️  Nenhum seeder encontrado");
+            $this->comment("Nenhum seeder encontrado");
             return self::SUCCESS;
         }
 
@@ -148,12 +148,12 @@ final class ModuleSeedCommand extends Command
             $className = $this->getSeederClassName($module, $seederFile);
 
             if (!$className) {
-                $this->warn("   ⚠️  Não foi possível determinar a classe: " . basename($seederFile));
+                $this->warn("Não foi possível determinar a classe: " . basename($seederFile));
                 continue;
             }
 
             if (!class_exists($className)) {
-                $this->warn("   ⚠️  Classe não encontrada: {$className}");
+                $this->warn("Classe não encontrada: {$className}");
                 continue;
             }
 
@@ -174,14 +174,14 @@ final class ModuleSeedCommand extends Command
 
         foreach ($possibleClasses as $className) {
             if (class_exists($className)) {
-                $this->info("📦 Módulo: {$module}");
+                $this->info("Módulo: {$module}");
                 $this->executeSeeder($className);
                 return self::SUCCESS;
             }
         }
 
-        $this->error("❌ Seeder não encontrado: {$class}");
-        $this->comment("💡 Tentou procurar em:");
+        $this->error("Seeder não encontrado: {$class}");
+        $this->comment("Tentou procurar em:");
         foreach ($possibleClasses as $tried) {
             $this->line("   • {$tried}");
         }
@@ -194,7 +194,7 @@ final class ModuleSeedCommand extends Command
         $seederName = class_basename($className);
 
         try {
-            $this->line("   🌱 Executando: {$seederName}...");
+            $this->line("Executando: {$seederName}...");
 
             $seeder = $this->laravel->make($className);
 
@@ -206,12 +206,11 @@ final class ModuleSeedCommand extends Command
             }
 
             $this->seededClasses[] = $className;
-            $this->info("   ✅ {$seederName} executado com sucesso!");
+            $this->info("{$seederName} executado com sucesso!");
 
         } catch (\Throwable $e) {
-            $this->error("   ❌ Erro ao executar {$seederName}:");
-            $this->error("   {$e->getMessage()}");
-
+            $this->error("Erro ao executar {$seederName}:");
+            $this->error("{$e->getMessage()}");
             if ($this->output->isVerbose()) {
                 $this->newLine();
                 $this->line($e->getTraceAsString());
@@ -236,7 +235,7 @@ final class ModuleSeedCommand extends Command
         }
 
         if ($this->laravel->environment() === 'production') {
-            $this->warn('🚨 Aplicação está em ambiente de PRODUÇÃO!');
+            $this->warn('Aplicação está em ambiente de PRODUÇÃO!');
 
             return $this->confirm('Deseja realmente executar os seeders em produção?', false);
         }

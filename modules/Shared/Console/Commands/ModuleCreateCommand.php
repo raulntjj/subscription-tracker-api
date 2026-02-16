@@ -27,11 +27,11 @@ final class ModuleCreateCommand extends Command
         $modulePath = base_path("modules/{$name}");
 
         if (is_dir($modulePath)) {
-            $this->error("❌ Módulo '{$name}' já existe!");
+            $this->error("Módulo '{$name}' já existe!");
             return self::FAILURE;
         }
 
-        $this->info("🏗️  Criando módulo {$name}...");
+        $this->info("Criando módulo {$name}...");
         $this->newLine();
 
         // Mapeamento de placeholders
@@ -44,8 +44,8 @@ final class ModuleCreateCommand extends Command
         $this->createEmptyDirectories($modulePath);
 
         $this->newLine();
-        $this->info("✅ Módulo '{$name}' criado com sucesso!");
-        $this->line("📂 Localização: modules/{$name}");
+        $this->info("Módulo '{$name}' criado com sucesso!");
+        $this->line("Localização: modules/{$name}");
         $this->newLine();
 
         $this->displayEndpoints($replacements);
@@ -83,7 +83,7 @@ final class ModuleCreateCommand extends Command
             $stubFullPath = $this->stubsPath . '/' . $stubRelativePath;
 
             if (!file_exists($stubFullPath)) {
-                $this->warn("  ⚠️  Stub não encontrado: {$stubRelativePath}");
+                $this->warn("Stub não encontrado: {$stubRelativePath}");
                 continue;
             }
 
@@ -104,7 +104,7 @@ final class ModuleCreateCommand extends Command
             file_put_contents($targetFullPath, $content);
 
             $relativePath = str_replace(base_path() . '/', '', $targetFullPath);
-            $this->line("  📄 {$relativePath}");
+            $this->line("{$relativePath}");
         }
     }
 
@@ -209,7 +209,7 @@ final class ModuleCreateCommand extends Command
         $prefix = $replacements['{{MODULE_NAME_SNAKE_PLURAL}}'];
         $name = $replacements['{{MODULE_NAME}}'];
 
-        $this->info("📡 Endpoints disponíveis:");
+        $this->info("Endpoints disponíveis:");
         $this->newLine();
 
         $this->line("  <fg=cyan>Web (offset pagination):</>");
@@ -233,7 +233,7 @@ final class ModuleCreateCommand extends Command
      */
     private function displayNextSteps(string $name): void
     {
-        $this->warn("⚠️  Próximos passos:");
+        $this->warn("Próximos passos:");
         $this->newLine();
         $this->line("  1. Registre o ServiceProvider em <fg=yellow>bootstrap/providers.php</>:");
         $this->line("     <fg=green>Modules\\{$name}\\Infrastructure\\Providers\\{$name}ServiceProvider::class,</>");

@@ -39,17 +39,15 @@ final readonly class BillingHistoryDTO
     /**
      * Cria DTO a partir de um registro do banco
      */
-    public static function fromDatabase(object|array $data, string $currency = 'BRL'): self
+    public static function fromDatabase(object $data, string $currency = 'BRL'): self
     {
-        $data = (array) $data;
-
         return new self(
-            id: $data['id'],
-            subscriptionId: $data['subscription_id'],
-            amountPaid: (int) $data['amount_paid'],
-            amountPaidFormatted: self::formatPrice((int) $data['amount_paid'], $currency),
-            paidAt: $data['paid_at'],
-            createdAt: $data['created_at'],
+            id: $data->id,
+            subscriptionId: $data->subscription_id,
+            amountPaid: (int) $data->amount_paid,
+            amountPaidFormatted: self::formatPrice((int) $data->amount_paid, $currency),
+            paidAt: $data->paid_at->format('Y-m-d H:i:s'),
+            createdAt: $data->created_at->format('Y-m-d H:i:s'),
         );
     }
 

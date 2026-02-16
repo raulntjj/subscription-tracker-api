@@ -19,8 +19,8 @@ class TestRabbitMQCommand extends Command
 
         TestRabbitMQJob::dispatch($message);
 
-        $this->info("✅ Job despachado para o RabbitMQ: {$message}");
-        $this->info("📝 Verifique os logs em storage/logs/worker.log");
+        $this->info("Job despachado para o RabbitMQ: {$message}");
+        $this->info("Verifique os logs em storage/logs/worker.log");
 
         return self::SUCCESS;
     }

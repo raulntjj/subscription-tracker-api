@@ -30,12 +30,12 @@ final class ModuleTestCommand extends Command
         $testsPath = "{$modulePath}/Tests";
 
         if (!is_dir($modulePath)) {
-            $this->error("❌ Módulo '{$module}' não encontrado!");
+            $this->error("Módulo '{$module}' não encontrado!");
             return self::FAILURE;
         }
 
         if (!is_dir($testsPath)) {
-            $this->error("❌ Pasta de testes não encontrada em: {$testsPath}");
+            $this->error("Pasta de testes não encontrada em: {$testsPath}");
             return self::FAILURE;
         }
 
@@ -43,19 +43,19 @@ final class ModuleTestCommand extends Command
         $testPath = $testsPath;
         if ($unit) {
             $testPath = "{$testsPath}/Unit";
-            $this->info("🧪 Executando testes UNITÁRIOS do módulo {$module}...");
+            $this->info("Executando testes UNITÁRIOS do módulo {$module}...");
         } elseif ($integration) {
             $testPath = "{$testsPath}/Integration";
-            $this->info("🔗 Executando testes de INTEGRAÇÃO do módulo {$module}...");
+            $this->info("Executando testes de INTEGRAÇÃO do módulo {$module}...");
         } elseif ($feature) {
             $testPath = "{$testsPath}/Feature";
-            $this->info("🎯 Executando testes de FEATURE do módulo {$module}...");
+            $this->info("Executando testes de FEATURE do módulo {$module}...");
         } else {
-            $this->info("🧪 Executando TODOS os testes do módulo {$module}...");
+            $this->info("Executando TODOS os testes do módulo {$module}...");
         }
 
         if (!is_dir($testPath)) {
-            $this->error("❌ Pasta de testes não encontrada: {$testPath}");
+            $this->error("Pasta de testes não encontrada: {$testPath}");
             return self::FAILURE;
         }
 
@@ -68,7 +68,7 @@ final class ModuleTestCommand extends Command
 
         if ($filter) {
             $command[] = "--filter={$filter}";
-            $this->info("🔍 Filtro aplicado: {$filter}");
+            $this->info("Filtro aplicado: {$filter}");
         }
 
         $this->newLine();
@@ -104,15 +104,15 @@ final class ModuleTestCommand extends Command
             $this->newLine();
 
             if ($returnCode === 0) {
-                $this->info("✅ Testes executados com sucesso!");
+                $this->info("Testes executados com sucesso!");
                 return self::SUCCESS;
             }
 
-            $this->error("❌ Alguns testes falharam.");
+            $this->error("Alguns testes falharam.");
             return self::FAILURE;
         }
 
-        $this->error("❌ Erro ao executar os testes.");
+        $this->error("Erro ao executar os testes.");
         return self::FAILURE;
     }
 }

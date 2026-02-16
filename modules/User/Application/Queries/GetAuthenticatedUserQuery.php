@@ -25,6 +25,6 @@ final class GetAuthenticatedUserQuery
             return null;
         }
 
-        return UserDTO::fromDatabase($user->toArray());
+        return UserDTO::fromDatabase($user);
     }
 }

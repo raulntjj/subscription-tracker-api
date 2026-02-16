@@ -32,8 +32,8 @@ final class MobileSubscriptionController extends Controller
     private const SORTABLE_COLUMNS = ['name', 'created_at', 'updated_at'];
 
     public function __construct(
-        private readonly FindSubscriptionsCursorPaginatedQuery $findCursorPaginatedQuery,
         private readonly FindSubscriptionOptionsQuery $findOptionsQuery,
+        private readonly FindSubscriptionsCursorPaginatedQuery $findCursorPaginatedQuery,
     ) {
     }
 

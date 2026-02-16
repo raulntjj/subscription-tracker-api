@@ -23,10 +23,10 @@ use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
  */
 final class DispatchWebhookJob implements ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
     use Queueable;
+    use Dispatchable;
     use SerializesModels;
+    use InteractsWithQueue;
 
     /**
      * Número de tentativas em caso de falha

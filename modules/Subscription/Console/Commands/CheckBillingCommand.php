@@ -35,24 +35,24 @@ final class CheckBillingCommand extends Command
      */
     public function handle(): int
     {
-        $this->info('🔍 Checking subscriptions due for billing...');
+        $this->info('Checking subscriptions due for billing...');
 
         try {
             if ($this->option('sync')) {
                 // Executa sincronamente
-                $this->info('⚡ Running synchronously...');
+                $this->info('Running synchronously...');
                 CheckBillingJob::dispatchSync();
             } else {
                 // Despacha para a fila
-                $this->info('📤 Dispatching to queue...');
+                $this->info('Dispatching to queue...');
                 CheckBillingJob::dispatch();
             }
 
-            $this->info('✅ Billing check job dispatched successfully!');
+            $this->info('Billing check job dispatched successfully!');
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
-            $this->error('❌ Failed to dispatch billing check job:');
+            $this->error('Failed to dispatch billing check job:');
             $this->error($e->getMessage());
 
             if ($this->getOutput()->isVerbose()) {

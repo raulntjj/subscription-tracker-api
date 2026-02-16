@@ -23,7 +23,7 @@ final class ModuleMakeSeederCommand extends Command
         $modulePath = base_path("modules/{$module}");
 
         if (!is_dir($modulePath)) {
-            $this->error("❌ Módulo '{$module}' não encontrado!");
+            $this->error("Módulo '{$module}' não encontrado!");
             return self::FAILURE;
         }
 
@@ -31,7 +31,7 @@ final class ModuleMakeSeederCommand extends Command
 
         if (!is_dir($seedersPath)) {
             mkdir($seedersPath, 0755, true);
-            $this->info("📁 Criado diretório: {$seedersPath}");
+            $this->info("Criado diretório: {$seedersPath}");
         }
 
         // Garante que o nome termina com "Seeder"
@@ -44,7 +44,7 @@ final class ModuleMakeSeederCommand extends Command
         $filepath = "{$seedersPath}/{$filename}";
 
         if (file_exists($filepath)) {
-            $this->error("❌ Seeder já existe: {$filename}");
+            $this->error("Seeder já existe: {$filename}");
             return self::FAILURE;
         }
 
@@ -52,13 +52,13 @@ final class ModuleMakeSeederCommand extends Command
 
         file_put_contents($filepath, $content);
 
-        $this->info("✅ Seeder criado com sucesso!");
-        $this->line("📄 Arquivo: modules/{$module}/Infrastructure/Persistence/Seeders/{$filename}");
-        $this->line("🏷️  Classe: {$className}");
+        $this->info("Seeder criado com sucesso!");
+        $this->line("Arquivo: modules/{$module}/Infrastructure/Persistence/Seeders/{$filename}");
+        $this->line("Classe: {$className}");
         $this->newLine();
-        $this->comment("💡 Para executar:");
-        $this->line("   php artisan module:seed {$module}");
-        $this->line("   php artisan module:seed {$module} --class={$className}");
+        $this->comment("Para executar:");
+        $this->line("php artisan module:seed {$module}");
+        $this->line("php artisan module:seed {$module} --class={$className}");
 
         return self::SUCCESS;
     }

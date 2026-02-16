@@ -25,7 +25,7 @@ class TestRabbitMQJob implements ShouldQueue
 
     public function handle(): void
     {
-        Log::info('🐰 RabbitMQ Job Executado!', [
+        Log::info('RabbitMQ Job Executado!', [
             'message' => $this->message,
             'timestamp' => now()->toDateTimeString(),
             'queue' => $this->queue ?? 'default',
@@ -35,14 +35,14 @@ class TestRabbitMQJob implements ShouldQueue
         // Simula algum processamento
         sleep(2);
 
-        Log::info('✅ RabbitMQ Job Finalizado!', [
+        Log::info('RabbitMQ Job Finalizado!', [
             'message' => $this->message,
         ]);
     }
 
     public function failed(\Throwable $exception): void
     {
-        Log::error('❌ RabbitMQ Job Falhou!', [
+        Log::error('RabbitMQ Job Falhou!', [
             'message' => $this->message,
             'error' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString(),

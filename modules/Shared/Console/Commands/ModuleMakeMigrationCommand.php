@@ -23,7 +23,7 @@ final class ModuleMakeMigrationCommand extends Command
         $modulePath = base_path("modules/{$module}");
 
         if (!is_dir($modulePath)) {
-            $this->error("❌ Módulo '{$module}' não encontrado!");
+            $this->error("Módulo '{$module}' não encontrado!");
             return self::FAILURE;
         }
 
@@ -31,7 +31,7 @@ final class ModuleMakeMigrationCommand extends Command
 
         if (!is_dir($migrationsPath)) {
             mkdir($migrationsPath, 0755, true);
-            $this->info("📁 Criado diretório: {$migrationsPath}");
+            $this->info("Criado diretório: {$migrationsPath}");
         }
 
         $timestamp = date('Y_m_d_His');
@@ -45,9 +45,9 @@ final class ModuleMakeMigrationCommand extends Command
 
         file_put_contents($filepath, $content);
 
-        $this->info("✅ Migration criada com sucesso!");
-        $this->line("📄 Arquivo: modules/{$module}/Infrastructure/Persistence/Migrations/{$filename}");
-        $this->line("🏷️  Classe: {$className}");
+        $this->info("Migration criada com sucesso!");
+        $this->line("Arquivo: modules/{$module}/Infrastructure/Persistence/Migrations/{$filename}");
+        $this->line("Classe: {$className}");
 
         return self::SUCCESS;
     }
