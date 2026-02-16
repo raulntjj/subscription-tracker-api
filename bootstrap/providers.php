@@ -3,6 +3,7 @@
 return [
     // Shared Module
     Modules\Shared\Infrastructure\Providers\SharedServiceProvider::class,
+    Modules\Shared\Infrastructure\Providers\QueueServiceProvider::class,
 
     // User Module
     Modules\User\Infrastructure\Providers\UserServiceProvider::class,

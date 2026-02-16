@@ -1,5 +1,4 @@
 services:
-  # Laravel Octane com FrankenPHP
   backend:
     build:
       context: ../../
@@ -33,8 +32,8 @@ services:
 
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
-      - RABBITMQ_USER=admin
-      - RABBITMQ_PASSWORD=secret
+      - RABBITMQ_USER=root
+      - RABBITMQ_PASSWORD=root
       - RABBITMQ_VHOST=/
       
       - CACHE_DRIVER=redis
@@ -100,7 +99,7 @@ services:
       retries: 5
     command: redis-server /usr/local/etc/redis/redis.conf
 
-  # Redis Sessions - User Sessions
+  # Redis Sessions
   redis-sessions:
     image: redis:7-alpine
     container_name: subs-tracker-redis-sessions
@@ -119,17 +118,16 @@ services:
       retries: 5
     command: redis-server /usr/local/etc/redis/redis.conf
     
-  # RabbitMQ - Message Broker for Background Jobs
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
     container_name: subs-tracker-rabbitmq
     restart: unless-stopped
     ports:
-      - "5672:5672"        # AMQP protocol
-      - "15672:15672"      # Management UI
+      - "5672:5672"
+      - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: secret
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: root
       RABBITMQ_DEFAULT_VHOST: /
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
@@ -142,7 +140,6 @@ services:
       retries: 5
       start_period: 30s
 
-  # Redis Commander - Redis Management Interface
   redis-commander:
     image: rediscommander/redis-commander:latest
     container_name: subs-tracker-redis-commander
@@ -151,68 +148,14 @@ services:
       - "8081:8081"
     environment:
       - REDIS_HOSTS=cache:redis-cache:6379,sessions:redis-sessions:6379
-      - HTTP_USER=admin
-      - HTTP_PASSWORD=secret
+      - HTTP_USER=root
+      - HTTP_PASSWORD=root
     networks:
       - subs-tracker-network
     depends_on:
       redis-cache:
         condition: service_healthy
       redis-sessions:
-        condition: service_healthy
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: subs-tracker-prometheus
-    restart: unless-stopped
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    networks:
-      - subs-tracker-network
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: subs-tracker-grafana
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana-data:/var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=secret
-    networks:
-      - subs-tracker-network
-    depends_on:
-      - prometheus
-
-  rabbitmq-exporter:
-    image: kbudde/rabbitmq-exporter
-    container_name: subs-tracker-rabbitmq-exporter
-    restart: unless-stopped
-    environment:
-      - RABBIT_URL=http://rabbitmq:15672
-      - RABBIT_USER=admin
-      - RABBIT_PASSWORD=secret
-    networks:
-      - subs-tracker-network
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-
-  redis-exporter:
-    image: oliver006/redis_exporter
-    container_name: subs-tracker-redis-exporter
-    restart: unless-stopped
-    environment:
-      - REDIS_ADDR=redis-cache:6379
-    networks:
-      - subs-tracker-network
-    depends_on:
-      redis-cache:
         condition: service_healthy
 
 networks:
@@ -227,9 +170,4 @@ volumes:
   redis-sessions-data:
     driver: local
   rabbitmq-data:
-    driver: local
-
-  prometheus-data:
-    driver: local
-  grafana-data:
     driver: local

@@ -10,9 +10,7 @@ use Modules\Shared\Console\Commands\ModuleMakeMigrationCommand;
 use Modules\Shared\Console\Commands\ModuleMakeSeederCommand;
 use Modules\Shared\Console\Commands\ModuleSeedCommand;
 use Modules\Shared\Console\Commands\ModuleTestCommand;
-use Modules\Shared\Console\Commands\RabbitMQSetupCommand;
-use Modules\Shared\Console\Commands\TestLoggerCommand;
-use Modules\Shared\Console\Commands\TestRabbitMQCommand;
+use Modules\Shared\Console\Commands\QueueMonitorCleanCommand;
 use Modules\Shared\Domain\Contracts\CacheServiceInterface;
 use Modules\Shared\Domain\Contracts\JwtServiceInterface;
 use Modules\Shared\Domain\Contracts\LoggerInterface;
@@ -42,18 +40,17 @@ final class SharedServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__ . '/../../Interface/Routes/api.php');
         $this->loadRoutesFrom(__DIR__ . '/../../Interface/Routes/web.php');
+        $this->loadRoutesFrom(__DIR__ . '/../../Interface/Routes/queue.php');
         $this->loadMigrationsFrom(__DIR__ . '/../../Infrastructure/Persistence/Migrations');
 
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ModuleSeedCommand::class,
                 ModuleTestCommand::class,
-                TestLoggerCommand::class,
                 ModuleCreateCommand::class,
-                TestRabbitMQCommand::class,
-                RabbitMQSetupCommand::class,
                 ModuleMakeSeederCommand::class,
                 ModuleMakeMigrationCommand::class,
+                QueueMonitorCleanCommand::class,
             ]);
         }
     }
