@@ -73,7 +73,6 @@ return [
             'replace_placeholders' => true,
         ],
 
-        // Canais customizados para arquitetura modular
         'application' => [
             'driver' => 'daily',
             'path' => storage_path('logs/application.log'),

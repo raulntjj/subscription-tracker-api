@@ -41,8 +41,9 @@ final class TestWebhookJob implements ShouldQueue
 
     public function __construct(string $webhookConfigId)
     {
+        $this->onQueue('webhook');
+
         $this->webhookConfigId = $webhookConfigId;
-        $this->onQueue('webhooks');
     }
 
     /**
@@ -174,7 +175,7 @@ final class TestWebhookJob implements ShouldQueue
         return [
             'webhook:test',
             "webhook:{$this->webhookConfigId}",
-            'queue:webhooks',
+            'queue:webhook',
         ];
     }
 }

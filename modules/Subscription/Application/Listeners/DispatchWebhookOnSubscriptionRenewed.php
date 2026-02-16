@@ -31,12 +31,12 @@ final class DispatchWebhookOnSubscriptionRenewed
             'billing_history_id' => $event->getBillingHistoryId()->toString(),
         ]);
 
-        // Despachar job para fila webhooks do RabbitMQ
+        // Despachar job para fila webhook do RabbitMQ
         DispatchWebhookJob::dispatch(
             $event->getSubscriptionId()->toString(),
             $event->getUserId()->toString(),
             $event->getBillingHistoryId()->toString(),
             $event->toArray()
-        )->onQueue('webhooks');
+        )->onQueue('webhook');
     }
 }

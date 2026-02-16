@@ -60,12 +60,12 @@ final readonly class TestWebhookUseCase
 
             $this->logger()->info('Webhook test job dispatched to queue', [
                 'webhook_config_id' => $id,
-                'queue' => 'webhooks',
+                'queue' => 'webhook',
             ]);
 
             return [
                 'dispatched' => true,
-                'queue' => 'webhooks',
+                'queue' => 'webhook',
                 'webhook_config_id' => $id,
                 'message' => 'Webhook test dispatched to RabbitMQ queue. Check logs for results.',
             ];

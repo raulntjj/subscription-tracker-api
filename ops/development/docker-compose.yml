@@ -150,7 +150,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - REDIS_HOSTS=cache:redis-cache:6380,sessions:redis-sessions:6381
+      - REDIS_HOSTS=cache:redis-cache:6379,sessions:redis-sessions:6379
       - HTTP_USER=admin
       - HTTP_PASSWORD=secret
     networks:

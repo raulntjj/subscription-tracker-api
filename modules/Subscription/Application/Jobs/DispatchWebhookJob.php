@@ -54,11 +54,12 @@ final class DispatchWebhookJob implements ShouldQueue
         string $billingHistoryId,
         array $eventData
     ) {
-        $this->subscriptionId = $subscriptionId;
+        $this->onQueue('webhook');
+        
         $this->userId = $userId;
-        $this->billingHistoryId = $billingHistoryId;
         $this->eventData = $eventData;
-        $this->onQueue('webhooks');
+        $this->subscriptionId = $subscriptionId;
+        $this->billingHistoryId = $billingHistoryId;
     }
 
     /**
