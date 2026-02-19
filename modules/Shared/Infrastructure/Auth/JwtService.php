@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Infrastructure\Auth;
 
+use Exception;
+use RuntimeException;
 use PHPOpenSourceSaver\JWTAuth\JWTAuth;
 use Modules\Shared\Domain\Contracts\JwtServiceInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 
 final class JwtService implements JwtServiceInterface
 {
@@ -40,13 +43,27 @@ final class JwtService implements JwtServiceInterface
 
     public function refreshToken(): string
     {
-        $token = auth('api')->refresh();
+        try {
+            $token = auth('api')->refresh();
 
-        $this->logger()->info('Token refreshed', [
-            'user_id' => auth('api')->id(),
-        ]);
+            $this->logger()->info('Token refreshed', [
+                'user_id' => auth('api')->id(),
+            ]);
 
-        return $token;
+            return $token;
+        } catch (TokenExpiredException $e) {
+            $this->logger()->warning('Refresh failed: token expired beyond refresh_ttl', [
+                'error' => $e->getMessage(),
+            ]);
+            
+            throw new RuntimeException('Token expirou. Faça login novamente.', 401);
+        } catch (Exception $e) {
+            $this->logger()->error('Token refresh error', [
+                'error' => $e->getMessage(),
+            ]);
+            
+            throw $e;
+        }
     }
 
     public function invalidateToken(): void

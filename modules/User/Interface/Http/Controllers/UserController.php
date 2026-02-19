@@ -74,19 +74,12 @@ final class UserController extends Controller
                 self::SORTABLE_COLUMNS
             );
 
-            $paginator = $this->findUsersPaginatedQuery->execute($page, $perPage, $search, $sort);
+            $paginatedDTO = $this->findUsersPaginatedQuery->execute($page, $perPage, $search, $sort);
 
-            $usersData = array_map(
-                fn (UserDTO $user) => $user->toArray(),
-                $paginator->items()
+            return ApiResponse::success(
+                data: $paginatedDTO->toArray(),
+                message: 'Users retrieved successfully'
             );
-
-            $pagination = PaginationDTO::fromPaginator($paginator);
-
-            return ApiResponse::success([
-                'users' => $usersData,
-                'pagination' => $pagination->toArray(),
-            ], 'Users retrieved successfully');
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -108,17 +101,12 @@ final class UserController extends Controller
                 self::SEARCHABLE_COLUMNS
             );
 
-            $users = $this->findUserOptionsQuery->execute($search);
+            $optionsDTO = $this->findUserOptionsQuery->execute($search);
 
-            $usersData = array_map(
-                fn (UserDTO $user) => $user->toOptions(),
-                $users
+            return ApiResponse::success(
+                data: $optionsDTO->toArray(),
+                message: 'User options retrieved successfully'
             );
-
-            return ApiResponse::success([
-                'users' => $usersData,
-                'total' => count($usersData),
-            ], 'User options retrieved successfully');
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }

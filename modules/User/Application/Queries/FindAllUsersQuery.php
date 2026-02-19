@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Modules\User\Application\Queries;
 
 use Modules\User\Application\DTOs\UserDTO;
-use Modules\User\Infrastructure\Persistence\Eloquent\UserModel;
+use Modules\User\Application\DTOs\UserListDTO;
+use Modules\User\Domain\Contracts\UserRepositoryInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 
@@ -19,15 +20,20 @@ final readonly class FindAllUsersQuery
 
     private const CACHE_TTL = 300; // 5 minutos
 
+    public function __construct(
+        private UserRepositoryInterface $userRepository
+    ) {
+    }
+
     protected function cacheTags(): array
     {
         return ['users'];
     }
 
     /**
-     * @return array<UserDTO>
+     * @return UserListDTO
      */
-    public function execute(): array
+    public function execute(): UserListDTO
     {
         $cacheKey = "users:all";
 
@@ -38,11 +44,14 @@ final readonly class FindAllUsersQuery
             $cacheKey,
             self::CACHE_TTL,
             function () {
-                $usersData = UserModel::orderBy('created_at', 'desc')->get();
+                $users = $this->userRepository->findAll();
 
-                return $usersData->map(function ($userData) {
-                    return UserDTO::fromDatabase($userData);
-                })->all();
+                $usersDTO = array_map(
+                    fn($user) => UserDTO::fromEntity($user),
+                    $users
+                );
+
+                return UserListDTO::fromArray($usersDTO);
             }
         );
     }

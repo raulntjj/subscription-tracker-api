@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Modules\User\Application\Queries;
 
+use Ramsey\Uuid\Uuid;
 use Modules\User\Application\DTOs\UserDTO;
-use Modules\User\Infrastructure\Persistence\Eloquent\UserModel;
+use Modules\User\Domain\Contracts\UserRepositoryInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 
 /**
  * Query para buscar um usuário por ID
- *
- * CQRS: Queries podem usar Eloquent Models diretamente para leitura
- * Benefícios: soft deletes automático, casts, scopes, relations
  */
 final readonly class FindUserByIdQuery
 {
@@ -21,6 +19,11 @@ final readonly class FindUserByIdQuery
     use Cacheable;
 
     private const CACHE_TTL = 3600; // 1 hora
+
+    public function __construct(
+        private UserRepositoryInterface $userRepository
+    ) {
+    }
 
     protected function cacheTags(): array
     {
@@ -39,13 +42,14 @@ final readonly class FindUserByIdQuery
             $cacheKey,
             self::CACHE_TTL,
             function () use ($userId) {
-                $userData = UserModel::where('id', $userId)->first();
+                $uuid = Uuid::fromString($userId);
+                $user = $this->userRepository->findById($uuid);
 
-                if ($userData == null) {
+                if ($user === null) {
                     return null;
                 }
 
-                return UserDTO::fromDatabase($userData);
+                return UserDTO::fromEntity($user);
             }
         );
     }

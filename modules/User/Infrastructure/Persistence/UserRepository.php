@@ -85,6 +85,75 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
         }
     }
 
+    public function findAll(): array
+    {
+        $models = UserModel::orderBy('created_at', 'desc')->get();
+
+        return $models->map(fn(UserModel $model) => $this->toDomain($model))->all();
+    }
+
+    public function findPaginated(int $page, int $perPage): array
+    {
+        $paginator = UserModel::orderBy('created_at', 'desc')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return [
+            'data' => $paginator->items() ? array_map(
+                fn(UserModel $model) => $this->toDomain($model),
+                $paginator->items()
+            ) : [],
+            'total' => $paginator->total(),
+            'per_page' => $paginator->perPage(),
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+        ];
+    }
+
+    public function findCursorPaginated(int $limit, ?string $cursor = null): array
+    {
+        $query = UserModel::orderBy('created_at', 'desc');
+
+        if ($cursor !== null) {
+            $query->where('created_at', '<', $cursor);
+        }
+
+        $models = $query->limit($limit + 1)->get();
+
+        $hasMore = $models->count() > $limit;
+        if ($hasMore) {
+            $models = $models->slice(0, $limit);
+        }
+
+        $data = $models->map(fn(UserModel $model) => $this->toDomain($model))->all();
+
+        $nextCursor = null;
+        if ($hasMore && count($data) > 0) {
+            $lastItem = end($data);
+            $nextCursor = $lastItem->createdAt()->format('Y-m-d H:i:s');
+        }
+
+        // Para cursor anterior, seria necessário inverter a query
+        $prevCursor = $cursor; // Simplificado
+
+        return [
+            'data' => $data,
+            'next_cursor' => $nextCursor,
+            'prev_cursor' => $prevCursor,
+        ];
+    }
+
+    public function findOptions(): array
+    {
+        return UserModel::select('id', 'name')
+            ->orderBy('name')
+            ->get()
+            ->map(fn(UserModel $model) => [
+                'id' => $model->id,
+                'name' => $model->name . ($model->surname ? " {$model->surname}" : ''),
+            ])
+            ->all();
+    }
+
     private function toDomain(UserModel $model): User
     {
         return new User(

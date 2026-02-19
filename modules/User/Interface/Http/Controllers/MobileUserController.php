@@ -63,9 +63,12 @@ final class MobileUserController extends Controller
                 self::SORTABLE_COLUMNS
             );
 
-            $result = $this->findUsersCursorPaginatedQuery->execute($cursor, $perPage, $search, $sort);
+            $cursorPaginatedDTO = $this->findUsersCursorPaginatedQuery->execute($cursor, $perPage, $search, $sort);
 
-            return ApiResponse::success($result, 'Users retrieved successfully');
+            return ApiResponse::success(
+                data: $cursorPaginatedDTO->toArray(),
+                message: 'Users retrieved successfully'
+            );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -86,17 +89,12 @@ final class MobileUserController extends Controller
                 self::SEARCHABLE_COLUMNS
             );
 
-            $users = $this->findUserOptionsQuery->execute($search);
+            $optionsDTO = $this->findUserOptionsQuery->execute($search);
 
-            $usersData = array_map(
-                fn (UserDTO $user) => $user->toOptions(),
-                $users
+            return ApiResponse::success(
+                data: $optionsDTO->toArray(),
+                message: 'User options retrieved successfully'
             );
-
-            return ApiResponse::success([
-                'users' => $usersData,
-                'total' => count($usersData),
-            ], 'User options retrieved successfully');
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }

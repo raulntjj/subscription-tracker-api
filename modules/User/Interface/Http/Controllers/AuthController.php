@@ -81,7 +81,13 @@ final class AuthController
     /**
      * POST /auth/refresh
      *
-     * Renova o token JWT atual.
+     * Renova o token JWT expirado (dentro do refresh_ttl de 14 dias).
+     * 
+     * Esta rota aceita tokens EXPIRADOS desde que estejam dentro da janela
+     * de refresh (JWT_REFRESH_TTL configurado no .env).
+     * 
+     * Se o token expirou há mais de 14 dias, retorna erro 401 e o usuário
+     * precisa fazer login novamente.
      */
     public function refresh(): JsonResponse
     {
@@ -92,6 +98,9 @@ final class AuthController
                 data: $token->toArray(),
                 message: 'Token renovado com sucesso.'
             );
+        } catch (\RuntimeException $e) {
+            // Token expirou além do refresh_ttl
+            return ApiResponse::unauthorized($e->getMessage());
         } catch (Throwable $e) {
             $this->logger()->error('Token refresh error', [
                 'error' => $e->getMessage(),

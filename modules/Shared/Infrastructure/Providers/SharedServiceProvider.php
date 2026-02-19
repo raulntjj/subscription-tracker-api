@@ -14,9 +14,11 @@ use Modules\Shared\Console\Commands\QueueMonitorCleanCommand;
 use Modules\Shared\Domain\Contracts\CacheServiceInterface;
 use Modules\Shared\Domain\Contracts\JwtServiceInterface;
 use Modules\Shared\Domain\Contracts\LoggerInterface;
+use Modules\Shared\Domain\Contracts\QueueMonitorRepositoryInterface;
 use Modules\Shared\Infrastructure\Auth\JwtService;
 use Modules\Shared\Infrastructure\Cache\CacheServiceFactory;
 use Modules\Shared\Infrastructure\Logging\LoggerFactory;
+use Modules\Shared\Infrastructure\Queue\RedisQueueMonitorRepository;
 
 final class SharedServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,9 @@ final class SharedServiceProvider extends ServiceProvider
 
         // Registra o JwtService como singleton
         $this->app->singleton(JwtServiceInterface::class, JwtService::class);
+
+        // Registra o QueueMonitorRepository como singleton
+        $this->app->singleton(QueueMonitorRepositoryInterface::class, RedisQueueMonitorRepository::class);
     }
 
     public function boot(): void
