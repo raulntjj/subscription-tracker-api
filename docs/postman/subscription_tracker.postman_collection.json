@@ -67,43 +67,6 @@
 					"response": []
 				},
 				{
-					"name": "Get Authenticated User",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/auth/v1/me",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"v1",
-								"me"
-							]
-						},
-						"description": "Retorna dados do usuário autenticado"
-					},
-					"response": []
-				},
-				{
 					"name": "Refresh Token",
 					"event": [
 						{
@@ -193,6 +156,43 @@
 							]
 						},
 						"description": "Invalida o token JWT atual"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Authenticated User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/v1/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"v1",
+								"me"
+							]
+						},
+						"description": "Retorna dados do usuário autenticado"
 					},
 					"response": []
 				}
@@ -1086,7 +1086,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"url\": \"https://discord.com/api/webhooks/1472962342789582859/hzK3RHRgzYIL4DWXwtfAljFiZru3tF1VCGoFeyh2jqLvP_JKRXROitTWl_ZO5Pyv0Jbc\"\n}"
+							"raw": "{\n    \"url\": \"{{webhook_url}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/webhooks",
@@ -1132,7 +1132,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"url\": \"https://discord.com/api/webhooks/1471941614061621446/IYTct_yktnqPvIgFmymDLfKJQafCRNeVCoITdOgR0K-yQQhqgQDRez3zSVEDgHN90lKa\",\n    \"secret\": \"new-secret-key-456\"\n}"
+							"raw": "{\n{\n    \"url\": \"{{webhook_url}}\",\n    \"secret\": \"{{webhook_secret}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}",
@@ -1488,6 +1488,21 @@
 		},
 		{
 			"key": "job_id",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "webhook",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "webhook_url",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "webhook_secret",
 			"value": "",
 			"type": "default"
 		}
