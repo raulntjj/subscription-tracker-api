@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Auth;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class LogoutRouteTest extends FeatureTestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_can_logout_with_valid_token(): void
     {

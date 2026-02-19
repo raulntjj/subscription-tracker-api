@@ -7,15 +7,15 @@ namespace Modules\User\Tests\Unit\Application\UseCases;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Modules\User\Tests\UserTestCase;
 use Modules\User\Domain\Entities\User;
-use Illuminate\Foundation\Testing\TestCase;
 use Modules\User\Domain\ValueObjects\Email;
 use PHPUnit\Framework\MockObject\MockObject;
 use Modules\User\Domain\ValueObjects\Password;
 use Modules\User\Application\UseCases\DeleteUserUseCase;
 use Modules\User\Domain\Contracts\UserRepositoryInterface;
 
-final class DeleteUserUseCaseTest extends TestCase
+final class DeleteUserUseCaseTest extends UserTestCase
 {
     private MockObject&UserRepositoryInterface $userRepository;
     private DeleteUserUseCase $useCase;

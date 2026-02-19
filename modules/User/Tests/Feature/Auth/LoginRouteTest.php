@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Auth;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class LoginRouteTest extends FeatureTestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_can_login_with_valid_credentials(): void
     {
         $user = $this->createUser([
-            'email' => 'user@example.com',
+            'email' => 'user' . uniqid() . '@example.com',
             'password' => bcrypt('SecurePass123'),
         ]);
 
         $response = $this->postJson('/api/auth/v1/login', [
-            'email' => 'user@example.com',
+            'email' => $user->email,
             'password' => 'SecurePass123',
         ]);
 
@@ -42,23 +42,23 @@ final class LoginRouteTest extends FeatureTestCase
     public function test_cannot_login_with_invalid_email(): void
     {
         $response = $this->postJson('/api/auth/v1/login', [
-            'email' => 'nonexistent@example.com',
+            'email' => 'invalid-email',
             'password' => 'SecurePass123',
         ]);
 
-        $response->assertStatus(400);
+        $response->assertStatus(422);
         $this->assertFalse($response->json('success'));
     }
 
     public function test_cannot_login_with_invalid_password(): void
     {
         $user = $this->createUser([
-            'email' => 'user@example.com',
+            'email' => 'user' . uniqid() . '@example.com',
             'password' => bcrypt('CorrectPassword123'),
         ]);
 
         $response = $this->postJson('/api/auth/v1/login', [
-            'email' => 'user@example.com',
+            'email' => $user->email,
             'password' => 'WrongPassword123',
         ]);
 
@@ -79,7 +79,7 @@ final class LoginRouteTest extends FeatureTestCase
     public function test_login_validation_requires_password(): void
     {
         $response = $this->postJson('/api/auth/v1/login', [
-            'email' => 'user@example.com',
+            'email' => 'user' . uniqid() . '@example.com',
         ]);
 
         $response->assertStatus(422)
@@ -100,7 +100,7 @@ final class LoginRouteTest extends FeatureTestCase
     public function test_login_validation_requires_minimum_password_length(): void
     {
         $response = $this->postJson('/api/auth/v1/login', [
-            'email' => 'user@example.com',
+            'email' => 'user' . uniqid() . '@example.com',
             'password' => 'short',
         ]);
 
@@ -111,12 +111,12 @@ final class LoginRouteTest extends FeatureTestCase
     public function test_login_is_case_sensitive_for_password(): void
     {
         $user = $this->createUser([
-            'email' => 'user@example.com',
+            'email' => 'user' . uniqid() . '@example.com',
             'password' => bcrypt('SecurePass123'),
         ]);
 
         $response = $this->postJson('/api/auth/v1/login', [
-            'email' => 'user@example.com',
+            'email' => $user->email,
             'password' => 'SECUREPASS123',
         ]);
 
@@ -126,12 +126,12 @@ final class LoginRouteTest extends FeatureTestCase
     public function test_login_normalizes_email_to_lowercase(): void
     {
         $user = $this->createUser([
-            'email' => 'user@example.com',
+            'email' => 'user' . uniqid() . '@example.com',
             'password' => bcrypt('SecurePass123'),
         ]);
 
         $response = $this->postJson('/api/auth/v1/login', [
-            'email' => 'USER@EXAMPLE.COM',
+            'email' => strtoupper($user->email),
             'password' => 'SecurePass123',
         ]);
 

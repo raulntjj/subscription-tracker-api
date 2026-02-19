@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Unit\Application\UseCases;
 
 use Mockery;
-use Illuminate\Foundation\Testing\TestCase;
+use Modules\User\Tests\UserTestCase;
 use Modules\User\Application\UseCases\LogoutUseCase;
 use Modules\Shared\Domain\Contracts\JwtServiceInterface;
 
-final class LogoutUseCaseTest extends TestCase
+final class LogoutUseCaseTest extends UserTestCase
 {
     private JwtServiceInterface $jwtService;
     private LogoutUseCase $useCase;

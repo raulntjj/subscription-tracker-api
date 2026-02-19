@@ -6,24 +6,8 @@ use Illuminate\Support\Facades\Route;
 use Modules\User\Interface\Http\Controllers\AuthController;
 use Modules\Shared\Infrastructure\Auth\Middleware\Authenticate;
 
-/*
-|--------------------------------------------------------------------------
-| Auth Routes (Public + Authenticated)
-|--------------------------------------------------------------------------
-|
-| POST   /login    → Realiza login e retorna JWT (público)
-| POST   /refresh  → Renova token EXPIRADO dentro do refresh_ttl (aceita token expirado)
-| POST   /logout   → Invalida token (autenticado)
-| GET    /me       → Retorna usuário autenticado (autenticado)
-|
-| Importante:
-| - /refresh aceita tokens EXPIRADOS dentro da janela de refresh (14 dias por padrão)
-| - Tokens expirados NÃO funcionam em outras rotas autenticadas
-| - Após o refresh_ttl, o usuário precisa fazer login novamente
-|
-*/
-
-// Rota pública
+// Rotas públicas
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/refresh', [AuthController::class, 'refresh']);
 

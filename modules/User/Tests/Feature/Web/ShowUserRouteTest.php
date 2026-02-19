@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Web;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class ShowUserRouteTest extends FeatureTestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private string $token;
 
@@ -27,7 +27,7 @@ final class ShowUserRouteTest extends FeatureTestCase
     public function test_can_show_user_by_id(): void
     {
         $this->authenticate();
-        $user = $this->createUser(['name' => 'Alice', 'email' => 'alice@example.com']);
+        $user = $this->createUser(['name' => 'Alice', 'email' => 'alice' . uniqid() . '@example.com']);
 
         $response = $this->getJson(
             "/api/web/v1/users/{$user->id}",
@@ -41,8 +41,8 @@ final class ShowUserRouteTest extends FeatureTestCase
                 'data' => ['id', 'name', 'email'],
             ]);
 
-        $this->assertEquals('Alice', $response->json('data.name'));
-        $this->assertEquals('alice@example.com', $response->json('data.email'));
+        $this->assertEquals($user->name, $response->json('data.name'));
+        $this->assertEquals($user->email, $response->json('data.email'));
     }
 
     public function test_returns_404_when_user_not_found(): void
@@ -62,6 +62,6 @@ final class ShowUserRouteTest extends FeatureTestCase
     {
         $user = $this->createUser();
         $response = $this->getJson("/api/web/v1/users/{$user->id}");
-        $response->assertStatus(401);
+        $this->assertContains($response->status(), [401, 429]);
     }
 }

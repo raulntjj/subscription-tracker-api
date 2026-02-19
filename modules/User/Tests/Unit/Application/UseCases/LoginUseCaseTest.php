@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Unit\Application\UseCases;
 
 use Mockery;
-use Illuminate\Foundation\Testing\TestCase;
+use Modules\User\Tests\UserTestCase;
 use Modules\User\Application\DTOs\LoginDTO;
 use Modules\User\Application\DTOs\AuthTokenDTO;
 use Modules\User\Application\UseCases\LoginUseCase;
 use Modules\Shared\Domain\Contracts\JwtServiceInterface;
 
-final class LoginUseCaseTest extends TestCase
+final class LoginUseCaseTest extends UserTestCase
 {
     private JwtServiceInterface $jwtService;
     private LoginUseCase $useCase;
@@ -26,15 +26,16 @@ final class LoginUseCaseTest extends TestCase
 
     public function test_executes_successful_login(): void
     {
+        $email = 'john' . uniqid() . '@example.com';
         $dto = new LoginDTO(
-            email: 'john@example.com',
+            email: $email,
             password: 'SecurePass123'
         );
 
         $this->jwtService
             ->shouldReceive('attemptLogin')
             ->once()
-            ->with(['email' => 'john@example.com', 'password' => 'SecurePass123'])
+            ->with(['email' => $email, 'password' => 'SecurePass123'])
             ->andReturn('fake.jwt.token');
 
         $this->jwtService
@@ -52,15 +53,16 @@ final class LoginUseCaseTest extends TestCase
 
     public function test_throws_exception_when_credentials_are_invalid(): void
     {
+        $email = 'wrong' . uniqid() . '@example.com';
         $dto = new LoginDTO(
-            email: 'wrong@example.com',
+            email: $email,
             password: 'WrongPassword'
         );
 
         $this->jwtService
             ->shouldReceive('attemptLogin')
             ->once()
-            ->with(['email' => 'wrong@example.com', 'password' => 'WrongPassword'])
+            ->with(['email' => $email, 'password' => 'WrongPassword'])
             ->andReturn(null);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -93,13 +95,14 @@ final class LoginUseCaseTest extends TestCase
 
     public function test_calls_jwt_service_with_correct_credentials(): void
     {
+        $email = 'test' . uniqid() . '@example.com';
         $dto = new LoginDTO(
-            email: 'test@example.com',
+            email: $email,
             password: 'TestPass456'
         );
 
         $expectedCredentials = [
-            'email' => 'test@example.com',
+            'email' => $email,
             'password' => 'TestPass456',
         ];
 

@@ -5,24 +5,24 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Auth;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class CompleteAuthFlowTest extends FeatureTestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_complete_authentication_flow(): void
     {
         // 1. Cria um usuário
         $user = $this->createUser([
             'name' => 'Flow Test',
-            'email' => 'flow@example.com',
+            'email' => 'flow' . uniqid() . '@example.com',
             'password' => bcrypt('FlowPass123'),
         ]);
 
         // 2. Faz login
         $loginResponse = $this->postJson('/api/auth/v1/login', [
-            'email' => 'flow@example.com',
+            'email' => $user->email,
             'password' => 'FlowPass123',
         ]);
 

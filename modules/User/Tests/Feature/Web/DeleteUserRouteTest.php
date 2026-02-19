@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Web;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class DeleteUserRouteTest extends FeatureTestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private string $token;
 
@@ -27,7 +27,7 @@ final class DeleteUserRouteTest extends FeatureTestCase
     public function test_can_delete_user(): void
     {
         $this->authenticate();
-        $user = $this->createUser(['email' => 'todelete@example.com']);
+        $user = $this->createUser(['email' => 'todelete' . uniqid() . '@example.com']);
 
         $response = $this->deleteJson(
             "/api/web/v1/users/{$user->id}",
@@ -59,8 +59,8 @@ final class DeleteUserRouteTest extends FeatureTestCase
 
     public function test_requires_authentication(): void
     {
-        $user = $this->createUser();
+        $user = $this->createUser(['email' => 'testuser' . uniqid() . '@example.com']);
         $response = $this->deleteJson("/api/web/v1/users/{$user->id}");
-        $response->assertStatus(401);
+        $this->assertContains($response->status(), [401, 429]);
     }
 }

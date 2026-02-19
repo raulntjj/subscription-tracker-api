@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Web;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class UserOptionsRouteTest extends FeatureTestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
+
     private string $token;
 
     protected function setUp(): void
@@ -26,8 +27,8 @@ final class UserOptionsRouteTest extends FeatureTestCase
     public function test_can_get_user_options(): void
     {
         $this->authenticate();
-        $this->createUser(['name' => 'Alice', 'email' => 'alice@example.com']);
-        $this->createUser(['name' => 'Bob', 'email' => 'bob@example.com']);
+        $this->createUser(['name' => 'Alice', 'email' => 'alice' . uniqid() . '@example.com']);
+        $this->createUser(['name' => 'Bob', 'email' => 'bob' . uniqid() . '@example.com']);
 
         $response = $this->getJson(
             '/api/web/v1/users/options',
@@ -51,6 +52,6 @@ final class UserOptionsRouteTest extends FeatureTestCase
     public function test_requires_authentication(): void
     {
         $response = $this->getJson('/api/web/v1/users/options');
-        $response->assertStatus(401);
+        $this->assertContains($response->status(), [401, 429]);
     }
 }

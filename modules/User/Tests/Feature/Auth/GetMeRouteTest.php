@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Auth;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class GetMeRouteTest extends FeatureTestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_can_get_authenticated_user(): void
     {
+        $email = 'john' . uniqid() . '@example.com';
         $auth = $this->authenticateUser([
             'name' => 'John Doe',
-            'email' => 'john@example.com',
+            'email' => $email,
         ]);
 
         $response = $this->getJson(
@@ -37,7 +38,7 @@ final class GetMeRouteTest extends FeatureTestCase
 
         $this->assertTrue($response->json('success'));
         $this->assertEquals('John Doe', $response->json('data.name'));
-        $this->assertEquals('john@example.com', $response->json('data.email'));
+        $this->assertEquals($email, $response->json('data.email'));
     }
 
     public function test_cannot_get_authenticated_user_without_token(): void

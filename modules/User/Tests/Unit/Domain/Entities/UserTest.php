@@ -7,12 +7,12 @@ namespace Modules\User\Tests\Unit\Domain\Entities;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Ramsey\Uuid\UuidInterface;
+use Modules\User\Tests\UserTestCase;
 use Modules\User\Domain\Entities\User;
-use Illuminate\Foundation\Testing\TestCase;
 use Modules\User\Domain\ValueObjects\Email;
 use Modules\User\Domain\ValueObjects\Password;
 
-final class UserTest extends TestCase
+final class UserTest extends UserTestCase
 {
     private UuidInterface $uuid;
     private Email $email;

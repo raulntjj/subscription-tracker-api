@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Unit\Domain\ValueObjects;
 
 use InvalidArgumentException;
-use Illuminate\Foundation\Testing\TestCase;
+use Modules\User\Tests\UserTestCase;
 use Modules\User\Domain\ValueObjects\Email;
 
-final class EmailTest extends TestCase
+final class EmailTest extends UserTestCase
 {
     public function test_creates_valid_email(): void
     {

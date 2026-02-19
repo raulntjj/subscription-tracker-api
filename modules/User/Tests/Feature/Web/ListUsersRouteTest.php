@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Web;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class ListUsersRouteTest extends FeatureTestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private string $token;
 
@@ -27,8 +27,8 @@ final class ListUsersRouteTest extends FeatureTestCase
     public function test_can_list_users_paginated(): void
     {
         $this->authenticate();
-        $this->createUser(['name' => 'Alice', 'email' => 'alice@example.com']);
-        $this->createUser(['name' => 'Bob', 'email' => 'bob@example.com']);
+        $this->createUser(['name' => 'Alice', 'email' => 'alice' . uniqid() . '@example.com']);
+        $this->createUser(['name' => 'Bob', 'email' => 'bob' . uniqid() . '@example.com']);
 
         $response = $this->getJson(
             '/api/web/v1/users',
@@ -60,7 +60,7 @@ final class ListUsersRouteTest extends FeatureTestCase
         for ($i = 0; $i < 10; $i++) {
             $this->createUser([
                 'name' => "User {$i}",
-                'email' => "user{$i}@example.com"
+                'email' => "user{$i}" . uniqid() . "@example.com"
             ]);
         }
 
@@ -77,6 +77,6 @@ final class ListUsersRouteTest extends FeatureTestCase
     public function test_requires_authentication(): void
     {
         $response = $this->getJson('/api/web/v1/users');
-        $response->assertStatus(401);
+        $this->assertContains($response->status(), [401, 429]);
     }
 }

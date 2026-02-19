@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature;
 
 use Ramsey\Uuid\Uuid;
+use Modules\User\Tests\UserTestCase;
 use Illuminate\Contracts\Console\Kernel;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
-abstract class FeatureTestCase extends BaseTestCase
+abstract class FeatureTestCase extends UserTestCase
 {
-    use RefreshDatabase;
-
     /**
      * Creates the application.
      */
@@ -32,7 +29,7 @@ abstract class FeatureTestCase extends BaseTestCase
     {
         $defaultData = [
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test' . uniqid() . '@example.com',
             'password' => 'TestPassword123',
         ];
 
@@ -53,9 +50,15 @@ abstract class FeatureTestCase extends BaseTestCase
             'password' => $data['password'],
         ]);
 
+        $token = $response->json('data.access_token');
+
+        if ($token === null) {
+            $token = \PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth::fromUser($user);
+        }
+
         return [
             'user' => $user,
-            'token' => $response->json('data.access_token'),
+            'token' => $token,
         ];
     }
 

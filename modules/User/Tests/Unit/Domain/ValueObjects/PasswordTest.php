@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Unit\Domain\ValueObjects;
 
 use InvalidArgumentException;
-use Illuminate\Foundation\Testing\TestCase;
+use Modules\User\Tests\UserTestCase;
 use Modules\User\Domain\ValueObjects\Password;
 
-final class PasswordTest extends TestCase
+final class PasswordTest extends UserTestCase
 {
     public function test_creates_password_from_plain_text(): void
     {

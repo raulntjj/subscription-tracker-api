@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Unit\Application\UseCases;
 
 use Mockery;
-use Illuminate\Foundation\Testing\TestCase;
+use Modules\User\Tests\UserTestCase;
 use Modules\User\Application\DTOs\AuthTokenDTO;
 use Modules\Shared\Domain\Contracts\JwtServiceInterface;
 use Modules\User\Application\UseCases\RefreshTokenUseCase;
 
-final class RefreshTokenUseCaseTest extends TestCase
+final class RefreshTokenUseCaseTest extends UserTestCase
 {
     private JwtServiceInterface $jwtService;
     private RefreshTokenUseCase $useCase;

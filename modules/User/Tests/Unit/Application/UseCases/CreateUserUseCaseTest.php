@@ -7,14 +7,14 @@ namespace Modules\User\Tests\Unit\Application\UseCases;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Modules\User\Tests\UserTestCase;
 use Modules\User\Domain\Entities\User;
 use Modules\User\Application\DTOs\UserDTO;
-use Illuminate\Foundation\Testing\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Modules\User\Application\UseCases\CreateUserUseCase;
 use Modules\User\Domain\Contracts\UserRepositoryInterface;
 
-final class CreateUserUseCaseTest extends TestCase
+final class CreateUserUseCaseTest extends UserTestCase
 {
     private MockObject&UserRepositoryInterface $userRepository;
     private CreateUserUseCase $useCase;

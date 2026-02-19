@@ -10,8 +10,10 @@ use InvalidArgumentException;
 use Illuminate\Http\JsonResponse;
 use Modules\User\Application\DTOs\LoginDTO;
 use Illuminate\Validation\ValidationException;
+use Modules\User\Application\DTOs\CreateUserDTO;
 use Modules\User\Application\UseCases\LoginUseCase;
 use Modules\User\Application\UseCases\LogoutUseCase;
+use Modules\User\Application\UseCases\RegisterUseCase;
 use Modules\Shared\Interface\Http\Responses\ApiResponse;
 use Modules\User\Application\UseCases\RefreshTokenUseCase;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
@@ -24,6 +26,7 @@ final class AuthController
     public function __construct(
         private readonly LoginUseCase $loginUseCase,
         private readonly LogoutUseCase $logoutUseCase,
+        private readonly RegisterUseCase $registerUseCase,
         private readonly RefreshTokenUseCase $refreshTokenUseCase,
         private readonly GetAuthenticatedUserQuery $getAuthenticatedUserQuery,
     ) {
@@ -58,6 +61,46 @@ final class AuthController
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Login error', context: [
+                'error' => $e->getMessage(),
+            ]);
+
+            return ApiResponse::error(exception: $e);
+        }
+    }
+
+    /**
+     * POST /auth/register
+     *
+     * Registra um novo usuário e retorna o token JWT.
+     */
+    public function register(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate(rules: [
+                'name'         => ['required', 'string', 'max:255'],
+                'email'        => ['required', 'string', 'email', 'max:255'],
+                'password'     => ['required', 'string', 'min:8', 'confirmed'],
+                'surname'      => ['nullable', 'string', 'max:255'],
+                'profile_path' => ['nullable', 'string', 'max:500'],
+            ]);
+
+            $dto = CreateUserDTO::fromArray(data: $validated);
+            $token = $this->registerUseCase->execute(dto: $dto);
+
+            return ApiResponse::success(
+                data: $token->toArray(),
+                message: 'Usuário registrado com sucesso.',
+                status: 201
+            );
+        } catch (ValidationException $e) {
+            return ApiResponse::validationError(errors: $e->errors());
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::error(
+                message: $e->getMessage(),
+                status: 400
+            );
+        } catch (Throwable $e) {
+            $this->logger()->error(message: 'Register error', context: [
                 'error' => $e->getMessage(),
             ]);
 
