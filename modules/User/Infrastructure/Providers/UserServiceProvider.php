@@ -25,14 +25,17 @@ final class UserServiceProvider extends ServiceProvider
     {
         // Rotas Web com prefixo '/api/web/v1'
         Route::prefix('/api/web/v1')
+            ->middleware('api')
             ->group(__DIR__ . '/../../Interface/Routes/web.php');
 
         // Rotas Mobile com prefixo '/api/mobile/v1'
         Route::prefix('/api/mobile/v1')
+            ->middleware('api')
             ->group(__DIR__ . '/../../Interface/Routes/mobile.php');
 
         // Rotas de Autenticação com prefixo '/api/auth/v1'
         Route::prefix('/api/auth/v1')
+            ->middleware('api')
             ->group(__DIR__ . '/../../Interface/Routes/auth.php');
 
         $this->loadMigrationsFrom(__DIR__ . '/../Persistence/Migrations');

@@ -21,7 +21,7 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
     {
         $connection = Redis::connection($this->connection);
         $activeJobIds = $connection->smembers(self::PREFIX . 'active');
-        
+
         return $this->getJobsDetails($activeJobIds);
     }
 
@@ -30,7 +30,7 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
         $connection = Redis::connection($this->connection);
         $completedJobIds = $connection->smembers(self::PREFIX . 'completed');
         $limitedJobIds = array_slice($completedJobIds, 0, $limit);
-        
+
         return $this->getJobsDetails($limitedJobIds);
     }
 
@@ -39,20 +39,20 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
         $connection = Redis::connection($this->connection);
         $failedJobIds = $connection->smembers(self::PREFIX . 'failed');
         $limitedJobIds = array_slice($failedJobIds, 0, $limit);
-        
+
         return $this->getJobsDetails($limitedJobIds);
     }
 
     public function getAllJobs(): array
     {
         $connection = Redis::connection($this->connection);
-        
+
         $activeJobIds = $connection->smembers(self::PREFIX . 'active');
         $completedJobIds = $connection->smembers(self::PREFIX . 'completed');
         $failedJobIds = $connection->smembers(self::PREFIX . 'failed');
-        
+
         $allJobIds = array_merge($activeJobIds, $completedJobIds, $failedJobIds);
-        
+
         return $this->getJobsDetails($allJobIds);
     }
 
@@ -60,22 +60,22 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
     {
         $connection = Redis::connection($this->connection);
         $details = $connection->hgetall(self::PREFIX . $jobId);
-        
+
         if (empty($details)) {
             return null;
         }
-        
+
         return $this->formatJobDetails($jobId, $details);
     }
 
     public function getStatistics(): array
     {
         $connection = Redis::connection($this->connection);
-        
+
         $activeCount = $connection->scard(self::PREFIX . 'active');
         $completedCount = $connection->scard(self::PREFIX . 'completed');
         $failedCount = $connection->scard(self::PREFIX . 'failed');
-        
+
         return [
             'active_count' => (int) $activeCount,
             'completed_count' => (int) $completedCount,
@@ -87,28 +87,28 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
     public function clearCompletedAndFailed(): int
     {
         $connection = Redis::connection($this->connection);
-        
+
         $completedJobs = $connection->smembers(self::PREFIX . 'completed');
         $failedJobs = $connection->smembers(self::PREFIX . 'failed');
-        
+
         $deletedCount = 0;
-        
+
         // Remove os hashes dos jobs
         foreach (array_merge($completedJobs, $failedJobs) as $jobId) {
             $connection->del(self::PREFIX . $jobId);
             $deletedCount++;
         }
-        
+
         // Limpa as listas
         $connection->del(self::PREFIX . 'completed');
         $connection->del(self::PREFIX . 'failed');
-        
+
         return $deletedCount;
     }
 
     /**
      * Retorna detalhes de múltiplos jobs
-     * 
+     *
      * @param array $jobIds
      * @return array
      */
@@ -116,20 +116,20 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
     {
         $connection = Redis::connection($this->connection);
         $jobs = [];
-        
+
         foreach ($jobIds as $jobId) {
             $details = $connection->hgetall(self::PREFIX . $jobId);
             if (!empty($details)) {
                 $jobs[] = $this->formatJobDetails($jobId, $details);
             }
         }
-        
+
         return $jobs;
     }
 
     /**
      * Formata os detalhes do job para retorno
-     * 
+     *
      * @param string $jobId
      * @param array $details
      * @return array

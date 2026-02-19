@@ -63,7 +63,7 @@ final class QueueMonitorCleanCommand extends Command
 
         // Executa a limpeza
         $this->info('Limpando jobs...');
-        
+
         $result = $this->clearQueueMonitorLogsUseCase->execute();
 
         $this->newLine();

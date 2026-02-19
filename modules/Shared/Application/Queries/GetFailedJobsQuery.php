@@ -16,13 +16,13 @@ final class GetFailedJobsQuery
 
     /**
      * Retorna apenas os jobs falhados
-     * 
+     *
      * @return JobListDTO
      */
     public function execute(): JobListDTO
     {
         $jobs = $this->queueMonitorRepository->getFailedJobs();
-        
+
         return JobListDTO::fromArray($jobs);
     }
 }

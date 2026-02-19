@@ -1,11 +1,11 @@
 {
 	"info": {
-		"_postman_id": "79a03ffd-d5b9-4b5e-948b-61be611895b8",
+		"_postman_id": "a72ce5c6-a83c-4643-b429-ff7b024c7e36",
 		"name": "Subscription Tracker API",
 		"description": "Subscription Tracker API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "34921459",
-		"_collection_link": "https://morar-legal.postman.co/workspace/My-Workspace~70a6ab84-315b-4f89-854c-dfffcf9af18f/collection/34921459-79a03ffd-d5b9-4b5e-948b-61be611895b8?action=share&source=collection_link&creator=34921459"
+		"_collection_link": "https://morar-legal.postman.co/workspace/My-Workspace~70a6ab84-315b-4f89-854c-dfffcf9af18f/collection/34921459-a72ce5c6-a83c-4643-b429-ff7b024c7e36?action=share&source=collection_link&creator=34921459"
 	},
 	"item": [
 		{
@@ -48,7 +48,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"raulntjj@gmail.com\",\n    \"password\": \"12345678\"\n}"
+							"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/auth/v1/login",
@@ -118,7 +118,9 @@
 									"    }",
 									"}"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -428,7 +430,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe Updated\",\n    \"email\": \"john.updated@example.com\",\n    \"password\": \"newsecret123\"\n}"
+							"raw": "{\n    \"name\": \"John Doe Updated\",\n    \"email\": \"john.updated1@example.com\",\n    \"password\": \"newsecret123\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/users/{{user_id}}",
@@ -568,52 +570,6 @@
 								"mobile",
 								"v1",
 								"users"
-							],
-							"query": [
-								{
-									"key": "cursor",
-									"value": "",
-									"description": "Cursor retornado pela resposta anterior (next_cursor)",
-									"disabled": true
-								}
-							]
-						},
-						"description": "Lista usuários com cursor pagination (ideal para mobile) - infinite scroll"
-					},
-					"response": []
-				},
-				{
-					"name": "Get Users Options",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/mobile/v1/users/options",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"mobile",
-								"v1",
-								"users",
-								"options"
 							],
 							"query": [
 								{
@@ -834,7 +790,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Amazon\",\n    \"price\": 99999,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-13\",\n    \"category\": \"entertainment\",\n    \"description\": \"Plano Premium 4 telas\",\n    \"status\": \"active\"\n}"
+							"raw": "{\n    \"name\": \"Netflix\",\n    \"price\": 99999,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-13\",\n    \"category\": \"entertainment\",\n    \"description\": \"Plano Premium 4 telas\",\n    \"status\": \"active\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/subscriptions",
@@ -853,7 +809,7 @@
 					"response": []
 				},
 				{
-					"name": "Update Subscription (PUT)",
+					"name": "Update Subscription",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -880,7 +836,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Unimed\",\n    \"price\": 30000,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-20\",\n    \"category\": \"health\",\n    \"description\": \"Plano de Saúde\",\n    \"status\": \"paused\"\n}"
+							"raw": "{\n    \"name\": \"Unimed\",\n    \"price\": 30000,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-20\",\n    \"category\": \"health\",\n    \"description\": \"Plano de Saúde\",\n    \"status\": \"active\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/subscriptions/{{subscription_id}}",
@@ -1002,121 +958,12 @@
 						"description": "Lista assinaturas com cursor pagination (ideal para infinite scroll)"
 					},
 					"response": []
-				},
-				{
-					"name": "Get Subscriptions Options",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/mobile/v1/subscriptions/options",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"mobile",
-								"v1",
-								"subscriptions",
-								"options"
-							],
-							"query": [
-								{
-									"key": "cursor",
-									"value": "",
-									"description": "Cursor retornado pela resposta anterior (next_cursor)",
-									"disabled": true
-								}
-							]
-						},
-						"description": "Lista assinaturas com cursor pagination em formato simplificado"
-					},
-					"response": []
 				}
 			]
 		},
 		{
 			"name": "Webhooks",
 			"item": [
-				{
-					"name": "Create Webhook Config",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201) {",
-									"    const response = pm.response.json();",
-									"    if (response.data && response.data.id) {",
-									"        pm.environment.set(\"webhook_id\", response.data.id);",
-									"        console.log(\"Webhook ID salvo:\", response.data.id);",
-									"    }",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{jwt_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"url\": \"https://webhook.site/unique-url\",\n    \"secret\": \"my-secret-key-123\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/web/v1/webhooks",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"web",
-								"v1",
-								"webhooks"
-							]
-						},
-						"description": "Cria uma nova configuração de webhook para receber notificações de renovação de assinaturas"
-					},
-					"response": []
-				},
 				{
 					"name": "Get Webhook Configs",
 					"request": {
@@ -1193,6 +1040,71 @@
 					"response": []
 				},
 				{
+					"name": "Create Webhook Config",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.id) {",
+									"        pm.environment.set(\"webhook_id\", response.data.id);",
+									"        console.log(\"Webhook ID salvo:\", response.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"url\": \"https://discord.com/api/webhooks/1472962342789582859/hzK3RHRgzYIL4DWXwtfAljFiZru3tF1VCGoFeyh2jqLvP_JKRXROitTWl_ZO5Pyv0Jbc\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/web/v1/webhooks",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"web",
+								"v1",
+								"webhooks"
+							]
+						},
+						"description": "Cria uma nova configuração de webhook para receber notificações de renovação de assinaturas"
+					},
+					"response": []
+				},
+				{
 					"name": "Update Webhook Config",
 					"request": {
 						"auth": {
@@ -1220,7 +1132,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"url\": \"https://webhook.site/new-url\",\n    \"secret\": \"new-secret-key-456\"\n}"
+							"raw": "{\n    \"url\": \"https://discord.com/api/webhooks/1471941614061621446/IYTct_yktnqPvIgFmymDLfKJQafCRNeVCoITdOgR0K-yQQhqgQDRez3zSVEDgHN90lKa\",\n    \"secret\": \"new-secret-key-456\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}",
@@ -1252,7 +1164,7 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Accept",
@@ -1291,7 +1203,7 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Accept",
@@ -1377,7 +1289,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}/test",
+							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}/test?async=true",
 							"host": [
 								"{{base_url}}"
 							],
@@ -1388,9 +1300,121 @@
 								"webhooks",
 								"{{webhook_id}}",
 								"test"
+							],
+							"query": [
+								{
+									"key": "async",
+									"value": "true"
+								}
 							]
 						},
 						"description": "Envia um payload de teste para o webhook para validar a configuração"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Queue Monitor",
+			"item": [
+				{
+					"name": "Get Jobs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/queue-monitor",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"queue-monitor"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Job by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/queue-monitor/{{job_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"queue-monitor",
+								"{{job_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Metrics",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/queue-monitor/metrics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"queue-monitor",
+								"metrics"
+							]
+						}
 					},
 					"response": []
 				}
@@ -1451,6 +1475,21 @@
 			"value": "",
 			"type": "string",
 			"description": "ID do webhook para testes"
+		},
+		{
+			"key": "password",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "email",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "job_id",
+			"value": "",
+			"type": "default"
 		}
 	]
 }

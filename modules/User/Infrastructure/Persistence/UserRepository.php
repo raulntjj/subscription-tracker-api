@@ -89,7 +89,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
     {
         $models = UserModel::orderBy('created_at', 'desc')->get();
 
-        return $models->map(fn(UserModel $model) => $this->toDomain($model))->all();
+        return $models->map(fn (UserModel $model) => $this->toDomain($model))->all();
     }
 
     public function findPaginated(int $page, int $perPage): array
@@ -99,7 +99,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
 
         return [
             'data' => $paginator->items() ? array_map(
-                fn(UserModel $model) => $this->toDomain($model),
+                fn (UserModel $model) => $this->toDomain($model),
                 $paginator->items()
             ) : [],
             'total' => $paginator->total(),
@@ -124,7 +124,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
             $models = $models->slice(0, $limit);
         }
 
-        $data = $models->map(fn(UserModel $model) => $this->toDomain($model))->all();
+        $data = $models->map(fn (UserModel $model) => $this->toDomain($model))->all();
 
         $nextCursor = null;
         if ($hasMore && count($data) > 0) {
@@ -147,7 +147,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
         return UserModel::select('id', 'name')
             ->orderBy('name')
             ->get()
-            ->map(fn(UserModel $model) => [
+            ->map(fn (UserModel $model) => [
                 'id' => $model->id,
                 'name' => $model->name . ($model->surname ? " {$model->surname}" : ''),
             ])

@@ -66,7 +66,7 @@ final class ApiResponse
                     'memory_peak_usage' => memory_get_peak_usage(),
                     'memory_limit' => ini_get('memory_limit'),
                     'memory_usage' => memory_get_usage(),
-                    'execution_time' => microtime(true) - LARAVEL_START,
+                    'execution_time' => defined('LARAVEL_START') ? microtime(true) - LARAVEL_START : null,
                 ],
                 'application' => [
                     'environment' => app()->environment(),

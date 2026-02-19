@@ -16,7 +16,7 @@ final class GetQueueMetricsQuery
 
     /**
      * Retorna métricas das filas com detalhes de jobs por status
-     * 
+     *
      * @return QueueMetricsDTO
      */
     public function execute(): QueueMetricsDTO

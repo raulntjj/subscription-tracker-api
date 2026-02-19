@@ -16,7 +16,7 @@ final readonly class QueueStatisticsDTO
 
     /**
      * Cria um QueueStatisticsDTO a partir de um array
-     * 
+     *
      * @param array $data
      * @return self
      */
@@ -32,7 +32,7 @@ final readonly class QueueStatisticsDTO
 
     /**
      * Converte o DTO para array
-     * 
+     *
      * @return array
      */
     public function toArray(): array

@@ -13,7 +13,7 @@ final readonly class ClearLogsResultDTO
 
     /**
      * Converte o DTO para array
-     * 
+     *
      * @return array
      */
     public function toArray(): array

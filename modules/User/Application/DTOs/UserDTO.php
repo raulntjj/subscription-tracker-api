@@ -48,8 +48,8 @@ final readonly class UserDTO
             surname: $data->surname ?? null,
             profilePath: $data->profile_path ?? null,
             email: $data->email,
-            createdAt: $data->created_at->format('Y-m-d H:i:s'),
-            updatedAt: $data->updated_at?->format('Y-m-d H:i:s') ?? null,
+            createdAt: is_string($data->created_at) ? $data->created_at : $data->created_at->format('Y-m-d H:i:s'),
+            updatedAt: $data->updated_at ? (is_string($data->updated_at) ? $data->updated_at : $data->updated_at->format('Y-m-d H:i:s')) : null,
         );
     }
 

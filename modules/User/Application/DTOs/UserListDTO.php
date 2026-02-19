@@ -17,7 +17,7 @@ final readonly class UserListDTO
 
     /**
      * Cria um UserListDTO a partir de um array de UserDTO
-     * 
+     *
      * @param UserDTO[] $users
      * @return self
      */
@@ -31,7 +31,7 @@ final readonly class UserListDTO
 
     /**
      * Converte o DTO para array
-     * 
+     *
      * @return array
      */
     public function toArray(): array
@@ -39,7 +39,7 @@ final readonly class UserListDTO
         return [
             'total' => $this->total,
             'users' => array_map(
-                fn(UserDTO $user) => $user->toArray(),
+                fn (UserDTO $user) => $user->toArray(),
                 $this->users
             ),
         ];

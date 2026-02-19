@@ -23,14 +23,14 @@ interface UserRepositoryInterface
 
     /**
      * Retorna todos os usuários
-     * 
+     *
      * @return User[]
      */
     public function findAll(): array;
 
     /**
      * Retorna usuários paginados
-     * 
+     *
      * @param int $page
      * @param int $perPage
      * @return array{data: User[], total: int, per_page: int, current_page: int, last_page: int}
@@ -39,7 +39,7 @@ interface UserRepositoryInterface
 
     /**
      * Retorna usuários com cursor pagination
-     * 
+     *
      * @param int $limit
      * @param string|null $cursor
      * @return array{data: User[], next_cursor: string|null, prev_cursor: string|null}
@@ -48,7 +48,7 @@ interface UserRepositoryInterface
 
     /**
      * Retorna opções de usuários para dropdowns/selects
-     * 
+     *
      * @return array<array{id: string, name: string}>
      */
     public function findOptions(): array;

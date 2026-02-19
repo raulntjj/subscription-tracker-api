@@ -44,9 +44,6 @@ final class ModuleTestCommand extends Command
         if ($unit) {
             $testPath = "{$testsPath}/Unit";
             $this->info("Executando testes UNITÁRIOS do módulo {$module}...");
-        } elseif ($integration) {
-            $testPath = "{$testsPath}/Integration";
-            $this->info("Executando testes de INTEGRAÇÃO do módulo {$module}...");
         } elseif ($feature) {
             $testPath = "{$testsPath}/Feature";
             $this->info("Executando testes de FEATURE do módulo {$module}...");

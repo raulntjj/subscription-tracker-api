@@ -19,7 +19,7 @@ final class ClearQueueMonitorLogsUseCase
 
     /**
      * Limpa os logs de jobs concluídos e falhados
-     * 
+     *
      * @return ClearLogsResultDTO
      */
     public function execute(): ClearLogsResultDTO

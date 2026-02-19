@@ -55,7 +55,7 @@ final class DispatchWebhookJob implements ShouldQueue
         array $eventData
     ) {
         $this->onQueue('webhook');
-        
+
         $this->userId = $userId;
         $this->eventData = $eventData;
         $this->subscriptionId = $subscriptionId;
@@ -68,7 +68,7 @@ final class DispatchWebhookJob implements ShouldQueue
     public function handle(): void
     {
         $logger = new StructuredLogger('Subscription');
-        
+
         $logger->info('Processing webhook dispatch', [
             'subscription_id' => $this->subscriptionId,
             'user_id' => $this->userId,

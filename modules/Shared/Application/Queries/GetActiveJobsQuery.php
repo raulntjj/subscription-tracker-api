@@ -16,13 +16,13 @@ final class GetActiveJobsQuery
 
     /**
      * Retorna apenas os jobs ativos
-     * 
+     *
      * @return JobListDTO
      */
     public function execute(): JobListDTO
     {
         $jobs = $this->queueMonitorRepository->getActiveJobs();
-        
+
         return JobListDTO::fromArray($jobs);
     }
 }

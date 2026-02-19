@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(append: [
             \Illuminate\Routing\Middleware\ThrottleRequests::class,
         ]);
+
+        $middleware->alias([
+            'auth.jwt' => \Modules\Shared\Infrastructure\Auth\Middleware\Authenticate::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

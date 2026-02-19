@@ -22,7 +22,7 @@ final readonly class JobDTO
 
     /**
      * Cria um JobDTO a partir de um array
-     * 
+     *
      * @param array $data
      * @return self
      */
@@ -49,7 +49,7 @@ final readonly class JobDTO
 
     /**
      * Converte o DTO para array
-     * 
+     *
      * @return array
      */
     public function toArray(): array

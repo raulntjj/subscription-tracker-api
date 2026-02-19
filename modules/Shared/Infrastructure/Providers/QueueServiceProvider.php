@@ -30,13 +30,13 @@ final class QueueServiceProvider extends ServiceProvider
 
     /**
      * Registra listeners para monitorar filas do RabbitMQ via Redis
-     * 
+     *
      * Armazena informações sobre jobs em tempo real usando Redis (conexão 'sessions')
      * - Jobs em processamento: armazenados em hash "queue_monitor:{job_id}"
      * - Lista de jobs ativos: set "queue_monitor:active"
      * - Lista de jobs concluídos: set "queue_monitor:completed"
      * - Lista de jobs falhados: set "queue_monitor:failed"
-     * 
+     *
      * TTL:
      * - Jobs concluídos: 1 hora (3600s)
      * - Jobs falhados: 24 horas (86400s)
@@ -47,7 +47,7 @@ final class QueueServiceProvider extends ServiceProvider
         $this->app['events']->listen(JobProcessing::class, function (JobProcessing $event): void {
             $id = $event->job->getJobId();
             $connection = Redis::connection('sessions');
-            
+
             $connection->hset("queue_monitor:$id", [
                 'job' => $event->job->resolveName(),
                 'queue' => $event->job->getQueue(),
@@ -65,7 +65,7 @@ final class QueueServiceProvider extends ServiceProvider
         $this->app['events']->listen(JobProcessed::class, function (JobProcessed $event): void {
             $id = $event->job->getJobId();
             $connection = Redis::connection('sessions');
-            
+
             $connection->hmset("queue_monitor:$id", [
                 'status' => 'completed',
                 'finished_at' => now()->toDateTimeString(),
@@ -83,7 +83,7 @@ final class QueueServiceProvider extends ServiceProvider
         $this->app['events']->listen(JobFailed::class, function (JobFailed $event): void {
             $id = $event->job->getJobId();
             $connection = Redis::connection('sessions');
-            
+
             $connection->hmset("queue_monitor:$id", [
                 'status' => 'failed',
                 'error_message' => $event->exception->getMessage(),

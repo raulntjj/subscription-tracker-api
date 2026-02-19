@@ -17,14 +17,14 @@ final readonly class JobListDTO
 
     /**
      * Cria um JobListDTO a partir de um array de jobs
-     * 
+     *
      * @param array $jobsData
      * @return self
      */
     public static function fromArray(array $jobsData): self
     {
         $jobs = array_map(
-            fn(array $jobData) => JobDTO::fromArray($jobData),
+            fn (array $jobData) => JobDTO::fromArray($jobData),
             $jobsData
         );
 
@@ -36,7 +36,7 @@ final readonly class JobListDTO
 
     /**
      * Converte o DTO para array
-     * 
+     *
      * @return array
      */
     public function toArray(): array
@@ -44,7 +44,7 @@ final readonly class JobListDTO
         return [
             'total' => $this->total,
             'jobs' => array_map(
-                fn(JobDTO $job) => $job->toArray(),
+                fn (JobDTO $job) => $job->toArray(),
                 $this->jobs
             ),
         ];

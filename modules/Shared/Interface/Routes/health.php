@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Cache;
-use Modules\Shared\Interface\Http\Controllers\QueueMonitorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +19,7 @@ Route::get('/status', function () {
     $dbStatus = 'disconnected';
     $cacheStatus = 'disconnected';
 
+    // Testa a conexão com o banco de dados
     try {
         DB::connection()->getPdo();
         $dbStatus = 'connected';
@@ -27,6 +27,7 @@ Route::get('/status', function () {
         $dbStatus = 'error: ' . $e->getMessage();
     }
 
+    // Testa a conexão com o cache
     try {
         Cache::set('health_check', true, 10);
         $cacheStatus = Cache::get('health_check') ? 'connected' : 'error';

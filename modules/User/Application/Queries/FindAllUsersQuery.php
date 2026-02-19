@@ -47,7 +47,7 @@ final readonly class FindAllUsersQuery
                 $users = $this->userRepository->findAll();
 
                 $usersDTO = array_map(
-                    fn($user) => UserDTO::fromEntity($user),
+                    fn ($user) => UserDTO::fromEntity($user),
                     $users
                 );
 

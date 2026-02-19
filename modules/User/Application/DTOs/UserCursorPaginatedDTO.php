@@ -18,7 +18,7 @@ final readonly class UserCursorPaginatedDTO
 
     /**
      * Cria um UserCursorPaginatedDTO a partir de dados de cursor pagination
-     * 
+     *
      * @param array $paginationData
      * @return self
      */
@@ -33,14 +33,14 @@ final readonly class UserCursorPaginatedDTO
 
     /**
      * Converte o DTO para array
-     * 
+     *
      * @return array
      */
     public function toArray(): array
     {
         return [
             'data' => array_map(
-                fn(UserDTO $user) => $user->toArray(),
+                fn (UserDTO $user) => $user->toArray(),
                 $this->data
             ),
             'next_cursor' => $this->nextCursor,

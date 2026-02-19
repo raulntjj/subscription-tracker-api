@@ -12,8 +12,9 @@ final readonly class Email
 
     public function __construct(string $email)
     {
-        $this->validate($email);
-        $this->value = strtolower(trim($email));
+        $normalized = strtolower(trim($email));
+        $this->validate($normalized);
+        $this->value = $normalized;
     }
 
     private function validate(string $email): void

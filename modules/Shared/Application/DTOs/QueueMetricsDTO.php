@@ -21,7 +21,7 @@ final readonly class QueueMetricsDTO
 
     /**
      * Cria um QueueMetricsDTO a partir de arrays
-     * 
+     *
      * @param array $data
      * @return self
      */
@@ -30,15 +30,15 @@ final readonly class QueueMetricsDTO
         return new self(
             statistics: QueueStatisticsDTO::fromArray($data['statistics']),
             activeJobs: array_map(
-                fn(array $jobData) => JobDTO::fromArray($jobData),
+                fn (array $jobData) => JobDTO::fromArray($jobData),
                 $data['active_jobs']
             ),
             recentCompleted: array_map(
-                fn(array $jobData) => JobDTO::fromArray($jobData),
+                fn (array $jobData) => JobDTO::fromArray($jobData),
                 $data['recent_completed']
             ),
             recentFailed: array_map(
-                fn(array $jobData) => JobDTO::fromArray($jobData),
+                fn (array $jobData) => JobDTO::fromArray($jobData),
                 $data['recent_failed']
             ),
         );
@@ -46,7 +46,7 @@ final readonly class QueueMetricsDTO
 
     /**
      * Converte o DTO para array
-     * 
+     *
      * @return array
      */
     public function toArray(): array
@@ -54,15 +54,15 @@ final readonly class QueueMetricsDTO
         return [
             'statistics' => $this->statistics->toArray(),
             'active_jobs' => array_map(
-                fn(JobDTO $job) => $job->toArray(),
+                fn (JobDTO $job) => $job->toArray(),
                 $this->activeJobs
             ),
             'recent_completed' => array_map(
-                fn(JobDTO $job) => $job->toArray(),
+                fn (JobDTO $job) => $job->toArray(),
                 $this->recentCompleted
             ),
             'recent_failed' => array_map(
-                fn(JobDTO $job) => $job->toArray(),
+                fn (JobDTO $job) => $job->toArray(),
                 $this->recentFailed
             ),
         ];

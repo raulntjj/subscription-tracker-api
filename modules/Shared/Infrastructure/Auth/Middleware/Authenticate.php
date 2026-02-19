@@ -20,15 +20,15 @@ final class Authenticate
     public function handle(Request $request, Closure $next): Response
     {
         try {
-            $user = auth('api')->userOrFail();
-        } catch (TokenExpiredException) {
-            return ApiResponse::unauthorized('Token expirado. Faça refresh ou login novamente.');
-        } catch (TokenInvalidException) {
-            return ApiResponse::unauthorized('Token inválido.');
-        } catch (JWTException) {
-            return ApiResponse::unauthorized('Token não fornecido.');
-        } catch (\Throwable) {
-            return ApiResponse::unauthorized('Não autorizado.');
+            auth('api')->userOrFail();
+        } catch (TokenExpiredException $e) {
+            return ApiResponse::unauthorized(message: 'Token expirado. Faça refresh ou login novamente.');
+        } catch (TokenInvalidException $e) {
+            return ApiResponse::unauthorized(message: 'Token inválido.');
+        } catch (JWTException $e) {
+            return ApiResponse::unauthorized(message: 'Token não fornecido.');
+        } catch (\Throwable $e) {
+            return ApiResponse::unauthorized(message: 'Não autorizado.');
         }
 
         return $next($request);

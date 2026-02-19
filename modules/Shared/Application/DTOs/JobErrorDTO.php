@@ -14,7 +14,7 @@ final readonly class JobErrorDTO
 
     /**
      * Cria um JobErrorDTO a partir de um array
-     * 
+     *
      * @param array $data
      * @return self
      */
@@ -28,7 +28,7 @@ final readonly class JobErrorDTO
 
     /**
      * Converte o DTO para array
-     * 
+     *
      * @return array
      */
     public function toArray(): array

@@ -25,12 +25,12 @@ final class SharedServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Registra o Logger como singleton
-        $this->app->singleton(LoggerInterface::class, function ($app) {
+        $this->app->singleton(LoggerInterface::class, function () {
             return LoggerFactory::forModule('Shared');
         });
 
         // Registra o CacheService como singleton
-        $this->app->singleton(CacheServiceInterface::class, function ($app) {
+        $this->app->singleton(CacheServiceInterface::class, function () {
             return CacheServiceFactory::create();
         });
 
@@ -43,7 +43,7 @@ final class SharedServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->loadRoutesFrom(__DIR__ . '/../../Interface/Routes/api.php');
+        $this->loadRoutesFrom(__DIR__ . '/../../Interface/Routes/health.php');
         $this->loadRoutesFrom(__DIR__ . '/../../Interface/Routes/web.php');
         $this->loadRoutesFrom(__DIR__ . '/../../Interface/Routes/queue.php');
         $this->loadMigrationsFrom(__DIR__ . '/../../Infrastructure/Persistence/Migrations');

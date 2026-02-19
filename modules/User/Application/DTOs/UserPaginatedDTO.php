@@ -20,7 +20,7 @@ final readonly class UserPaginatedDTO
 
     /**
      * Cria um UserPaginatedDTO a partir de dados de paginação
-     * 
+     *
      * @param array $paginationData
      * @return self
      */
@@ -37,14 +37,14 @@ final readonly class UserPaginatedDTO
 
     /**
      * Converte o DTO para array
-     * 
+     *
      * @return array
      */
     public function toArray(): array
     {
         return [
             'data' => array_map(
-                fn(UserDTO $user) => $user->toArray(),
+                fn (UserDTO $user) => $user->toArray(),
                 $this->data
             ),
             'total' => $this->total,

@@ -26,4 +26,3 @@ Route::prefix('queue-monitor')->group(function () {
     Route::delete('/clear', [QueueMonitorController::class, 'clear'])->name('queue-monitor.clear');
     Route::get('/{jobId}', [QueueMonitorController::class, 'show'])->name('queue-monitor.show');
 });
-

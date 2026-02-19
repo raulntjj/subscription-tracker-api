@@ -55,13 +55,13 @@ final class JwtService implements JwtServiceInterface
             $this->logger()->warning('Refresh failed: token expired beyond refresh_ttl', [
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw new RuntimeException('Token expirou. Faça login novamente.', 401);
         } catch (Exception $e) {
             $this->logger()->error('Token refresh error', [
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }

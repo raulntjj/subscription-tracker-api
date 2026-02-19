@@ -60,7 +60,7 @@ final readonly class FindUsersCursorPaginatedQuery
 
                 // Converte entidades para DTOs
                 $usersDTO = array_map(
-                    fn($user) => UserDTO::fromEntity($user),
+                    fn ($user) => UserDTO::fromEntity($user),
                     $paginationData['data']
                 );
 

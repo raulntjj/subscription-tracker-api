@@ -32,7 +32,7 @@ final class QueueMonitorController extends Controller
 
     /**
      * GET /queue-monitor
-     * 
+     *
      * Retorna a listagem de todos os jobs (ativos, concluídos e falhados)
      */
     public function index(): JsonResponse
@@ -55,7 +55,7 @@ final class QueueMonitorController extends Controller
 
     /**
      * GET /queue-monitor/metrics
-     * 
+     *
      * Retorna métricas e estatísticas das filas
      */
     public function metrics(): JsonResponse
@@ -78,7 +78,7 @@ final class QueueMonitorController extends Controller
 
     /**
      * GET /queue-monitor/active
-     * 
+     *
      * Retorna apenas os jobs ativos
      */
     public function active(): JsonResponse
@@ -101,7 +101,7 @@ final class QueueMonitorController extends Controller
 
     /**
      * GET /queue-monitor/failed
-     * 
+     *
      * Retorna apenas os jobs falhados
      */
     public function failed(): JsonResponse
@@ -124,7 +124,7 @@ final class QueueMonitorController extends Controller
 
     /**
      * GET /queue-monitor/{jobId}
-     * 
+     *
      * Retorna detalhes de um job específico
      */
     public function show(string $jobId): JsonResponse
@@ -152,7 +152,7 @@ final class QueueMonitorController extends Controller
 
     /**
      * DELETE /queue-monitor/clear
-     * 
+     *
      * Limpa os logs de jobs concluídos e falhados
      */
     public function clear(): JsonResponse
@@ -173,4 +173,3 @@ final class QueueMonitorController extends Controller
         }
     }
 }
-

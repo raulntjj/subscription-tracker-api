@@ -16,18 +16,18 @@ final class GetJobDetailsQuery
 
     /**
      * Retorna detalhes de um job específico
-     * 
+     *
      * @param string $jobId
      * @return JobDTO|null
      */
     public function execute(string $jobId): ?JobDTO
     {
         $jobData = $this->queueMonitorRepository->getJobDetails($jobId);
-        
+
         if ($jobData === null) {
             return null;
         }
-        
+
         return JobDTO::fromArray($jobData);
     }
 }
