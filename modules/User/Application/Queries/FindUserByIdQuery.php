@@ -7,8 +7,8 @@ namespace Modules\User\Application\Queries;
 use Ramsey\Uuid\Uuid;
 use Modules\User\Application\DTOs\UserDTO;
 use Modules\User\Domain\Contracts\UserRepositoryInterface;
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 
 /**
  * Query para buscar um usuário por ID

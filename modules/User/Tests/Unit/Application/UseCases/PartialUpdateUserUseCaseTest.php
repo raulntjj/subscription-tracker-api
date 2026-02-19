@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Modules\User\Tests\Unit\Application\UseCases;
 
+use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use Illuminate\Foundation\Testing\TestCase;
-use PHPUnit\Framework\MockObject\MockObject;
-use Ramsey\Uuid\Uuid;
-use Modules\User\Application\DTOs\UpdateUserDTO;
-use Modules\User\Application\DTOs\UserDTO;
-use Modules\User\Application\UseCases\PartialUpdateUserUseCase;
-use Modules\User\Domain\Contracts\UserRepositoryInterface;
 use Modules\User\Domain\Entities\User;
+use Modules\User\Application\DTOs\UserDTO;
+use Illuminate\Foundation\Testing\TestCase;
 use Modules\User\Domain\ValueObjects\Email;
+use PHPUnit\Framework\MockObject\MockObject;
 use Modules\User\Domain\ValueObjects\Password;
+use Modules\User\Application\DTOs\UpdateUserDTO;
+use Modules\User\Domain\Contracts\UserRepositoryInterface;
+use Modules\User\Application\UseCases\PartialUpdateUserUseCase;
 
 final class PartialUpdateUserUseCaseTest extends TestCase
 {

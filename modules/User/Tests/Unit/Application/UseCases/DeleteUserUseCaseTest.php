@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Modules\User\Tests\Unit\Application\UseCases;
 
+use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Modules\User\Domain\Entities\User;
 use Illuminate\Foundation\Testing\TestCase;
+use Modules\User\Domain\ValueObjects\Email;
 use PHPUnit\Framework\MockObject\MockObject;
-use Ramsey\Uuid\Uuid;
+use Modules\User\Domain\ValueObjects\Password;
 use Modules\User\Application\UseCases\DeleteUserUseCase;
 use Modules\User\Domain\Contracts\UserRepositoryInterface;
-use Modules\User\Domain\Entities\User;
-use Modules\User\Domain\ValueObjects\Email;
-use Modules\User\Domain\ValueObjects\Password;
 
 final class DeleteUserUseCaseTest extends TestCase
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Infrastructure\Cache;
 
-use Modules\Shared\Domain\Contracts\CacheServiceInterface;
 use Modules\Shared\Infrastructure\Logging\LoggerFactory;
+use Modules\Shared\Domain\Contracts\CacheServiceInterface;
 
 final class CacheServiceFactory
 {

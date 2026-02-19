@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Modules\Shared\Infrastructure\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Modules\Shared\Console\Commands\ModuleCreateCommand;
-use Modules\Shared\Console\Commands\ModuleMakeMigrationCommand;
-use Modules\Shared\Console\Commands\ModuleMakeSeederCommand;
+use Modules\Shared\Infrastructure\Auth\JwtService;
+use Modules\Shared\Domain\Contracts\LoggerInterface;
 use Modules\Shared\Console\Commands\ModuleSeedCommand;
 use Modules\Shared\Console\Commands\ModuleTestCommand;
-use Modules\Shared\Console\Commands\QueueMonitorCleanCommand;
-use Modules\Shared\Domain\Contracts\CacheServiceInterface;
+use Modules\Shared\Console\Commands\ModuleCreateCommand;
 use Modules\Shared\Domain\Contracts\JwtServiceInterface;
-use Modules\Shared\Domain\Contracts\LoggerInterface;
-use Modules\Shared\Domain\Contracts\QueueMonitorRepositoryInterface;
-use Modules\Shared\Infrastructure\Auth\JwtService;
-use Modules\Shared\Infrastructure\Cache\CacheServiceFactory;
 use Modules\Shared\Infrastructure\Logging\LoggerFactory;
+use Modules\Shared\Domain\Contracts\CacheServiceInterface;
+use Modules\Shared\Console\Commands\ModuleMakeSeederCommand;
+use Modules\Shared\Infrastructure\Cache\CacheServiceFactory;
+use Modules\Shared\Console\Commands\QueueMonitorCleanCommand;
+use Modules\Shared\Console\Commands\ModuleMakeMigrationCommand;
+use Modules\Shared\Domain\Contracts\QueueMonitorRepositoryInterface;
 use Modules\Shared\Infrastructure\Queue\RedisQueueMonitorRepository;
 
 final class SharedServiceProvider extends ServiceProvider

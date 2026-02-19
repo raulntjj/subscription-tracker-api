@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Infrastructure\Logging;
 
-use Illuminate\Support\Facades\Log;
-use Modules\Shared\Domain\Contracts\LoggerInterface;
-use Modules\Shared\Domain\Enums\LogChannel;
-use Modules\Shared\Domain\Enums\LogLevel;
 use Throwable;
+use Illuminate\Support\Facades\Log;
+use Modules\Shared\Domain\Enums\LogLevel;
+use Modules\Shared\Domain\Enums\LogChannel;
+use Modules\Shared\Domain\Contracts\LoggerInterface;
 
 final class StructuredLogger implements LoggerInterface
 {

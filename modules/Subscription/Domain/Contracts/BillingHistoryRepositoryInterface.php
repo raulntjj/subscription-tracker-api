@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Domain\Contracts;
 
-use Modules\Subscription\Domain\Entities\BillingHistory;
 use Ramsey\Uuid\UuidInterface;
+use Modules\Subscription\Domain\Entities\BillingHistory;
 
 interface BillingHistoryRepositoryInterface
 {

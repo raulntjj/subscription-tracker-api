@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Subscription\Infrastructure\Persistence;
 
 use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
 use DateTimeImmutable;
+use Ramsey\Uuid\UuidInterface;
 use Modules\Subscription\Domain\Entities\WebhookConfig;
 use Modules\Shared\Infrastructure\Persistence\BaseRepository;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;

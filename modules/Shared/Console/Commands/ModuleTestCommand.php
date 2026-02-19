@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Console\Commands;
 
-use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Illuminate\Console\Command;
 
 final class ModuleTestCommand extends Command
 {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\User\Infrastructure\Persistence\Eloquent;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Modules\Shared\Infrastructure\Persistence\Concerns\HasUserActions;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\Shared\Infrastructure\Persistence\Concerns\HasUserActions;
 
 final class UserModel extends Authenticatable implements JWTSubject
 {

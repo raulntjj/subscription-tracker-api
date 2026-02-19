@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Modules\User\Interface\Http\Controllers;
 
-use Illuminate\Validation\ValidationException;
-use InvalidArgumentException;
 use Throwable;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
+use Illuminate\Http\JsonResponse;
 use Modules\User\Application\DTOs\LoginDTO;
+use Illuminate\Validation\ValidationException;
 use Modules\User\Application\UseCases\LoginUseCase;
 use Modules\User\Application\UseCases\LogoutUseCase;
 use Modules\Shared\Interface\Http\Responses\ApiResponse;

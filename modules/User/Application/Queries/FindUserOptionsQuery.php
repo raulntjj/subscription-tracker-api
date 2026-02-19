@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\User\Application\Queries;
 
+use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\User\Application\DTOs\UserOptionsDTO;
 use Modules\User\Domain\Contracts\UserRepositoryInterface;
-use Modules\Shared\Application\DTOs\SearchDTO;
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 
 /**
  * Query para buscar opções de usuários (sem paginação)

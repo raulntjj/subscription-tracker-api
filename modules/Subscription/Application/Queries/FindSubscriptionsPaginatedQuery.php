@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Queries;
 
+use Modules\Shared\Application\DTOs\SortDTO;
+use Modules\Shared\Application\DTOs\SearchDTO;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
-use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
-use Modules\Shared\Application\DTOs\SearchDTO;
-use Modules\Shared\Application\DTOs\SortDTO;
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
 
 /**
  * Query para buscar subscription com paginação offset (web)

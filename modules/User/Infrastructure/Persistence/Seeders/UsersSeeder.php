@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\User\Infrastructure\Persistence\Seeders;
 
+use Ramsey\Uuid\Uuid;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Ramsey\Uuid\Uuid;
 
 final class UsersSeeder extends Seeder
 {

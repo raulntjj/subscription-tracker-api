@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Infrastructure\Providers;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Modules\Subscription\Domain\Events\SubscriptionRenewed;
 use Modules\Shared\Infrastructure\Concerns\LoadsModuleSeeders;

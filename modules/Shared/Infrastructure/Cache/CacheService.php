@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Shared\Infrastructure\Cache;
 
 use Illuminate\Support\Facades\Cache;
-use Modules\Shared\Domain\Contracts\CacheServiceInterface;
 use Modules\Shared\Domain\Contracts\LoggerInterface;
+use Modules\Shared\Domain\Contracts\CacheServiceInterface;
 
 final class CacheService implements CacheServiceInterface
 {

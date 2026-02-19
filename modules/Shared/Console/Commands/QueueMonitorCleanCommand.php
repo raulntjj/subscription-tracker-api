@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Shared\Console\Commands;
 
 use Illuminate\Console\Command;
-use Modules\Shared\Application\UseCases\ClearQueueMonitorLogsUseCase;
 use Modules\Shared\Domain\Contracts\QueueMonitorRepositoryInterface;
+use Modules\Shared\Application\UseCases\ClearQueueMonitorLogsUseCase;
 
 final class QueueMonitorCleanCommand extends Command
 {

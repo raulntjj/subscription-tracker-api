@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\User\Tests\Unit\Domain\Entities;
 
-use DateTimeImmutable;
-use Illuminate\Foundation\Testing\TestCase;
 use Ramsey\Uuid\Uuid;
+use DateTimeImmutable;
 use Ramsey\Uuid\UuidInterface;
 use Modules\User\Domain\Entities\User;
+use Illuminate\Foundation\Testing\TestCase;
 use Modules\User\Domain\ValueObjects\Email;
 use Modules\User\Domain\ValueObjects\Password;
 

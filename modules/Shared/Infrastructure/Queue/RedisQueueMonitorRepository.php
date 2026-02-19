@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Infrastructure\Queue;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Redis;
 use Modules\Shared\Domain\Contracts\QueueMonitorRepositoryInterface;
-use Carbon\Carbon;
 
 final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterface
 {

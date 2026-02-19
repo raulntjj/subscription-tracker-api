@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Infrastructure\Cache\Concerns;
 
+use Modules\Shared\Infrastructure\Concerns\ModuleAware;
 use Modules\Shared\Domain\Contracts\CacheServiceInterface;
 use Modules\Shared\Infrastructure\Cache\CacheServiceFactory;
-use Modules\Shared\Infrastructure\Concerns\ModuleAware;
 
 trait Cacheable
 {

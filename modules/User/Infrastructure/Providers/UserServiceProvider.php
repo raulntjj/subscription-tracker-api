@@ -6,9 +6,9 @@ namespace Modules\User\Infrastructure\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Shared\Infrastructure\Concerns\LoadsModuleSeeders;
 use Modules\User\Domain\Contracts\UserRepositoryInterface;
 use Modules\User\Infrastructure\Persistence\UserRepository;
+use Modules\Shared\Infrastructure\Concerns\LoadsModuleSeeders;
 
 final class UserServiceProvider extends ServiceProvider
 {

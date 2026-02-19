@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Modules\Subscription\Domain\Entities;
 
 use DateTimeImmutable;
-use Modules\Subscription\Domain\Enums\BillingCycleEnum;
-use Modules\Subscription\Domain\Enums\CurrencyEnum;
-use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
 use Ramsey\Uuid\UuidInterface;
+use Modules\Subscription\Domain\Enums\CurrencyEnum;
+use Modules\Subscription\Domain\Enums\BillingCycleEnum;
+use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
 
 final class Subscription
 {

@@ -6,8 +6,8 @@ namespace Modules\Subscription\Application\UseCases;
 
 use Ramsey\Uuid\Uuid;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
-use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 
 final readonly class ActivateWebhookUseCase
 {

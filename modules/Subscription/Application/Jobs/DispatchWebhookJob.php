@@ -9,8 +9,8 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Modules\Shared\Infrastructure\Logging\StructuredLogger;
 use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
 

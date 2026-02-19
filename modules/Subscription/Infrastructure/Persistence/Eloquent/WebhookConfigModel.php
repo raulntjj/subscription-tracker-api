@@ -7,8 +7,8 @@ namespace Modules\Subscription\Infrastructure\Persistence\Eloquent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Modules\Shared\Infrastructure\Persistence\Concerns\HasUserActions;
 use Modules\User\Infrastructure\Persistence\Eloquent\UserModel;
+use Modules\Shared\Infrastructure\Persistence\Concerns\HasUserActions;
 
 final class WebhookConfigModel extends Model
 {

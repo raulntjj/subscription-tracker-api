@@ -16,11 +16,11 @@ use Modules\Subscription\Application\DTOs\UpdateWebhookConfigDTO;
 use Modules\Subscription\Application\UseCases\TestWebhookUseCase;
 use Modules\Subscription\Application\Queries\GetWebhookConfigsQuery;
 use Modules\Subscription\Application\UseCases\ActivateWebhookUseCase;
-use Modules\Subscription\Application\UseCases\DeactivateWebhookUseCase;
 use Modules\Subscription\Application\Queries\GetWebhookConfigByIdQuery;
+use Modules\Subscription\Application\UseCases\DeactivateWebhookUseCase;
 use Modules\Subscription\Application\UseCases\CreateWebhookConfigUseCase;
-use Modules\Subscription\Application\UseCases\UpdateWebhookConfigUseCase;
 use Modules\Subscription\Application\UseCases\DeleteWebhookConfigUseCase;
+use Modules\Subscription\Application\UseCases\UpdateWebhookConfigUseCase;
 
 final class WebhookConfigController extends Controller
 {

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Infrastructure\Persistence;
 
-use DateTimeImmutable;
 use Ramsey\Uuid\Uuid;
+use DateTimeImmutable;
 use Ramsey\Uuid\UuidInterface;
+use Modules\Subscription\Domain\Entities\BillingHistory;
 use Modules\Shared\Infrastructure\Persistence\BaseRepository;
 use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
-use Modules\Subscription\Domain\Entities\BillingHistory;
 use Modules\Subscription\Infrastructure\Persistence\Eloquent\BillingHistoryModel;
 
 final class BillingHistoryRepository extends BaseRepository implements BillingHistoryRepositoryInterface

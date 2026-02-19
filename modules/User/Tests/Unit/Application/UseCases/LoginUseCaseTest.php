@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\User\Tests\Unit\Application\UseCases;
 
-use Illuminate\Foundation\Testing\TestCase;
 use Mockery;
+use Illuminate\Foundation\Testing\TestCase;
 use Modules\User\Application\DTOs\LoginDTO;
 use Modules\User\Application\DTOs\AuthTokenDTO;
 use Modules\User\Application\UseCases\LoginUseCase;

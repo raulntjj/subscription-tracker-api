@@ -8,13 +8,13 @@ use Throwable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Shared\Application\Queries\GetAllJobsQuery;
-use Modules\Shared\Application\Queries\GetQueueMetricsQuery;
+use Modules\Shared\Interface\Http\Responses\ApiResponse;
 use Modules\Shared\Application\Queries\GetActiveJobsQuery;
 use Modules\Shared\Application\Queries\GetFailedJobsQuery;
 use Modules\Shared\Application\Queries\GetJobDetailsQuery;
-use Modules\Shared\Application\UseCases\ClearQueueMonitorLogsUseCase;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
+use Modules\Shared\Application\Queries\GetQueueMetricsQuery;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Shared\Application\UseCases\ClearQueueMonitorLogsUseCase;
 
 final class QueueMonitorController extends Controller
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\User\Tests\Feature\Web;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\User\Tests\Feature\FeatureTestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 final class UserOptionsRouteTest extends FeatureTestCase
 {

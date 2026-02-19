@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\User\Application\UseCases;
 
-use Modules\User\Application\DTOs\UserDTO;
 use Ramsey\Uuid\Uuid;
+use Modules\User\Application\DTOs\UserDTO;
 use Modules\User\Domain\ValueObjects\Email;
 use Modules\User\Domain\ValueObjects\Password;
 use Modules\User\Application\DTOs\UpdateUserDTO;

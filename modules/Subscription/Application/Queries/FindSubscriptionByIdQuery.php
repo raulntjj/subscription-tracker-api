@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Subscription\Application\Queries;
 
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
 
 /**

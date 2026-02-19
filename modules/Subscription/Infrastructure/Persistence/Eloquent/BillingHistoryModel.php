@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Subscription\Infrastructure\Persistence\Eloquent;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 final class BillingHistoryModel extends Model
 {

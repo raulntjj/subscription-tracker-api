@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Subscription\Application\UseCases;
 
 use Ramsey\Uuid\Uuid;
-use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 
 final readonly class DeleteWebhookConfigUseCase
 {

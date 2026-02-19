@@ -7,8 +7,8 @@ namespace Modules\Shared\Infrastructure\Auth\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
+use Modules\Shared\Interface\Http\Responses\ApiResponse;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 
 final class RefreshToken

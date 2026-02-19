@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Modules\User\Interface\Http\Controllers\MobileUserController;
 use Modules\Shared\Infrastructure\Auth\Middleware\Authenticate;
+use Modules\User\Interface\Http\Controllers\MobileUserController;
 
 /*
 |--------------------------------------------------------------------------

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Queries;
 
-use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
-use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
+use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
 
 /**
  * Query para buscar todas as configurações de webhook do usuário

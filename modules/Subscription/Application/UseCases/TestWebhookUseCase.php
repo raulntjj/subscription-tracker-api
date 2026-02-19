@@ -7,8 +7,8 @@ namespace Modules\Subscription\Application\UseCases;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Http;
 use Modules\Subscription\Application\Jobs\TestWebhookJob;
-use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 
 final readonly class TestWebhookUseCase
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Listeners;
 
+use Modules\Shared\Infrastructure\Logging\StructuredLogger;
 use Modules\Subscription\Domain\Events\SubscriptionRenewed;
 use Modules\Subscription\Application\Jobs\DispatchWebhookJob;
-use Modules\Shared\Infrastructure\Logging\StructuredLogger;
 
 /**
  * Listener que escuta o evento SubscriptionRenewed e despacha o job de webhook

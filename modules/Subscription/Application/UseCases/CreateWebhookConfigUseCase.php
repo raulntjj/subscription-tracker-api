@@ -8,9 +8,9 @@ use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Modules\Subscription\Domain\Entities\WebhookConfig;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Application\DTOs\CreateWebhookConfigDTO;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 
 final readonly class CreateWebhookConfigUseCase
 {

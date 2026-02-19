@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Shared\Application\UseCases;
 
 use Modules\Shared\Application\DTOs\ClearLogsResultDTO;
-use Modules\Shared\Domain\Contracts\QueueMonitorRepositoryInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Shared\Domain\Contracts\QueueMonitorRepositoryInterface;
 
 final class ClearQueueMonitorLogsUseCase
 {
