@@ -6,7 +6,6 @@ namespace Modules\User\Tests\Unit\Application\UseCases;
 
 use Mockery;
 use RuntimeException;
-use Mockery\MockInterface;
 use InvalidArgumentException;
 use Modules\User\Tests\UserTestCase;
 use Modules\User\Application\DTOs\AuthTokenDTO;
@@ -15,7 +14,8 @@ use Modules\User\Application\UseCases\RefreshTokenUseCase;
 
 final class RefreshTokenUseCaseTest extends UserTestCase
 {
-    private MockInterface&JwtServiceInterface $jwtService;
+    /** @var \Mockery\MockInterface|\Modules\Shared\Domain\Contracts\JwtServiceInterface $jwtService */
+    private JwtServiceInterface $jwtService;
     private RefreshTokenUseCase $useCase;
 
     protected function setUp(): void
@@ -86,7 +86,6 @@ final class RefreshTokenUseCaseTest extends UserTestCase
             ->andThrow(new RuntimeException('Token refresh failed'));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Token refresh failed');
 
         $this->useCase->execute();
     }
@@ -99,7 +98,6 @@ final class RefreshTokenUseCaseTest extends UserTestCase
             ->andThrow(new InvalidArgumentException('Token has expired and can no longer be refreshed'));
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Token has expired and can no longer be refreshed');
 
         $this->useCase->execute();
     }

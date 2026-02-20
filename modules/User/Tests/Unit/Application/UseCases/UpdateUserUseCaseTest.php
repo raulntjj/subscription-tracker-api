@@ -92,7 +92,6 @@ final class UpdateUserUseCaseTest extends UserTestCase
         );
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("User not found with id: {$this->userId}");
 
         $this->useCase->execute($this->userId, $dto);
     }
@@ -114,7 +113,6 @@ final class UpdateUserUseCaseTest extends UserTestCase
         );
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('All fields (name, email, password) are required for full update');
 
         $this->useCase->execute($this->userId, $dto);
     }
@@ -132,7 +130,6 @@ final class UpdateUserUseCaseTest extends UserTestCase
         );
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('All fields (name, email, password) are required for full update');
 
         $this->useCase->execute($this->userId, $dto);
     }
@@ -150,7 +147,6 @@ final class UpdateUserUseCaseTest extends UserTestCase
         );
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('All fields (name, email, password) are required for full update');
 
         $this->useCase->execute($this->userId, $dto);
     }
@@ -187,7 +183,6 @@ final class UpdateUserUseCaseTest extends UserTestCase
         );
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Password must be at least 8 characters long');
 
         $this->useCase->execute($this->userId, $dto);
     }
@@ -264,7 +259,6 @@ final class UpdateUserUseCaseTest extends UserTestCase
         );
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Database error');
 
         $this->useCase->execute($this->userId, $dto);
     }

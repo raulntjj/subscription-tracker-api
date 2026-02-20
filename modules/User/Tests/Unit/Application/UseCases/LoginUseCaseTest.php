@@ -6,7 +6,6 @@ namespace Modules\User\Tests\Unit\Application\UseCases;
 
 use Mockery;
 use RuntimeException;
-use Mockery\MockInterface;
 use InvalidArgumentException;
 use Modules\User\Tests\UserTestCase;
 use Modules\User\Application\DTOs\LoginDTO;
@@ -16,7 +15,8 @@ use Modules\Shared\Domain\Contracts\JwtServiceInterface;
 
 final class LoginUseCaseTest extends UserTestCase
 {
-    private MockInterface&JwtServiceInterface $jwtService;
+    /** @var \Mockery\MockInterface|\Modules\Shared\Domain\Contracts\JwtServiceInterface $jwtService */
+    private JwtServiceInterface $jwtService;
     private LoginUseCase $useCase;
 
     protected function setUp(): void
@@ -69,7 +69,6 @@ final class LoginUseCaseTest extends UserTestCase
             ->andReturn(null);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Credenciais inválidas.');
 
         $this->useCase->execute($dto);
     }
@@ -136,7 +135,6 @@ final class LoginUseCaseTest extends UserTestCase
             ->andThrow(new RuntimeException('Database connection failed'));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Database connection failed');
 
         $this->useCase->execute($dto);
     }

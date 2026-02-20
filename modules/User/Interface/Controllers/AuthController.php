@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\User\Interface\Http\Controllers;
+namespace Modules\User\Interface\Controllers;
 
 use Throwable;
 use RuntimeException;
@@ -16,7 +16,7 @@ use Modules\User\Application\UseCases\LoginUseCase;
 use Modules\User\Application\UseCases\LogoutUseCase;
 use Modules\User\Application\UseCases\RegisterUseCase;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
+use Modules\Shared\Interface\Responses\ApiResponse;
 use Modules\User\Application\UseCases\RefreshTokenUseCase;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\User\Application\Queries\GetAuthenticatedUserQuery;

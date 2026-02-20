@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Tests\Feature\Web;
 
-use Modules\Subscription\Tests\Feature\FeatureTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Modules\Subscription\Tests\Feature\FeatureTestCase;
 
 final class DeleteSubscriptionRouteTest extends FeatureTestCase
 {
@@ -163,8 +163,8 @@ final class DeleteSubscriptionRouteTest extends FeatureTestCase
         $subscription = $this->createSubscription();
 
         $response = $this->deleteJson("/api/web/v1/subscriptions/{$subscription->id}");
-        
-        $this->assertContains($response->status(), [401, 429]);
+
+        $this->assertContains($response->status(), [401]);
     }
 
     public function test_subscription_is_actually_removed_from_database(): void
@@ -191,7 +191,7 @@ final class DeleteSubscriptionRouteTest extends FeatureTestCase
 
         $this->assertTrue(
             $deletedSubscription === null || $deletedSubscription->deleted_at !== null,
-            'Subscription should be deleted or soft deleted'
+            'Subscription should be deleted or soft deleted',
         );
     }
 

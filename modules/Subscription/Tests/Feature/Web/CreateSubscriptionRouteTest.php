@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Tests\Feature\Web;
 
-use Modules\Subscription\Tests\Feature\FeatureTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Modules\Subscription\Tests\Feature\FeatureTestCase;
 
 final class CreateSubscriptionRouteTest extends FeatureTestCase
 {
@@ -289,7 +289,7 @@ final class CreateSubscriptionRouteTest extends FeatureTestCase
     public function test_requires_authentication(): void
     {
         $response = $this->postJson('/api/web/v1/subscriptions');
-        $this->assertContains($response->status(), [401, 429]);
+        $this->assertContains($response->status(), [401]);
     }
 
     public function test_user_id_is_set_from_authenticated_user(): void

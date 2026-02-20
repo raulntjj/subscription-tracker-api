@@ -73,6 +73,6 @@ final class PartialUpdateUserRouteTest extends FeatureTestCase
     {
         $user = $this->createUser();
         $response = $this->patchJson("/api/web/v1/users/{$user->id}");
-        $this->assertContains($response->status(), [401, 429]);
+        $this->assertContains($response->status(), [401]);
     }
 }

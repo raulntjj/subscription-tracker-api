@@ -9,4 +9,5 @@ return [
     'invalid_credentials' => 'Invalid credentials.',
     'token_expired_login_again' => 'Token expired. Please login again.',
     'failed_generate_token' => 'Failed to generate token after registration.',
+    'invalid_email_format' => 'Invalid email format: :email',
 ];

@@ -101,6 +101,6 @@ final class CreateUserRouteTest extends FeatureTestCase
     public function test_requires_authentication(): void
     {
         $response = $this->postJson('/api/web/v1/users');
-        $this->assertContains($response->status(), [401, 429]);
+        $this->assertContains($response->status(), [401]);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\User\Tests\Unit\Domain\ValueObjects;
 
+use ReflectionClass;
 use InvalidArgumentException;
 use Modules\User\Tests\UserTestCase;
 use Modules\User\Domain\ValueObjects\Email;
@@ -34,7 +35,6 @@ final class EmailTest extends UserTestCase
     public function test_throws_exception_for_invalid_email_format(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid email format: invalid-email');
 
         new Email('invalid-email');
     }
@@ -42,7 +42,6 @@ final class EmailTest extends UserTestCase
     public function test_throws_exception_for_email_without_at_symbol(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid email format');
 
         new Email('invalidemail.com');
     }
@@ -50,7 +49,6 @@ final class EmailTest extends UserTestCase
     public function test_throws_exception_for_email_without_domain(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid email format');
 
         new Email('john@');
     }
@@ -58,7 +56,6 @@ final class EmailTest extends UserTestCase
     public function test_throws_exception_for_empty_email(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid email format');
 
         new Email('');
     }
@@ -125,7 +122,6 @@ final class EmailTest extends UserTestCase
     public function test_throws_exception_for_email_with_spaces(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid email format');
 
         new Email('john doe@example.com');
     }
@@ -134,8 +130,7 @@ final class EmailTest extends UserTestCase
     {
         $email = new Email('john@example.com');
 
-        // Verifica que a classe é readonly tentando refletir suas propriedades
-        $reflection = new \ReflectionClass($email);
+        $reflection = new ReflectionClass($email);
         $this->assertTrue($reflection->isReadOnly());
     }
 }

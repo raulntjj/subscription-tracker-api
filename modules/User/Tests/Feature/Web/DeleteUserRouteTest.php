@@ -59,6 +59,6 @@ final class DeleteUserRouteTest extends FeatureTestCase
     {
         $user = $this->createUser(['email' => 'testuser' . uniqid() . '@example.com']);
         $response = $this->deleteJson("/api/web/v1/users/{$user->id}");
-        $this->assertContains($response->status(), [401, 429]);
+        $this->assertContains($response->status(), [401]);
     }
 }

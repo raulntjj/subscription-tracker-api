@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\User\Interface\Http\Controllers;
+namespace Modules\User\Interface\Controllers;
 
 use Throwable;
 use Illuminate\Http\Request;
@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Shared\Application\DTOs\SortDTO;
 use Modules\Shared\Application\DTOs\SearchDTO;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
+use Modules\Shared\Interface\Responses\ApiResponse;
 use Modules\User\Application\Queries\FindUserOptionsQuery;
 use Modules\User\Application\Queries\FindUsersCursorPaginatedQuery;
 

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Modules\User\Interface\Http\Controllers\UserController;
+use Modules\User\Interface\Controllers\UserController;
 use Modules\Shared\Infrastructure\Auth\Middleware\Authenticate;
 
 /*

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Tests\Feature\Web;
 
-use Modules\Subscription\Tests\Feature\FeatureTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Modules\Subscription\Tests\Feature\FeatureTestCase;
 
 final class ListSubscriptionsRouteTest extends FeatureTestCase
 {
@@ -122,9 +122,9 @@ final class ListSubscriptionsRouteTest extends FeatureTestCase
 
         $response->assertStatus(200);
         $data = $response->json('data.subscriptions');
-        
+
         $this->assertNotEmpty($data);
-        
+
         // Verifica se pelo menos um resultado contém "Netflix"
         $hasNetflix = false;
         foreach ($data as $subscription) {
@@ -185,7 +185,7 @@ final class ListSubscriptionsRouteTest extends FeatureTestCase
     public function test_requires_authentication(): void
     {
         $response = $this->getJson('/api/web/v1/subscriptions');
-        $this->assertContains($response->status(), [401, 429]);
+        $this->assertContains($response->status(), [401]);
     }
 
     public function test_default_pagination_values(): void
@@ -222,7 +222,7 @@ final class ListSubscriptionsRouteTest extends FeatureTestCase
                             'value',
                             'label',
                         ],
-                    ]
+                    ],
                 ],
             ]);
     }

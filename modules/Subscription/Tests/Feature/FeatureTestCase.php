@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Subscription\Tests\Feature;
 
 use Ramsey\Uuid\Uuid;
-use Modules\Subscription\Tests\SubscriptionTestCase;
 use Illuminate\Contracts\Console\Kernel;
+use Modules\Subscription\Tests\SubscriptionTestCase;
 
 abstract class FeatureTestCase extends SubscriptionTestCase
 {

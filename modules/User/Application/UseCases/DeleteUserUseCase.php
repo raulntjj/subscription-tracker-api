@@ -30,7 +30,7 @@ final readonly class DeleteUserUseCase
             $user = $this->userRepository->findById($uuid);
 
             if ($user === null) {
-                throw new \InvalidArgumentException("User not found with id: {$id}");
+                throw new \InvalidArgumentException(__('User::exception.user_not_found_with_id', ['id' => $id]));
             }
 
             $this->userRepository->delete($uuid);

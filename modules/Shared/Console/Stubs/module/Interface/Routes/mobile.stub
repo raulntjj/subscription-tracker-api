@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Modules\{{MODULE_NAME}}\Interface\Http\Controllers\Mobile{{MODULE_NAME}}Controller;
+use Modules\{{MODULE_NAME}}\Interface\Controllers\Mobile{{MODULE_NAME}}Controller;
 
 /*
 |--------------------------------------------------------------------------

@@ -89,7 +89,7 @@ final readonly class TestWebhookUseCase
             $entity = $this->repository->findById(Uuid::fromString($id));
 
             if (!$entity) {
-                throw new InvalidArgumentException('Webhook config not found');
+                throw new InvalidArgumentException(__('Subscription::exception.webhook_config_not_found'));
             }
 
             // Payload de teste

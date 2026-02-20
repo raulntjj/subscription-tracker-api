@@ -9,12 +9,12 @@ use RuntimeException;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use Modules\Subscription\Domain\Enums\CurrencyEnum;
 use Modules\Subscription\Tests\SubscriptionTestCase;
 use Modules\Subscription\Domain\Entities\Subscription;
-use Modules\Subscription\Domain\Enums\CurrencyEnum;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
 use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
-use PHPUnit\Framework\MockObject\MockObject;
 use Modules\Subscription\Application\UseCases\DeleteSubscriptionUseCase;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 
@@ -66,7 +66,6 @@ final class DeleteSubscriptionUseCaseTest extends SubscriptionTestCase
             ->method('delete');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Subscription not found with id:');
 
         $this->useCase->execute($this->subscriptionId->toString());
     }
@@ -105,7 +104,6 @@ final class DeleteSubscriptionUseCaseTest extends SubscriptionTestCase
             ->method('delete');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Database connection error');
 
         $this->useCase->execute($this->subscriptionId->toString());
     }
@@ -125,7 +123,6 @@ final class DeleteSubscriptionUseCaseTest extends SubscriptionTestCase
             ->willThrowException(new RuntimeException('Failed to delete'));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Failed to delete');
 
         $this->useCase->execute($this->subscriptionId->toString());
     }

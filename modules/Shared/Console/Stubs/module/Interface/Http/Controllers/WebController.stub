@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\{{MODULE_NAME}}\Interface\Http\Controllers;
+namespace Modules\{{MODULE_NAME}}\Interface\Controllers;
 
 use Throwable;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ use Modules\Shared\Application\DTOs\SortDTO;
 use Modules\Shared\Application\DTOs\PaginationDTO;
 use Modules\{{MODULE_NAME}}\Application\Queries\Find{{MODULE_NAME}}ByIdQuery;
 use Modules\{{MODULE_NAME}}\Application\Queries\Find{{MODULE_NAME}}OptionsQuery;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
+use Modules\Shared\Interface\Responses\ApiResponse;
 use Modules\{{MODULE_NAME}}\Application\UseCases\Create{{MODULE_NAME}}UseCase;
 use Modules\{{MODULE_NAME}}\Application\UseCases\Update{{MODULE_NAME}}UseCase;
 use Modules\{{MODULE_NAME}}\Application\UseCases\Delete{{MODULE_NAME}}UseCase;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Tests\Feature\Web;
 
-use Modules\Subscription\Tests\Feature\FeatureTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Modules\Subscription\Tests\Feature\FeatureTestCase;
 
 final class UpdateSubscriptionRouteTest extends FeatureTestCase
 {
@@ -222,8 +222,8 @@ final class UpdateSubscriptionRouteTest extends FeatureTestCase
         $subscription = $this->createSubscription();
 
         $response = $this->putJson("/api/web/v1/subscriptions/{$subscription->id}");
-        
-        $this->assertContains($response->status(), [401, 429]);
+
+        $this->assertContains($response->status(), [401]);
     }
 
     public function test_can_update_with_status_paused(): void
@@ -257,7 +257,7 @@ final class UpdateSubscriptionRouteTest extends FeatureTestCase
         $this->authenticate();
         $subscription = $this->createSubscription([
             'user_id' => $this->userId,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $updateData = [

@@ -135,7 +135,7 @@ final class TestWebhookJob implements ShouldQueue
 
                 // Se não for sucesso e ainda tiver tentativas, lança exceção para retry
                 if ($this->attempts() < $this->tries) {
-                    throw new RuntimeException("Webhook returned status {$statusCode}");
+                    throw new RuntimeException(__('Subscription::exception.webhook_test_failed', ['statusCode' => $statusCode]));
                 }
             }
         } catch (Throwable $e) {

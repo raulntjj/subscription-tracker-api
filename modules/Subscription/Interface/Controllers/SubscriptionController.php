@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Subscription\Interface\Http\Controllers;
+namespace Modules\Subscription\Interface\Controllers;
 
 use Throwable;
 use Illuminate\Http\Request;
@@ -12,7 +12,7 @@ use Illuminate\Routing\Controller;
 use Modules\Shared\Application\DTOs\SortDTO;
 use Illuminate\Validation\ValidationException;
 use Modules\Shared\Application\DTOs\SearchDTO;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
+use Modules\Shared\Interface\Responses\ApiResponse;
 use Modules\Subscription\Application\DTOs\CreateSubscriptionDTO;
 use Modules\Subscription\Application\DTOs\UpdateSubscriptionDTO;
 use Modules\Subscription\Application\Queries\FindSubscriptionByIdQuery;

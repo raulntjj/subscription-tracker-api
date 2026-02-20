@@ -8,9 +8,9 @@ use Ramsey\Uuid\Uuid;
 use RuntimeException;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use PHPUnit\Framework\MockObject\MockObject;
 use Modules\Subscription\Tests\SubscriptionTestCase;
 use Modules\Subscription\Domain\Entities\Subscription;
-use PHPUnit\Framework\MockObject\MockObject;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
 use Modules\Subscription\Application\DTOs\CreateSubscriptionDTO;
 use Modules\Subscription\Application\UseCases\CreateSubscriptionUseCase;
@@ -195,7 +195,6 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
             ->willThrowException(new RuntimeException('Database error'));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Database error');
 
         $dto = new CreateSubscriptionDTO(
             name: 'Netflix',

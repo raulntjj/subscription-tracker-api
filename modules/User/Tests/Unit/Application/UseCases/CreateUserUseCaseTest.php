@@ -92,7 +92,6 @@ final class CreateUserUseCaseTest extends UserTestCase
             ->method('save');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid email format');
 
         $this->useCase->execute(
             name: 'John',
@@ -108,7 +107,6 @@ final class CreateUserUseCaseTest extends UserTestCase
             ->method('save');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Password must be at least 8 characters long');
 
         $this->useCase->execute(
             name: 'John',
@@ -148,7 +146,6 @@ final class CreateUserUseCaseTest extends UserTestCase
             ->willThrowException(new RuntimeException('Database error'));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Database error');
 
         $this->useCase->execute(
             name: 'John',

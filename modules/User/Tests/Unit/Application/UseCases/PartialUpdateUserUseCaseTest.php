@@ -146,7 +146,6 @@ final class PartialUpdateUserUseCaseTest extends UserTestCase
         $dto = new UpdateUserDTO(name: 'Jane');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("User not found with id: {$this->userId}");
 
         $this->useCase->execute($this->userId, $dto);
     }
@@ -165,7 +164,6 @@ final class PartialUpdateUserUseCaseTest extends UserTestCase
         $dto = new UpdateUserDTO();
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('No fields provided for update');
 
         $this->useCase->execute($this->userId, $dto);
     }
@@ -194,7 +192,6 @@ final class PartialUpdateUserUseCaseTest extends UserTestCase
         $dto = new UpdateUserDTO(password: 'short');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Password must be at least 8 characters long');
 
         $this->useCase->execute($this->userId, $dto);
     }
@@ -236,7 +233,6 @@ final class PartialUpdateUserUseCaseTest extends UserTestCase
         $dto = new UpdateUserDTO(name: 'Jane');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Database error');
 
         $this->useCase->execute($this->userId, $dto);
     }

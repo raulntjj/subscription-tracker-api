@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\User\Interface\Http\Controllers;
+namespace Modules\User\Interface\Controllers;
 
 use Throwable;
 use Illuminate\Http\Request;
@@ -15,7 +15,7 @@ use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\User\Application\DTOs\CreateUserDTO;
 use Modules\User\Application\DTOs\UpdateUserDTO;
 use Modules\User\Application\Queries\FindUserByIdQuery;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
+use Modules\Shared\Interface\Responses\ApiResponse;
 use Modules\User\Application\UseCases\CreateUserUseCase;
 use Modules\User\Application\UseCases\DeleteUserUseCase;
 use Modules\User\Application\UseCases\UpdateUserUseCase;

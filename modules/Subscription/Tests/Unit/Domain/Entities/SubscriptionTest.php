@@ -8,9 +8,9 @@ use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
+use Modules\Subscription\Domain\Enums\CurrencyEnum;
 use Modules\Subscription\Tests\SubscriptionTestCase;
 use Modules\Subscription\Domain\Entities\Subscription;
-use Modules\Subscription\Domain\Enums\CurrencyEnum;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
 use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
 
@@ -232,7 +232,7 @@ final class SubscriptionTest extends SubscriptionTestCase
         $currentDate = new DateTimeImmutable('2026-03-01');
         $subscription = $this->createSubscription(
             billingCycle: BillingCycleEnum::MONTHLY,
-            nextBillingDate: $currentDate
+            nextBillingDate: $currentDate,
         );
 
         $nextDate = $subscription->calculateNextBillingDate();
@@ -245,7 +245,7 @@ final class SubscriptionTest extends SubscriptionTestCase
         $currentDate = new DateTimeImmutable('2026-03-01');
         $subscription = $this->createSubscription(
             billingCycle: BillingCycleEnum::YEARLY,
-            nextBillingDate: $currentDate
+            nextBillingDate: $currentDate,
         );
 
         $nextDate = $subscription->calculateNextBillingDate();
@@ -257,7 +257,7 @@ final class SubscriptionTest extends SubscriptionTestCase
     {
         $subscription = $this->createSubscription(
             price: 4990,
-            billingCycle: BillingCycleEnum::MONTHLY
+            billingCycle: BillingCycleEnum::MONTHLY,
         );
 
         $this->assertEquals(4990, $subscription->normalizedMonthlyPrice());
@@ -267,7 +267,7 @@ final class SubscriptionTest extends SubscriptionTestCase
     {
         $subscription = $this->createSubscription(
             price: 59880, // R$ 598,80 por ano
-            billingCycle: BillingCycleEnum::YEARLY
+            billingCycle: BillingCycleEnum::YEARLY,
         );
 
         // Deve dividir por 12: 59880 / 12 = 4990
@@ -306,7 +306,7 @@ final class SubscriptionTest extends SubscriptionTestCase
         $today = new DateTimeImmutable('today');
         $subscription = $this->createSubscription(
             status: SubscriptionStatusEnum::ACTIVE,
-            nextBillingDate: $today
+            nextBillingDate: $today,
         );
 
         $this->assertTrue($subscription->isDueForBilling());
@@ -317,7 +317,7 @@ final class SubscriptionTest extends SubscriptionTestCase
         $futureDate = new DateTimeImmutable('+7 days');
         $subscription = $this->createSubscription(
             status: SubscriptionStatusEnum::ACTIVE,
-            nextBillingDate: $futureDate
+            nextBillingDate: $futureDate,
         );
 
         $this->assertFalse($subscription->isDueForBilling());
@@ -328,7 +328,7 @@ final class SubscriptionTest extends SubscriptionTestCase
         $today = new DateTimeImmutable('today');
         $subscription = $this->createSubscription(
             status: SubscriptionStatusEnum::PAUSED,
-            nextBillingDate: $today
+            nextBillingDate: $today,
         );
 
         $this->assertFalse($subscription->isDueForBilling());

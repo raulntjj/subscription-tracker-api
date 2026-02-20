@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Modules\Shared\Infrastructure\Auth\Middleware\Authenticate;
-use Modules\Subscription\Interface\Http\Controllers\SubscriptionController;
-use Modules\Subscription\Interface\Http\Controllers\WebhookConfigController;
+use Modules\Subscription\Interface\Controllers\SubscriptionController;
+use Modules\Subscription\Interface\Controllers\WebhookConfigController;
 
 /*
 |--------------------------------------------------------------------------

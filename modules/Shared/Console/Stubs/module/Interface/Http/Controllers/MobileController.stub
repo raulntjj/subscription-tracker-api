@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Modules\{{MODULE_NAME}}\Interface\Http\Controllers;
+namespace Modules\{{MODULE_NAME}}\Interface\Controllers;
 
 use Throwable;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Request;
+use Illuminate\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\{{MODULE_NAME}}\Application\DTOs\{{MODULE_NAME}}DTO;
 use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\Shared\Application\DTOs\SortDTO;
 use Modules\Shared\Application\DTOs\CursorPaginationDTO;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
+use Modules\Shared\Interface\Responses\ApiResponse;
 use Modules\{{MODULE_NAME}}\Application\Queries\Find{{MODULE_NAME}}OptionsQuery;
 use Modules\{{MODULE_NAME}}\Application\Queries\Find{{MODULE_NAME_PLURAL}}CursorPaginatedQuery;
 

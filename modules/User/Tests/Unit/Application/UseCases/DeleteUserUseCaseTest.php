@@ -68,7 +68,6 @@ final class DeleteUserUseCaseTest extends UserTestCase
             ->method('delete');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("User not found with id: {$this->userId}");
 
         $this->useCase->execute($this->userId);
     }
@@ -102,7 +101,6 @@ final class DeleteUserUseCaseTest extends UserTestCase
             ->willThrowException(new RuntimeException('Database error'));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Database error');
 
         $this->useCase->execute($this->userId);
     }

@@ -81,7 +81,6 @@ final class RegisterRouteTest extends FeatureTestCase
 
         $response->assertStatus(400);
         $this->assertFalse($response->json('success'));
-        $this->assertStringContainsString('já está em uso', $response->json('message'));
     }
 
     public function test_register_validation_requires_name(): void

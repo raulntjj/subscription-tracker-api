@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Shared\Interface\Http\Responses;
+namespace Modules\Shared\Interface\Responses;
 
 use Throwable;
 use Illuminate\Http\JsonResponse;

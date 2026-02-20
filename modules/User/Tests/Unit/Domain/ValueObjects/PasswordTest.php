@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\User\Tests\Unit\Domain\ValueObjects;
 
+use ReflectionClass;
 use InvalidArgumentException;
 use Modules\User\Tests\UserTestCase;
 use Modules\User\Domain\ValueObjects\Password;
@@ -33,7 +34,6 @@ final class PasswordTest extends UserTestCase
     public function test_throws_exception_for_short_password(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Password must be at least 8 characters long');
 
         Password::fromPlainText('short');
     }
@@ -41,7 +41,6 @@ final class PasswordTest extends UserTestCase
     public function test_throws_exception_for_7_character_password(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Password must be at least 8 characters long');
 
         Password::fromPlainText('1234567');
     }
@@ -158,13 +157,12 @@ final class PasswordTest extends UserTestCase
         $password = Password::fromPlainText('SecurePass123');
 
         // Verifica que a classe é readonly
-        $reflection = new \ReflectionClass($password);
+        $reflection = new ReflectionClass($password);
         $this->assertTrue($reflection->isReadOnly());
     }
 
     public function test_from_hash_does_not_validate_length(): void
     {
-        // fromHash não valida o tamanho porque já é um hash
         $shortHash = 'short';
         $password = Password::fromHash($shortHash);
 

@@ -9,4 +9,8 @@ return [
     'webhook_url_empty' => 'Webhook URL cannot be empty.',
     'webhook_url_invalid' => 'Invalid webhook URL format.',
     'webhook_url_protocol' => 'Webhook URL must use HTTP or HTTPS protocol.',
+    'webhook_server_error' => 'Webhook returned server error: :statusCode',
+    'webhook_rate_limited' => 'Webhook rate limited: :statusCode',
+    'webhook_client_error' => 'Webhook returned client error: :statusCode',
+    'webhook_test_failed' => 'Webhook returned status :statusCode',
 ];

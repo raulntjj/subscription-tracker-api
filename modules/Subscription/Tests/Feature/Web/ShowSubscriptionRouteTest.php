@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Tests\Feature\Web;
 
-use Modules\Subscription\Tests\Feature\FeatureTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Modules\Subscription\Tests\Feature\FeatureTestCase;
 
 final class ShowSubscriptionRouteTest extends FeatureTestCase
 {
@@ -79,7 +79,7 @@ final class ShowSubscriptionRouteTest extends FeatureTestCase
         );
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $this->assertEquals('Netflix Premium', $data['name']);
         $this->assertEquals(4990, $data['price']);
@@ -129,8 +129,8 @@ final class ShowSubscriptionRouteTest extends FeatureTestCase
         $subscription = $this->createSubscription();
 
         $response = $this->getJson("/api/web/v1/subscriptions/{$subscription->id}");
-        
-        $this->assertContains($response->status(), [401, 429]);
+
+        $this->assertContains($response->status(), [401]);
     }
 
     public function test_can_show_subscription_with_different_currencies(): void

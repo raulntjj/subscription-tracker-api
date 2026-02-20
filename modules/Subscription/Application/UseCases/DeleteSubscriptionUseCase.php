@@ -31,7 +31,7 @@ final readonly class DeleteSubscriptionUseCase
             $entity = $this->repository->findById($uuid);
 
             if ($entity === null) {
-                throw new InvalidArgumentException("Subscription not found with id: {$id}");
+                throw new InvalidArgumentException(__('Subscription::exception.subscription_not_found_with_id', ['id' => $id]));
             }
 
             $this->repository->delete($uuid);

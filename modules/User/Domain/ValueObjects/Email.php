@@ -20,7 +20,7 @@ final readonly class Email
     private function validate(string $email): void
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Invalid email format: {$email}");
+            throw new InvalidArgumentException(__('User::exception.invalid_email_format', ['email' => $email]));
         }
     }
 

@@ -41,7 +41,7 @@ final class ListUsersRouteTest extends FeatureTestCase
                 'success',
                 'message',
                 'data' => [
-                    'data' => [
+                    'users' => [
                         '*' => ['id', 'name', 'email', 'created_at'],
                     ],
                     'next_cursor',
@@ -50,7 +50,7 @@ final class ListUsersRouteTest extends FeatureTestCase
             ]);
 
         $this->assertTrue($response->json('success'));
-        $this->assertIsArray($response->json('data.data'));
+        $this->assertIsArray($response->json('data.users'));
     }
 
     public function test_can_list_users_with_custom_per_page(): void
@@ -70,7 +70,7 @@ final class ListUsersRouteTest extends FeatureTestCase
 
         $response->assertStatus(200);
 
-        $this->assertLessThanOrEqual(5, count($response->json('data.data')));
+        $this->assertLessThanOrEqual(5, count($response->json('data.users')));
     }
 
     public function test_cursor_pagination_provides_next_cursor(): void
@@ -142,7 +142,7 @@ final class ListUsersRouteTest extends FeatureTestCase
     public function test_requires_authentication(): void
     {
         $response = $this->getJson('/api/mobile/v1/users');
-        $this->assertContains($response->status(), [401, 429]);
+        $this->assertContains($response->status(), [401]);
     }
 
     public function test_returns_users_in_json_format(): void
@@ -158,7 +158,7 @@ final class ListUsersRouteTest extends FeatureTestCase
         $response->assertStatus(200)
             ->assertHeader('Content-Type', 'application/json');
 
-        $data = $response->json('data.data');
+        $data = $response->json('data.users');
         if (count($data) > 0) {
             $firstUser = $data[0];
             $this->assertArrayHasKey('id', $firstUser);
@@ -183,7 +183,7 @@ final class ListUsersRouteTest extends FeatureTestCase
         );
 
         $firstResponse->assertStatus(200);
-        $firstPageData = $firstResponse->json('data.data');
+        $firstPageData = $firstResponse->json('data.users');
 
         if (count($firstPageData) > 0) {
             $this->assertNotEmpty($firstPageData[0]['id']);
@@ -211,7 +211,7 @@ final class ListUsersRouteTest extends FeatureTestCase
 
             $response->assertStatus(200);
 
-            $data = $response->json('data.data');
+            $data = $response->json('data.users');
             $this->assertLessThanOrEqual($perPage, count($data));
         }
     }

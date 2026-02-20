@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Shared\Infrastructure\Auth\Middleware\Authenticate;
-use Modules\Shared\Interface\Http\Controllers\QueueMonitorController;
+use Modules\Shared\Interface\Controllers\QueueMonitorController;
 
 /*
 |--------------------------------------------------------------------------

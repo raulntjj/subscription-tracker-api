@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Modules\Subscription\Interface\Http\Controllers;
+namespace Modules\Subscription\Interface\Controllers;
 
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
+use Modules\Shared\Interface\Responses\ApiResponse;
 use Modules\Subscription\Application\DTOs\CreateWebhookConfigDTO;
 use Modules\Subscription\Application\DTOs\UpdateWebhookConfigDTO;
 use Modules\Subscription\Application\UseCases\TestWebhookUseCase;

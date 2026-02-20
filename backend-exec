@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Script para executar comandos no container Docker
-# Uso: ./docker-exec [comando]
-# Exemplo: ./docker-exec php artisan migrate
-# Exemplo: ./docker-exec composer install
-# Exemplo: ./docker-exec bash (para abrir shell interativo)
-
 CONTAINER_NAME="subs-tracker-backend"
 
 if [ $# -eq 0 ]; then

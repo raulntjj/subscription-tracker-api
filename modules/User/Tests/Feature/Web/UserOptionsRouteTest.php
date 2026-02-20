@@ -52,6 +52,6 @@ final class UserOptionsRouteTest extends FeatureTestCase
     public function test_requires_authentication(): void
     {
         $response = $this->getJson('/api/web/v1/users/options');
-        $this->assertContains($response->status(), [401, 429]);
+        $this->assertContains($response->status(), [401]);
     }
 }

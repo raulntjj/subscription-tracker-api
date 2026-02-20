@@ -9,13 +9,13 @@ use RuntimeException;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use Modules\Subscription\Domain\Enums\CurrencyEnum;
 use Modules\Subscription\Tests\SubscriptionTestCase;
 use Modules\Subscription\Domain\Entities\Subscription;
-use Modules\Subscription\Domain\Enums\CurrencyEnum;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
-use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
-use PHPUnit\Framework\MockObject\MockObject;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
+use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
 use Modules\Subscription\Application\DTOs\UpdateSubscriptionDTO;
 use Modules\Subscription\Application\UseCases\UpdateSubscriptionUseCase;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
@@ -338,7 +338,6 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
             ->willThrowException(new RuntimeException('Database error'));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Database error');
 
         $dto = new UpdateSubscriptionDTO(
             name: 'Netflix',

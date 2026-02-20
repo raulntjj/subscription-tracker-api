@@ -248,12 +248,12 @@ final class DispatchWebhookJob implements ShouldQueue
 
         // Decidir se deve retentar baseado no status code
         if ($statusCode >= 500) {
-            throw new RuntimeException("Webhook returned server error: {$statusCode}");
+            throw new RuntimeException(__('Subscription::exception.webhook_server_error', ['statusCode' => $statusCode]));
         } elseif ($statusCode === 429) {
-            throw new RuntimeException("Webhook rate limited: {$statusCode}");
+            throw new RuntimeException(__('Subscription::exception.webhook_rate_limited', ['statusCode' => $statusCode]));
         } elseif ($statusCode >= 400 && $statusCode < 500) {
             if ($this->attempts() < 3) {
-                throw new RuntimeException("Webhook returned client error: {$statusCode}");
+                throw new RuntimeException(__('Subscription::exception.webhook_client_error', ['statusCode' => $statusCode]));
             }
 
             $this->logger()->error('Webhook permanently failed with client error', [

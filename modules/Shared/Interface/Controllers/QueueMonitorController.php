@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Modules\Shared\Interface\Http\Controllers;
+namespace Modules\Shared\Interface\Controllers;
 
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Shared\Application\Queries\GetAllJobsQuery;
-use Modules\Shared\Interface\Http\Responses\ApiResponse;
+use Modules\Shared\Interface\Responses\ApiResponse;
 use Modules\Shared\Application\Queries\GetActiveJobsQuery;
 use Modules\Shared\Application\Queries\GetFailedJobsQuery;
 use Modules\Shared\Application\Queries\GetJobDetailsQuery;

@@ -9,13 +9,18 @@ use Modules\Shared\Infrastructure\Locale\Middleware\SetLocaleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        commands: __DIR__.'/../routes/console.php',
+        commands: __DIR__.'/../modules/Shared/Interface/Routes/console.php',
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->api(append: [
-            ThrottleRequests::class,
             SetLocaleMiddleware::class,
         ]);
+
+        if (app()->environment('production')) {
+            $middleware->api(append: [
+                ThrottleRequests::class,
+            ]);
+        }
 
         $middleware->alias([
             'auth.jwt' => Authenticate::class,

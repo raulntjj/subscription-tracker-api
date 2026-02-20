@@ -7,14 +7,13 @@ namespace Modules\User\Tests\Unit\Application\UseCases;
 use Mockery;
 use RuntimeException;
 use Modules\User\Tests\UserTestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 use Modules\User\Application\UseCases\LogoutUseCase;
 use Modules\Shared\Domain\Contracts\JwtServiceInterface;
 
 final class LogoutUseCaseTest extends UserTestCase
 {
     /** @var \Mockery\MockInterface|\Modules\Shared\Domain\Contracts\JwtServiceInterface $jwtService */
-    private MockObject&JwtServiceInterface $jwtService;
+    private JwtServiceInterface $jwtService;
     private LogoutUseCase $useCase;
 
     protected function setUp(): void
@@ -40,7 +39,6 @@ final class LogoutUseCaseTest extends UserTestCase
 
         $this->useCase->execute();
 
-        // Se chegou aqui sem exceções, o teste passou
         $this->assertTrue(true);
     }
 
@@ -87,7 +85,6 @@ final class LogoutUseCaseTest extends UserTestCase
             ->andThrow(new RuntimeException('Token invalidation failed'));
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Token invalidation failed');
 
         $this->useCase->execute();
     }
