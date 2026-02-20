@@ -15,9 +15,11 @@ final class ApiResponse
      */
     public static function success(
         mixed $data = null,
-        string $message = 'Success',
+        ?string $message = null,
         int $status = Response::HTTP_OK,
     ): JsonResponse {
+        $message = $message ?? __('Shared::response.success');
+
         return response()->json([
             'success' => true,
             'message' => $message,
@@ -29,13 +31,15 @@ final class ApiResponse
      * Resposta de erro genérica
      */
     public static function error(
-        ?string $message = 'An error occurred',
+        ?string $message = null,
         mixed $errors = null,
         ?Throwable $exception = null,
         int $status = Response::HTTP_BAD_REQUEST,
     ): JsonResponse {
         if ($exception !== null) {
             $message = $exception->getMessage();
+        } else {
+            $message = $message ?? __('Shared::response.error');
         }
 
         $payload = [
@@ -85,8 +89,9 @@ final class ApiResponse
      */
     public static function created(
         mixed $data = null,
-        string $message = 'Resource created successfully',
+        ?string $message = null,
     ): JsonResponse {
+        $message = $message ?? __('Shared::response.created');
         return self::success(data: $data, message: $message, status: Response::HTTP_CREATED);
     }
 
@@ -94,8 +99,9 @@ final class ApiResponse
      * Resposta de não encontrado (404 Not Found)
      */
     public static function notFound(
-        string $message = 'Resource not found',
+        ?string $message = null,
     ): JsonResponse {
+        $message = $message ?? __('Shared::response.not_found');
         return self::error(message: $message, errors: null, status: Response::HTTP_NOT_FOUND);
     }
 
@@ -104,8 +110,9 @@ final class ApiResponse
      */
     public static function validationError(
         mixed $errors,
-        string $message = 'Validation failed',
+        ?string $message = null,
     ): JsonResponse {
+        $message = $message ?? __('Shared::response.validation_failed');
         return self::error(message: $message, errors: $errors, status: Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
@@ -113,8 +120,9 @@ final class ApiResponse
      * Resposta de não autorizado (401 Unauthorized)
      */
     public static function unauthorized(
-        string $message = 'Unauthorized',
+        ?string $message = null,
     ): JsonResponse {
+        $message = $message ?? __('Shared::response.unauthorized');
         return self::error(message: $message, status: Response::HTTP_UNAUTHORIZED);
     }
 
@@ -122,8 +130,9 @@ final class ApiResponse
      * Resposta de proibido (403 Forbidden)
      */
     public static function forbidden(
-        string $message = 'Forbidden',
+        ?string $message = null,
     ): JsonResponse {
+        $message = $message ?? __('Shared::response.forbidden');
         return self::error(message: $message, status: Response::HTTP_FORBIDDEN);
     }
 
@@ -131,9 +140,10 @@ final class ApiResponse
      * Resposta de conflito (409 Conflict)
      */
     public static function conflict(
-        string $message = 'Conflict',
+        ?string $message = null,
         mixed $errors = null,
     ): JsonResponse {
+        $message = $message ?? __('Shared::response.conflict');
         return self::error(message: $message, errors: $errors, status: Response::HTTP_CONFLICT);
     }
 
@@ -141,8 +151,9 @@ final class ApiResponse
      * Resposta de erro interno do servidor (500 Internal Server Error)
      */
     public static function serverError(
-        string $message = 'Internal server error',
+        ?string $message = null,
     ): JsonResponse {
+        $message = $message ?? __('Shared::response.server_error');
         return self::error(message: $message, status: Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
@@ -162,8 +173,10 @@ final class ApiResponse
         int $total,
         int $perPage,
         int $currentPage,
-        string $message = 'Data retrieved successfully',
+        ?string $message = null,
     ): JsonResponse {
+        $message = $message ?? __('Shared::response.data_retrieved');
+
         return self::success([
             'items' => $items,
             'pagination' => [

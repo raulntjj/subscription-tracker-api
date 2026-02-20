@@ -6,6 +6,7 @@ namespace Modules\User\Application\UseCases;
 
 use Throwable;
 use Ramsey\Uuid\Uuid;
+use InvalidArgumentException;
 use Modules\User\Application\DTOs\UserDTO;
 use Modules\User\Domain\ValueObjects\Email;
 use Modules\User\Domain\ValueObjects\Password;
@@ -39,11 +40,11 @@ final readonly class PartialUpdateUserUseCase
             $user = $this->userRepository->findById($uuid);
 
             if ($user === null) {
-                throw new \InvalidArgumentException("User not found with id: {$id}");
+                throw new InvalidArgumentException(__('User::message.user_not_found_with_id', ['id' => $id]));
             }
 
             if (!$dto->hasChanges()) {
-                throw new \InvalidArgumentException('No fields provided for update');
+                throw new InvalidArgumentException(__('User::message.no_fields_for_update'));
             }
 
             if ($dto->name !== null) {

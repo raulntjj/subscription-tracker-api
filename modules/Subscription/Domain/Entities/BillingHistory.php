@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Subscription\Domain\Entities;
 
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
 
 final class BillingHistory
@@ -67,7 +68,7 @@ final class BillingHistory
     private function validateAmount(int $amount): void
     {
         if ($amount < 0) {
-            throw new \InvalidArgumentException('Amount paid cannot be negative');
+            throw new InvalidArgumentException(__('Subscription::message.amount_paid_cannot_negative'));
         }
     }
 }

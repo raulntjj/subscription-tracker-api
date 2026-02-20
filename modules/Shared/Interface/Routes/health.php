@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/status', function () {
+Route::get('/', function () {
     $dbStatus = 'disconnected';
     $cacheStatus = 'disconnected';
 

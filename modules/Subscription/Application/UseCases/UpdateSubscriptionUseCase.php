@@ -37,7 +37,7 @@ final readonly class UpdateSubscriptionUseCase
         try {
             // Valida a data de próximo faturamento
             if (!$dto->validateNextBillingDate()) {
-                throw new InvalidArgumentException('Next billing date must be in the future or today');
+                throw new InvalidArgumentException(__('Subscription::message.next_billing_date_future'));
             }
 
             $uuid = Uuid::fromString($id);
@@ -45,7 +45,7 @@ final readonly class UpdateSubscriptionUseCase
             $entity = $this->repository->findById($uuid);
 
             if ($entity === null) {
-                throw new InvalidArgumentException("Subscription not found with id: {$id}");
+                throw new InvalidArgumentException(__('Subscription::message.subscription_not_found_with_id', ['id' => $id]));
             }
 
             // Atualiza todos os campos

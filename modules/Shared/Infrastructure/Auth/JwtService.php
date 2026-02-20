@@ -61,7 +61,7 @@ final class JwtService implements JwtServiceInterface
                 'error' => $e->getMessage(),
             ]);
 
-            throw new RuntimeException('Token expirou. Faça login novamente.', 401);
+            throw new RuntimeException(__('User::message.token_expired_login_again'), 401);
         } catch (Exception $e) {
             $this->logger()->error('Token refresh error', [
                 'error' => $e->getMessage(),

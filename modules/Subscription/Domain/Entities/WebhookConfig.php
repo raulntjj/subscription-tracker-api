@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Subscription\Domain\Entities;
 
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
 
 final class WebhookConfig
@@ -40,16 +41,16 @@ final class WebhookConfig
     private function validateUrl(string $url): void
     {
         if (empty($url)) {
-            throw new \InvalidArgumentException('Webhook URL cannot be empty');
+            throw new InvalidArgumentException(__('Subscription::exception.webhook_url_empty'));
         }
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new \InvalidArgumentException('Invalid webhook URL format');
+            throw new InvalidArgumentException(__('Subscription::exception.webhook_url_invalid'));
         }
 
         $parsedUrl = parse_url($url);
         if (!isset($parsedUrl['scheme']) || !in_array($parsedUrl['scheme'], ['http', 'https'])) {
-            throw new \InvalidArgumentException('Webhook URL must use HTTP or HTTPS protocol');
+            throw new InvalidArgumentException(__('Subscription::exception.webhook_url_protocol'));
         }
     }
 

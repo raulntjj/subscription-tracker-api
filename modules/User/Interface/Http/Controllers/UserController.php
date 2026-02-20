@@ -82,7 +82,7 @@ final class UserController extends Controller
 
             return ApiResponse::success(
                 data: $paginatedDTO->toArray(),
-                message: 'Users retrieved successfully',
+                message: __('User::message.users_retrieved_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -109,7 +109,7 @@ final class UserController extends Controller
 
             return ApiResponse::success(
                 data: $optionsDTO->toArray(),
-                message: 'User options retrieved successfully',
+                message: __('User::message.user_options_retrieved_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -125,12 +125,12 @@ final class UserController extends Controller
             $user = $this->findUserByIdQuery->execute(userId: $id);
 
             if ($user === null) {
-                return ApiResponse::notFound(message: 'User not found');
+                return ApiResponse::notFound(message: __('User::message.user_not_found'));
             }
 
             return ApiResponse::success(
                 data: $user->toArray(),
-                message: 'User retrieved successfully',
+                message: __('User::message.user_retrieved_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -163,7 +163,7 @@ final class UserController extends Controller
 
             return ApiResponse::created(
                 data: $user->toArray(),
-                message: 'User created successfully',
+                message: __('User::message.user_created_success'),
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -193,7 +193,7 @@ final class UserController extends Controller
 
             return ApiResponse::success(
                 data: $user->toArray(),
-                message: 'User updated successfully',
+                message: __('User::message.user_updated_success'),
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -225,7 +225,7 @@ final class UserController extends Controller
 
             return ApiResponse::success(
                 data: $user->toArray(),
-                message: 'User patched successfully',
+                message: __('User::message.user_patched_success'),
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());

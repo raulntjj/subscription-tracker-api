@@ -54,7 +54,7 @@ final class AuthController
 
             return ApiResponse::success(
                 data: $token->toArray(),
-                message: 'Login performed successfully.',
+                message: __('User::message.login_success'),
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -93,7 +93,7 @@ final class AuthController
 
             return ApiResponse::success(
                 data: $token->toArray(),
-                message: 'User registered successfully.',
+                message: __('User::message.register_success'),
                 status: 201,
             );
         } catch (ValidationException $e) {
@@ -123,7 +123,7 @@ final class AuthController
             $this->logoutUseCase->execute();
 
             return ApiResponse::success(
-                message: 'Logout performed successfully.',
+                message: __('User::message.logout_success'),
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Logout error', context: [
@@ -144,14 +144,14 @@ final class AuthController
 
             return ApiResponse::success(
                 data: $token->toArray(),
-                message: 'Token refreshed successfully.',
+                message: __('User::message.token_refreshed'),
             );
         } catch (TokenExpiredException $e) {
-            return ApiResponse::unauthorized(message: 'Token expired. Please login again.');
+            return ApiResponse::unauthorized(message: __('User::message.token_expired'));
         } catch (TokenInvalidException $e) {
-            return ApiResponse::unauthorized(message: 'Token invalid.');
+            return ApiResponse::unauthorized(message: __('User::message.token_invalid'));
         } catch (JWTException $e) {
-            return ApiResponse::unauthorized(message: 'Token not provided.');
+            return ApiResponse::unauthorized(message: __('User::message.token_not_provided'));
         } catch (RuntimeException $e) {
             return ApiResponse::unauthorized(message: $e->getMessage());
         } catch (Throwable $e) {
@@ -174,12 +174,12 @@ final class AuthController
             $user = $this->getAuthenticatedUserQuery->execute();
 
             if ($user === null) {
-                return ApiResponse::unauthorized(message: 'Authenticated user not found.');
+                return ApiResponse::unauthorized(message: __('User::message.user_not_found'));
             }
 
             return ApiResponse::success(
                 data: $user->toArray(),
-                message: 'Authenticated user retrieved successfully.',
+                message: __('User::message.user_retrieved_success'),
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Get authenticated user error', context: [

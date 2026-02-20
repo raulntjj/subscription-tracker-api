@@ -40,5 +40,6 @@ final class UserServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__ . '/../Persistence/Migrations');
         $this->loadSeedersFrom(__DIR__ . '/../Persistence/Seeders');
+        $this->loadTranslationsFrom(__DIR__ . '/../../Infrastructure/Lang', 'User');
     }
 }

@@ -6,6 +6,7 @@ namespace Modules\User\Application\UseCases;
 
 use Throwable;
 use Ramsey\Uuid\Uuid;
+use InvalidArgumentException;
 use Modules\User\Application\DTOs\UserDTO;
 use Modules\User\Domain\ValueObjects\Email;
 use Modules\User\Domain\ValueObjects\Password;
@@ -38,11 +39,11 @@ final readonly class UpdateUserUseCase
             $user = $this->userRepository->findById($uuid);
 
             if ($user === null) {
-                throw new \InvalidArgumentException("User not found with id: {$id}");
+                throw new InvalidArgumentException(__('User::message.user_not_found_with_id', ['id' => $id]));
             }
 
             if ($dto->name === null || $dto->email === null || $dto->password === null) {
-                throw new \InvalidArgumentException('All fields (name, email, password) are required for full update');
+                throw new InvalidArgumentException(__('User::message.all_fields_required_update'));
             }
 
             $user->changeName($dto->name);

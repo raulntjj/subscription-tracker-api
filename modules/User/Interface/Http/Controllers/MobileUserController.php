@@ -71,7 +71,7 @@ final class MobileUserController extends Controller
 
             return ApiResponse::success(
                 data: $cursorPaginatedDTO->toArray(),
-                message: 'Users retrieved successfully',
+                message: __('User::message.users_retrieved_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);

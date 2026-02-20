@@ -18,7 +18,7 @@ final readonly class Password
     public static function fromPlainText(string $plainPassword): self
     {
         if (strlen($plainPassword) < 8) {
-            throw new InvalidArgumentException('Password must be at least 8 characters long');
+            throw new InvalidArgumentException(__('User::message.password_min_length'));
         }
 
         return new self(bcrypt($plainPassword));

@@ -82,7 +82,7 @@ final class SubscriptionController extends Controller
 
             return ApiResponse::success(
                 data: $result->toArray(),
-                message: 'Subscriptions retrieved successfully',
+                message: __('Subscription::message.subscriptions_retrieved_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -108,7 +108,7 @@ final class SubscriptionController extends Controller
 
             return ApiResponse::success(
                 data: $result->toArray(),
-                message: 'Subscription options retrieved successfully',
+                message: __('Subscription::message.subscription_options_retrieved_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -124,12 +124,12 @@ final class SubscriptionController extends Controller
             $item = $this->findByIdQuery->execute(id: $id);
 
             if ($item === null) {
-                return ApiResponse::notFound(message: 'Subscription not found');
+                return ApiResponse::notFound(message: __('Subscription::message.subscription_not_found'));
             }
 
             return ApiResponse::success(
                 data: $item->toArray(),
-                message: 'Subscription retrieved successfully',
+                message: __('Subscription::message.subscription_retrieved_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -160,7 +160,7 @@ final class SubscriptionController extends Controller
 
             return ApiResponse::created(
                 data: $item->toArray(),
-                message: 'Subscription created successfully',
+                message: __('Subscription::message.subscription_created_success'),
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -192,7 +192,7 @@ final class SubscriptionController extends Controller
 
             return ApiResponse::success(
                 $item->toArray(),
-                'Subscription updated successfully',
+                __('Subscription::message.subscription_updated_success'),
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -216,7 +216,7 @@ final class SubscriptionController extends Controller
             $userId = auth(guard: 'api')->id();
 
             if (!$userId) {
-                return ApiResponse::unauthorized(message: 'User not authenticated');
+                return ApiResponse::unauthorized(message: __('Subscription::message.user_not_authenticated'));
             }
 
             $currency = $request->query(key: 'currency', default: 'BRL');
@@ -225,7 +225,7 @@ final class SubscriptionController extends Controller
 
             return ApiResponse::success(
                 data: $budgetDTO->toArray(),
-                message: 'Monthly budget calculated successfully',
+                message: __('Subscription::message.monthly_budget_calculated_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);

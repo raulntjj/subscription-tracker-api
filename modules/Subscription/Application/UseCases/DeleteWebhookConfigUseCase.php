@@ -6,6 +6,7 @@ namespace Modules\Subscription\Application\UseCases;
 
 use Throwable;
 use Ramsey\Uuid\Uuid;
+use InvalidArgumentException;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 
@@ -28,7 +29,7 @@ final readonly class DeleteWebhookConfigUseCase
             $entity = $this->repository->findById(Uuid::fromString($id));
 
             if (!$entity) {
-                throw new \InvalidArgumentException('Webhook config not found');
+                throw new InvalidArgumentException(__('Subscription::exception.webhook_config_not_found'));
             }
 
             $this->repository->delete(Uuid::fromString($id));

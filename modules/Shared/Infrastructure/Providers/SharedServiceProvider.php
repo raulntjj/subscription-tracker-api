@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Infrastructure\Providers;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Modules\Shared\Infrastructure\Auth\JwtService;
 use Modules\Shared\Domain\Contracts\LoggerInterface;
@@ -43,10 +44,25 @@ final class SharedServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->loadRoutesFrom(__DIR__ . '/../../Interface/Routes/health.php');
-        $this->loadRoutesFrom(__DIR__ . '/../../Interface/Routes/web.php');
-        $this->loadRoutesFrom(__DIR__ . '/../../Interface/Routes/queue.php');
+        Route::prefix('/health')
+            ->middleware('api')
+            ->group(__DIR__ . '/../../Interface/Routes/health.php');
+
+        Route::prefix('/')
+            ->middleware('api')
+            ->group(__DIR__ . '/../../Interface/Routes/web.php');
+
+        Route::prefix('/queue')
+            ->middleware('api')
+            ->group(__DIR__ . '/../../Interface/Routes/queue.php');
+
         $this->loadMigrationsFrom(__DIR__ . '/../../Infrastructure/Persistence/Migrations');
+        $this->loadTranslationsFrom(__DIR__ . '/../../Infrastructure/Lang', 'Shared');
+
+        // Configura o caminho de idiomas padrão do Laravel para usar o Shared
+        $this->app->booted(function () {
+            $this->app['path.lang'] = __DIR__ . '/../../Infrastructure/Lang';
+        });
 
         if ($this->app->runningInConsole()) {
             $this->commands([

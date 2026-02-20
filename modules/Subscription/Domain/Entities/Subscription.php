@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Subscription\Domain\Entities;
 
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
 use Modules\Subscription\Domain\Enums\CurrencyEnum;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
@@ -206,7 +207,7 @@ final class Subscription
     private function validatePrice(int $price): void
     {
         if ($price < 0) {
-            throw new \InvalidArgumentException('Price cannot be negative');
+            throw new InvalidArgumentException(__('Subscription::message.price_cannot_negative'));
         }
     }
 
@@ -214,7 +215,7 @@ final class Subscription
     {
         $today = new DateTimeImmutable('today');
         if ($date < $today) {
-            throw new \InvalidArgumentException('Next billing date must be in the future or today');
+            throw new InvalidArgumentException(__('Subscription::message.next_billing_date_future'));
         }
     }
 

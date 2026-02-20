@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\User\Application\UseCases;
 
 use Throwable;
+use RuntimeException;
 use InvalidArgumentException;
 use Modules\User\Application\DTOs\AuthTokenDTO;
 use Modules\User\Application\DTOs\CreateUserDTO;
@@ -41,7 +42,7 @@ final readonly class RegisterUseCase
 
             $existingUser = $this->userRepository->findByEmail($normalizedEmail);
             if ($existingUser !== null) {
-                throw new InvalidArgumentException('Email is already in use.');
+                throw new InvalidArgumentException(__('User::message.email_already_in_use'));
             }
 
             $userDTO = $this->createUserUseCase->execute(
@@ -58,7 +59,7 @@ final readonly class RegisterUseCase
             ]);
 
             if ($token === null) {
-                throw new \RuntimeException('Failed to generate token after registration.');
+                throw new RuntimeException(__('User::message.failed_generate_token'));
             }
 
             $this->logger()->event('UserRegistered', [

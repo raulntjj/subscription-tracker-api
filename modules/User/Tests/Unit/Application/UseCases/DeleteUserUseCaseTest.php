@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Unit\Application\UseCases;
 
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Modules\User\Tests\UserTestCase;
@@ -98,9 +99,9 @@ final class DeleteUserUseCaseTest extends UserTestCase
         $this->userRepository
             ->expects($this->once())
             ->method('delete')
-            ->willThrowException(new \RuntimeException('Database error'));
+            ->willThrowException(new RuntimeException('Database error'));
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Database error');
 
         $this->useCase->execute($this->userId);

@@ -7,6 +7,7 @@ namespace Modules\Subscription\Application\UseCases;
 use Throwable;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Modules\Subscription\Domain\Enums\CurrencyEnum;
 use Modules\Subscription\Domain\Entities\Subscription;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
@@ -37,7 +38,7 @@ final readonly class CreateSubscriptionUseCase
 
         try {
             if (!$dto->validateNextBillingDate()) {
-                throw new \InvalidArgumentException('Next billing date must be in the future or today');
+                throw new InvalidArgumentException(__('Subscription::message.next_billing_date_future'));
             }
 
             $entity = new Subscription(

@@ -6,6 +6,7 @@ namespace Modules\Subscription\Application\UseCases;
 
 use Throwable;
 use Ramsey\Uuid\Uuid;
+use InvalidArgumentException;
 use Illuminate\Support\Facades\Http;
 use Modules\Subscription\Application\Jobs\TestWebhookJob;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
@@ -53,7 +54,7 @@ final readonly class TestWebhookUseCase
             $entity = $this->repository->findById(Uuid::fromString($id));
 
             if (!$entity) {
-                throw new \InvalidArgumentException('Webhook config not found');
+                throw new InvalidArgumentException(__('Subscription::exception.webhook_config_not_found'));
             }
 
             // Despacha job para fila RabbitMQ
@@ -88,7 +89,7 @@ final readonly class TestWebhookUseCase
             $entity = $this->repository->findById(Uuid::fromString($id));
 
             if (!$entity) {
-                throw new \InvalidArgumentException('Webhook config not found');
+                throw new InvalidArgumentException('Webhook config not found');
             }
 
             // Payload de teste

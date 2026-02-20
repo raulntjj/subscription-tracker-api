@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Shared\Interface\Http\Controllers;
 
 use Throwable;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Shared\Application\Queries\GetAllJobsQuery;
@@ -35,14 +36,14 @@ final class QueueMonitorController extends Controller
      *
      * Retorna a listagem de todos os jobs (ativos, concluídos e falhados)
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
             $jobList = $this->getAllJobsQuery->execute();
 
             return ApiResponse::success(
                 data: $jobList->toArray(),
-                message: 'Jobs retrieved successfully.',
+                message: __('Shared::message.jobs_retrieved_successfully'),
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Error fetching all jobs', context: [
@@ -65,7 +66,7 @@ final class QueueMonitorController extends Controller
 
             return ApiResponse::success(
                 data: $metrics->toArray(),
-                message: 'Queue metrics retrieved successfully.',
+                message: __('Shared::message.queue_metrics_retrieved_successfully'),
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Error fetching queue metrics', context: [
@@ -88,7 +89,7 @@ final class QueueMonitorController extends Controller
 
             return ApiResponse::success(
                 data: $jobList->toArray(),
-                message: 'Active jobs retrieved successfully.',
+                message: __('Shared::message.active_jobs_retrieved_successfully'),
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Error fetching active jobs', context: [
@@ -111,7 +112,7 @@ final class QueueMonitorController extends Controller
 
             return ApiResponse::success(
                 data: $jobList->toArray(),
-                message: 'Failed jobs retrieved successfully.',
+                message: __('Shared::message.failed_jobs_retrieved_successfully'),
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Error fetching failed jobs', context: [
@@ -133,12 +134,12 @@ final class QueueMonitorController extends Controller
             $job = $this->getJobDetailsQuery->execute(jobId: $jobId);
 
             if ($job === null) {
-                return ApiResponse::notFound(message: 'Job not found or expired.');
+                return ApiResponse::notFound(message: __('Shared::message.job_not_found'));
             }
 
             return ApiResponse::success(
                 data: $job->toArray(),
-                message: 'Job details retrieved successfully.',
+                message: __('Shared::message.job_details_retrieved_successfully'),
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Error fetching job details', context: [
@@ -162,7 +163,7 @@ final class QueueMonitorController extends Controller
 
             return ApiResponse::success(
                 data: $result->toArray(),
-                message: "Cleanup completed. {$result->deletedCount} jobs removed.",
+                message: __('Shared::message.cleanup_completed', ['count' => $result->deletedCount]),
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Error clearing queue monitor logs', context: [

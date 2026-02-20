@@ -6,6 +6,7 @@ namespace Modules\Subscription\Infrastructure\Persistence;
 
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
 use Modules\Subscription\Domain\Entities\WebhookConfig;
 use Modules\Shared\Infrastructure\Persistence\BaseRepository;
@@ -44,7 +45,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
         $model = WebhookConfigModel::find($webhookConfig->id()->toString());
 
         if ($model === null) {
-            throw new \InvalidArgumentException('Webhook config not found');
+            throw new InvalidArgumentException(__('Subscription::exception.webhook_config_not_found'));
         }
 
         $model->url = $webhookConfig->url();

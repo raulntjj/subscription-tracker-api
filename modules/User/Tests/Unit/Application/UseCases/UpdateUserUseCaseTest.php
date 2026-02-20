@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Unit\Application\UseCases;
 
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Modules\User\Tests\UserTestCase;
@@ -254,7 +255,7 @@ final class UpdateUserUseCaseTest extends UserTestCase
         $this->userRepository
             ->expects($this->once())
             ->method('update')
-            ->willThrowException(new \RuntimeException('Database error'));
+            ->willThrowException(new RuntimeException('Database error'));
 
         $dto = new UpdateUserDTO(
             name: 'New Name',
@@ -262,7 +263,7 @@ final class UpdateUserUseCaseTest extends UserTestCase
             password: 'NewPass12345',
         );
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Database error');
 
         $this->useCase->execute($this->userId, $dto);

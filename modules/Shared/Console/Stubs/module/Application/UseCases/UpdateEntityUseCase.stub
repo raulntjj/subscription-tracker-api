@@ -6,6 +6,7 @@ namespace Modules\{{MODULE_NAME}}\Application\UseCases;
 
 use Throwable;
 use Ramsey\Uuid\Uuid;
+use InvalidArgumentException;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\{{MODULE_NAME}}\Application\DTOs\{{MODULE_NAME}}DTO;
 use Modules\{{MODULE_NAME}}\Application\DTOs\Update{{MODULE_NAME}}DTO;
@@ -36,11 +37,11 @@ final readonly class Update{{MODULE_NAME}}UseCase
             $entity = $this->repository->findById($uuid);
 
             if ($entity === null) {
-                throw new \InvalidArgumentException("{{MODULE_NAME}} not found with id: {$id}");
+                throw new InvalidArgumentException("{{MODULE_NAME}} not found with id: {$id}");
             }
 
             if ($dto->name === null) {
-                throw new \InvalidArgumentException('All fields (name) are required for full update');
+                throw new InvalidArgumentException('All fields (name) are required for full update');
             }
 
             $entity->changeName($dto->name);

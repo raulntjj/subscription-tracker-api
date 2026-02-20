@@ -6,6 +6,7 @@ namespace Modules\{{MODULE_NAME}}\Application\UseCases;
 
 use Throwable;
 use Ramsey\Uuid\Uuid;
+use InvalidArgumentException;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\{{MODULE_NAME}}\Application\DTOs\{{MODULE_NAME}}DTO;
 use Modules\{{MODULE_NAME}}\Application\DTOs\Update{{MODULE_NAME}}DTO;
@@ -41,7 +42,7 @@ final readonly class PartialUpdate{{MODULE_NAME}}UseCase
             }
 
             if (!$dto->hasChanges()) {
-                throw new \InvalidArgumentException('No fields provided for update');
+                throw new InvalidArgumentException('No fields provided for update');
             }
 
             if ($dto->name !== null) {

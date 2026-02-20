@@ -6,6 +6,7 @@ namespace Modules\Subscription\Application\UseCases;
 
 use Throwable;
 use Ramsey\Uuid\Uuid;
+use InvalidArgumentException;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
@@ -29,7 +30,7 @@ final readonly class ActivateWebhookUseCase
             $webhook = $this->repository->findById(Uuid::fromString($id));
 
             if (!$webhook) {
-                throw new \InvalidArgumentException('Webhook config not found');
+                throw new InvalidArgumentException(__('Subscription::exception.webhook_config_not_found'));
             }
 
             $webhook->activate();

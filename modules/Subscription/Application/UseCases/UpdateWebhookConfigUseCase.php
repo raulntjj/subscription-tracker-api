@@ -6,6 +6,7 @@ namespace Modules\Subscription\Application\UseCases;
 
 use Throwable;
 use Ramsey\Uuid\Uuid;
+use InvalidArgumentException;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Application\DTOs\UpdateWebhookConfigDTO;
@@ -30,7 +31,7 @@ final readonly class UpdateWebhookConfigUseCase
             $entity = $this->repository->findById(Uuid::fromString($dto->id));
 
             if (!$entity) {
-                throw new \InvalidArgumentException('Webhook config not found');
+                throw new InvalidArgumentException(__('Subscription::exception.webhook_config_not_found'));
             }
 
             if ($dto->url !== null) {

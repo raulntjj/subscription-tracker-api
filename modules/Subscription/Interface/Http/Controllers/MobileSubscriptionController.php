@@ -71,7 +71,7 @@ final class MobileSubscriptionController extends Controller
 
             return ApiResponse::success(
                 data: $cursorPaginatedDTO->toArray(),
-                message: 'Subscriptions retrieved successfully',
+                message: __('Subscription::message.subscriptions_retrieved_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
