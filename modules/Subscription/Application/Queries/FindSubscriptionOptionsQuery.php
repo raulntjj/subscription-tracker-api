@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Modules\Subscription\Application\Queries;
 
 use Modules\Shared\Application\DTOs\SearchDTO;
-use Modules\Subscription\Application\DTOs\SubscriptionDTO;
-use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
-use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
+use Modules\Subscription\Application\DTOs\SubscriptionOptionsDTO;
+use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 
 /**
  * Query para buscar opções de subscription (sem paginação)
@@ -17,51 +16,28 @@ use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
 final readonly class FindSubscriptionOptionsQuery
 {
     use Loggable;
-    use Cacheable;
 
-    private const CACHE_TTL = 300; // 5 minutos
-
-    protected function cacheTags(): array
-    {
-        return ['subscriptions'];
+    public function __construct(
+        private SubscriptionRepositoryInterface $repository
+    ) {
     }
 
-    /**
-     * @return array<SubscriptionDTO>
-     */
-    public function execute(?SearchDTO $search = null): array
+    public function execute(?SearchDTO $search = null): SubscriptionOptionsDTO
     {
-        $searchKey = $search ? $search->cacheKey() : 'search:none';
-        $cacheKey = "subscriptions:options:{$searchKey}";
-
         $this->logger()->debug('Finding subscription options', [
             'search' => $search?->term,
         ]);
 
-        return $this->cache()->remember(
-            $cacheKey,
-            self::CACHE_TTL,
-            function () use ($search) {
-                $query = SubscriptionModel::query()
-                    ->orderBy('name', 'asc');
+        // Extrai parâmetros de busca
+        $searchColumns = null;
+        $searchTerm = null;
+        if ($search !== null && $search->hasSearch()) {
+            $searchColumns = $search->columns;
+            $searchTerm = $search->term;
+        }
 
-                // Aplica busca
-                if ($search !== null && $search->hasSearch()) {
-                    $query->where(function ($q) use ($search) {
-                        foreach ($search->columns as $column) {
-                            $q->orWhere($column, 'LIKE', "%{$search->term}%");
-                        }
-                    });
-                }
+        $options = $this->repository->findOptions($searchColumns, $searchTerm);
 
-                $data = $query->get();
-
-                $items = $data->map(function ($item) {
-                    return SubscriptionDTO::fromDatabase($item);
-                })->all();
-
-                return $items;
-            }
-        );
+        return new SubscriptionOptionsDTO(options: $options);
     }
 }

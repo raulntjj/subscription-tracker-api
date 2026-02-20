@@ -74,18 +74,21 @@ final class SubscriptionController extends Controller
                 self::SORTABLE_COLUMNS
             );
 
-            $paginator = $this->findPaginatedQuery->execute($page, $perPage, $search, $sort);
+            $result = $this->findPaginatedQuery->execute($page, $perPage, $search, $sort);
 
             $data = array_map(
                 fn (SubscriptionDTO $item) => $item->toArray(),
-                $paginator->items()
+                $result->data
             );
-
-            $pagination = PaginationDTO::fromPaginator($paginator);
 
             return ApiResponse::success([
                 'subscriptions' => $data,
-                'pagination' => $pagination->toArray(),
+                'pagination' => [
+                    'total' => $result->total,
+                    'per_page' => $result->perPage,
+                    'current_page' => $result->currentPage,
+                    'last_page' => $result->lastPage,
+                ],
             ], 'Subscriptions retrieved successfully');
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -107,16 +110,11 @@ final class SubscriptionController extends Controller
                 self::SEARCHABLE_COLUMNS
             );
 
-            $items = $this->findOptionsQuery->execute($search);
-
-            $data = array_map(
-                fn (SubscriptionDTO $item) => $item->toOptions(),
-                $items
-            );
+            $result = $this->findOptionsQuery->execute($search);
 
             return ApiResponse::success([
-                'subscriptions' => $data,
-                'total' => count($data),
+                'subscriptions' => $result->options,
+                'total' => count($result->options),
             ], 'Subscription options retrieved successfully');
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);

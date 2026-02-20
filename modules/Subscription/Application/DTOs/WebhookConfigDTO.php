@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\DTOs;
 
+use Modules\Subscription\Domain\Entities\WebhookConfig;
+
 /**
  * DTO para retornar dados de uma configuração de webhook
  */
@@ -17,6 +19,21 @@ final readonly class WebhookConfigDTO
         public string $createdAt,
         public string $updatedAt,
     ) {
+    }
+
+    /**
+     * Cria DTO a partir da entidade de domínio
+     */
+    public static function fromEntity(WebhookConfig $entity): self
+    {
+        return new self(
+            id: $entity->id()->toString(),
+            userId: $entity->userId()->toString(),
+            url: $entity->url(),
+            isActive: $entity->isActive(),
+            createdAt: $entity->createdAt()->format('Y-m-d H:i:s'),
+            updatedAt: $entity->updatedAt()?->format('Y-m-d H:i:s') ?? '',
+        );
     }
 
     /**

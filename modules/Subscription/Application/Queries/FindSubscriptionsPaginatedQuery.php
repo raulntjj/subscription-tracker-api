@@ -6,11 +6,10 @@ namespace Modules\Subscription\Application\Queries;
 
 use Modules\Shared\Application\DTOs\SortDTO;
 use Modules\Shared\Application\DTOs\SearchDTO;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
-use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
-use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
+use Modules\Subscription\Application\DTOs\SubscriptionPaginatedDTO;
+use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 
 /**
  * Query para buscar subscription com paginação offset (web)
@@ -19,14 +18,12 @@ use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
 final readonly class FindSubscriptionsPaginatedQuery
 {
     use Loggable;
-    use Cacheable;
 
-    private const CACHE_TTL = 300; // 5 minutos
     private const DEFAULT_PER_PAGE = 15;
 
-    protected function cacheTags(): array
-    {
-        return ['subscriptions'];
+    public function __construct(
+        private SubscriptionRepositoryInterface $repository
+    ) {
     }
 
     public function execute(
@@ -34,11 +31,7 @@ final readonly class FindSubscriptionsPaginatedQuery
         int $perPage = self::DEFAULT_PER_PAGE,
         ?SearchDTO $search = null,
         ?SortDTO $sort = null,
-    ): LengthAwarePaginator {
-        $searchKey = $search ? $search->cacheKey() : 'search:none';
-        $sortKey = $sort ? $sort->cacheKey() : 'sort:default';
-        $cacheKey = "subscriptions:paginated:page:{$page}:per_page:{$perPage}:{$searchKey}:{$sortKey}";
-
+    ): SubscriptionPaginatedDTO {
         $this->logger()->debug('Finding subscription with pagination', [
             'page' => $page,
             'per_page' => $perPage,
@@ -46,51 +39,41 @@ final readonly class FindSubscriptionsPaginatedQuery
             'sort' => $sort?->sorts,
         ]);
 
-        return $this->cache()->remember(
-            $cacheKey,
-            self::CACHE_TTL,
-            function () use ($page, $perPage, $search, $sort) {
-                $query = SubscriptionModel::query();
+        // Extrai parâmetros de busca
+        $searchColumns = null;
+        $searchTerm = null;
+        if ($search !== null && $search->hasSearch()) {
+            $searchColumns = $search->columns;
+            $searchTerm = $search->term;
+        }
 
-                // Aplica busca
-                if ($search !== null && $search->hasSearch()) {
-                    $query->where(function ($q) use ($search) {
-                        foreach ($search->columns as $column) {
-                            $q->orWhere($column, 'LIKE', "%{$search->term}%");
-                        }
-                    });
-                }
+        // Extrai parâmetros de ordenação
+        $sorts = null;
+        if ($sort !== null && $sort->hasSorts()) {
+            $sorts = $sort->sorts;
+        }
 
-                // Aplica ordenação
-                if ($sort !== null && $sort->hasSorts()) {
-                    foreach ($sort->sorts as $sortItem) {
-                        $query->orderBy($sortItem['column'], $sortItem['direction']);
-                    }
-                } else {
-                    $query->orderBy('created_at', 'desc');
-                }
+        $result = $this->repository->findPaginated(
+            $page,
+            $perPage,
+            $searchColumns,
+            $searchTerm,
+            $sorts
+        );
 
-                $paginator = $query->paginate(
-                    perPage: $perPage,
-                    page: $page
-                );
+        // Converte entidades para DTOs
+        $dtos = array_map(
+            fn ($entity) => SubscriptionDTO::fromEntity($entity),
+            $result['data']
+        );
 
-                // Converte para DTOs
-                $items = $paginator->getCollection()->map(function ($model) {
-                    return SubscriptionDTO::fromDatabase($model);
-                })->all();
-
-                return new LengthAwarePaginator(
-                    items: $items,
-                    total: $paginator->total(),
-                    perPage: $paginator->perPage(),
-                    currentPage: $paginator->currentPage(),
-                    options: [
-                        'path' => request()->url(),
-                        'query' => request()->query(),
-                    ]
-                );
-            }
+        return new SubscriptionPaginatedDTO(
+            data: $dtos,
+            total: $result['total'],
+            perPage: $result['per_page'],
+            currentPage: $result['current_page'],
+            lastPage: $result['last_page'],
         );
     }
 }
+

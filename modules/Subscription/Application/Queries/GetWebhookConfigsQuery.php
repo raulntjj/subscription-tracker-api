@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Queries;
 
-use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
+use Ramsey\Uuid\Uuid;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
-use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
+use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 
 /**
  * Query para buscar todas as configurações de webhook do usuário
@@ -15,42 +15,28 @@ use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
 final readonly class GetWebhookConfigsQuery
 {
     use Loggable;
-    use Cacheable;
 
-    private const CACHE_TTL = 300; // 5 minutos
-
-    protected function cacheTags(): array
-    {
-        return ['webhook_configs'];
+    public function __construct(
+        private WebhookConfigRepositoryInterface $repository
+    ) {
     }
 
+    /**
+     * @return WebhookConfigDTO[]
+     */
     public function execute(string $userId): array
     {
-        $cacheKey = "webhook_configs:user:{$userId}";
-
         $this->logger()->debug('Finding webhook configs for user', [
             'user_id' => $userId,
         ]);
 
-        return $this->cache()->remember(
-            $cacheKey,
-            self::CACHE_TTL,
-            function () use ($userId) {
-                $models = WebhookConfigModel::where('user_id', $userId)
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+        $webhookConfigs = $this->repository->findAllByUserId(
+            Uuid::fromString($userId)
+        );
 
-                return $models->map(function ($model) {
-                    return WebhookConfigDTO::fromArray([
-                        'id' => $model->id,
-                        'user_id' => $model->user_id,
-                        'url' => $model->url,
-                        'is_active' => $model->is_active,
-                        'created_at' => $model->created_at->format('Y-m-d H:i:s'),
-                        'updated_at' => $model->updated_at->format('Y-m-d H:i:s'),
-                    ]);
-                })->all();
-            }
+        return array_map(
+            fn ($entity) => WebhookConfigDTO::fromEntity($entity),
+            $webhookConfigs
         );
     }
 }

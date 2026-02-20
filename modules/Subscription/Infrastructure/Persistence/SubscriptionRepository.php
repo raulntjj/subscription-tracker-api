@@ -17,6 +17,8 @@ use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
 
 final class SubscriptionRepository extends BaseRepository implements SubscriptionRepositoryInterface
 {
+    private const MIN_CACHE_TTL = 600;
+    private const MAX_CACHE_TTL = 3600;
     protected function getCacheTags(): array
     {
         return ['subscriptions'];
@@ -64,13 +66,17 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
 
     public function findById(UuidInterface $id): ?Subscription
     {
-        $model = SubscriptionModel::find($id->toString());
+        $cacheKey = "subscription:{$id->toString()}";
 
-        if ($model === null) {
-            return null;
-        }
+        return $this->findWithCache($cacheKey, function () use ($id) {
+            $model = SubscriptionModel::find($id->toString());
 
-        return $this->toDomain($model);
+            if ($model === null) {
+                return null;
+            }
+
+            return $this->toDomain($model);
+        }, self::MAX_CACHE_TTL);
     }
 
     public function delete(UuidInterface $id): void
@@ -84,44 +90,204 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
 
     public function findActiveByUserId(string $userId): array
     {
-        return SubscriptionModel::where('user_id', $userId)
+        $models = SubscriptionModel::where('user_id', $userId)
             ->where('status', 'active')
             ->whereNull('deleted_at')
-            ->get()
-            ->map(fn ($model) => (object) [
-                'id' => $model->id,
-                'name' => $model->name,
-                'price' => (int) $model->price,
-                'currency' => $model->currency,
-                'billing_cycle' => $model->billing_cycle,
-                'next_billing_date' => $model->next_billing_date,
-                'category' => $model->category,
-                'status' => $model->status,
-                'user_id' => $model->user_id,
-            ])
-            ->toArray();
+            ->get();
+
+        $subscriptions = [];
+        foreach ($models as $model) {
+            $subscriptions[] = $this->toDomain($model);
+        }
+
+        return $subscriptions;
     }
 
     public function findDueForBillingToday(): array
     {
         $today = now()->format('Y-m-d');
 
-        return SubscriptionModel::where('status', 'active')
+        $models = SubscriptionModel::where('status', 'active')
             ->whereDate('next_billing_date', $today)
             ->whereNull('deleted_at')
-            ->get()
-            ->map(fn ($model) => (object) [
-                'id' => $model->id,
-                'name' => $model->name,
-                'price' => (int) $model->price,
-                'currency' => $model->currency,
-                'billing_cycle' => $model->billing_cycle,
-                'next_billing_date' => $model->next_billing_date,
-                'category' => $model->category,
-                'status' => $model->status,
-                'user_id' => $model->user_id,
-            ])
-            ->toArray();
+            ->get();
+
+        $subscriptions = [];
+        foreach ($models as $model) {
+            $subscriptions[] = $this->toDomain($model);
+        }
+
+        return $subscriptions;
+    }
+
+    public function findPaginated(
+        int $page,
+        int $perPage,
+        ?array $searchColumns = null,
+        ?string $searchTerm = null,
+        ?array $sorts = null
+    ): array {
+        $searchKey = $searchTerm !== null && $searchTerm !== '' 
+            ? md5(json_encode($searchColumns) . $searchTerm) 
+            : 'none';
+        $sortKey = $sorts !== null && count($sorts) > 0
+            ? md5(json_encode($sorts))
+            : 'default';
+        $cacheKey = "subscriptions:paginated:page:{$page}:per_page:{$perPage}:search:{$searchKey}:sort:{$sortKey}";
+
+        return $this->findWithCache($cacheKey, function () use ($page, $perPage, $searchColumns, $searchTerm, $sorts) {
+            $query = SubscriptionModel::query()->whereNull('deleted_at');
+
+            // Aplica busca
+            if ($searchColumns !== null && $searchTerm !== null && $searchTerm !== '') {
+                $query->where(function ($q) use ($searchColumns, $searchTerm) {
+                    foreach ($searchColumns as $column) {
+                        $q->orWhere($column, 'LIKE', "%{$searchTerm}%");
+                    }
+                });
+            }
+
+            // Aplica ordenação
+            if ($sorts !== null && count($sorts) > 0) {
+                foreach ($sorts as $sort) {
+                    $query->orderBy($sort['column'], $sort['direction']);
+                }
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $total = $query->count();
+            $lastPage = (int) ceil($total / $perPage);
+
+            $models = $query
+                ->skip(($page - 1) * $perPage)
+                ->take($perPage)
+                ->get();
+
+            $subscriptions = [];
+            foreach ($models as $model) {
+                $subscriptions[] = $this->toDomain($model);
+            }
+
+            return [
+                'data' => $subscriptions,
+                'total' => $total,
+                'per_page' => $perPage,
+                'current_page' => $page,
+                'last_page' => $lastPage,
+            ];
+        }, self::MIN_CACHE_TTL);
+    }
+
+    public function findCursorPaginated(
+        int $limit,
+        ?string $cursor = null,
+        ?array $searchColumns = null,
+        ?string $searchTerm = null,
+        ?array $sorts = null
+    ): array {
+        $searchKey = $searchTerm !== null && $searchTerm !== '' 
+            ? md5(json_encode($searchColumns) . $searchTerm) 
+            : 'none';
+
+        $sortKey = $sorts !== null && count($sorts) > 0
+            ? md5(json_encode($sorts))
+            : 'default';
+
+        $cursorKey = $cursor ?? 'none';
+        $cacheKey = "subscriptions:cursor_paginated:cursor:{$cursorKey}:limit:{$limit}:search:{$searchKey}:sort:{$sortKey}";
+
+        return $this->findWithCache($cacheKey, function () use ($limit, $cursor, $searchColumns, $searchTerm, $sorts) {
+            $query = SubscriptionModel::query()->whereNull('deleted_at');
+
+            // Aplica busca
+            if ($searchColumns !== null && $searchTerm !== null && $searchTerm !== '') {
+                $query->where(function ($q) use ($searchColumns, $searchTerm) {
+                    foreach ($searchColumns as $column) {
+                        $q->orWhere($column, 'LIKE', "%{$searchTerm}%");
+                    }
+                });
+            }
+
+            // Aplica ordenação
+            if ($sorts !== null && count($sorts) > 0) {
+                foreach ($sorts as $sort) {
+                    $query->orderBy($sort['column'], $sort['direction']);
+                }
+                $query->orderBy('id', 'desc');
+            } else {
+                $query->orderBy('created_at', 'desc');
+                $query->orderBy('id', 'desc');
+            }
+
+            if ($cursor) {
+                $parts = explode('|', base64_decode($cursor));
+                if (count($parts) === 2) {
+                    [$timestamp, $id] = $parts;
+                    $query->where(function ($q) use ($timestamp, $id) {
+                        $q->where('created_at', '<', $timestamp)
+                            ->orWhere(function ($q) use ($timestamp, $id) {
+                                $q->where('created_at', '=', $timestamp)
+                                    ->where('id', '<', $id);
+                            });
+                    });
+                }
+            }
+
+            $models = $query->take($limit + 1)->get();
+            $hasMore = $models->count() > $limit;
+
+            if ($hasMore) {
+                $models = $models->take($limit);
+            }
+
+            $nextCursor = null;
+            if ($hasMore && $models->isNotEmpty()) {
+                $lastModel = $models->last();
+                $nextCursor = base64_encode($lastModel->created_at->format('Y-m-d H:i:s') . '|' . $lastModel->id);
+            }
+
+            $subscriptions = [];
+            foreach ($models as $model) {
+                $subscriptions[] = $this->toDomain($model);
+            }
+
+            return [
+                'data' => $subscriptions,
+                'next_cursor' => $nextCursor,
+                'prev_cursor' => null,
+            ];
+        }, self::MIN_CACHE_TTL);
+    }
+
+    public function findOptions(?array $searchColumns = null, ?string $searchTerm = null): array
+    {
+        $searchKey = $searchTerm !== null && $searchTerm !== '' 
+            ? md5(json_encode($searchColumns) . $searchTerm) 
+            : 'all';
+        
+        return $this->findWithCache("subscription_options:{$searchKey}", function () use ($searchColumns, $searchTerm) {
+            $query = SubscriptionModel::query()
+                ->whereNull('deleted_at')
+                ->orderBy('name');
+
+            // Aplica busca
+            if ($searchColumns !== null && $searchTerm !== null && $searchTerm !== '') {
+                $query->where(function ($q) use ($searchColumns, $searchTerm) {
+                    foreach ($searchColumns as $column) {
+                        $q->orWhere($column, 'LIKE', "%{$searchTerm}%");
+                    }
+                });
+            }
+
+            return $query
+                ->get(['id', 'name'])
+                ->map(fn ($model) => [
+                    'id' => $model->id,
+                    'name' => $model->name,
+                ])
+                ->toArray();
+        });
     }
 
     private function toDomain(SubscriptionModel $model): Subscription

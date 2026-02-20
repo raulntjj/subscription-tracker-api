@@ -14,6 +14,10 @@ use Modules\Subscription\Infrastructure\Persistence\Eloquent\BillingHistoryModel
 
 final class BillingHistoryRepository extends BaseRepository implements BillingHistoryRepositoryInterface
 {
+
+    private const MIN_CACHE_TTL = 600;
+    private const MAX_CACHE_TTL = 3600;
+
     protected function getCacheTags(): array
     {
         return ['billing_histories'];

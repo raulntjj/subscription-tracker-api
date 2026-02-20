@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Queries;
 
-use Illuminate\Pagination\CursorPaginator;
 use Modules\Shared\Application\DTOs\SortDTO;
 use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
-use Modules\Shared\Infrastructure\Cache\Concerns\Cacheable;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
-use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
+use Modules\Subscription\Application\DTOs\SubscriptionCursorPaginatedDTO;
+use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 
 /**
  * Query para buscar subscription com cursor pagination (mobile)
@@ -19,14 +18,12 @@ use Modules\Subscription\Infrastructure\Persistence\Eloquent\SubscriptionModel;
 final readonly class FindSubscriptionsCursorPaginatedQuery
 {
     use Loggable;
-    use Cacheable;
 
     private const DEFAULT_PER_PAGE = 20;
-    private const CACHE_TTL = 300; // 5 minutos
 
-    protected function cacheTags(): array
-    {
-        return ['subscriptions'];
+    public function __construct(
+        private SubscriptionRepositoryInterface $repository
+    ) {
     }
 
     public function execute(
@@ -34,12 +31,7 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
         int $perPage = self::DEFAULT_PER_PAGE,
         ?SearchDTO $search = null,
         ?SortDTO $sort = null,
-    ): CursorPaginator {
-        $searchKey = $search ? $search->cacheKey() : 'search:none';
-        $sortKey = $sort ? $sort->cacheKey() : 'sort:default';
-        $cursorKey = $cursor ?? 'cursor:none';
-        $cacheKey = "subscriptions:cursor_paginated:cursor:{$cursorKey}:per_page:{$perPage}:{$searchKey}:{$sortKey}";
-
+    ): SubscriptionCursorPaginatedDTO {
         $this->logger()->debug('Finding subscription with cursor pagination', [
             'cursor' => $cursor,
             'per_page' => $perPage,
@@ -47,56 +39,39 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
             'sort' => $sort?->sorts,
         ]);
 
-        return $this->cache()->remember(
-            $cacheKey,
-            self::CACHE_TTL,
-            function () use ($cursor, $perPage, $search, $sort) {
-                $query = SubscriptionModel::query();
+        // Extrai parâmetros de busca
+        $searchColumns = null;
+        $searchTerm = null;
+        if ($search !== null && $search->hasSearch()) {
+            $searchColumns = $search->columns;
+            $searchTerm = $search->term;
+        }
 
-                // Aplica busca
-                if ($search !== null && $search->hasSearch()) {
-                    $query->where(function ($q) use ($search) {
-                        foreach ($search->columns as $column) {
-                            $q->orWhere($column, 'LIKE', "%{$search->term}%");
-                        }
-                    });
-                }
+        // Extrai parâmetros de ordenação
+        $sorts = null;
+        if ($sort !== null && $sort->hasSorts()) {
+            $sorts = $sort->sorts;
+        }
 
-                // Aplica ordenação
-                if ($sort !== null && $sort->hasSorts()) {
-                    foreach ($sort->sorts as $sortItem) {
-                        $query->orderBy($sortItem['column'], $sortItem['direction']);
-                    }
-                    $query->orderBy('id', 'desc');
-                } else {
-                    $query->orderBy('created_at', 'desc');
-                    $query->orderBy('id', 'desc');
-                }
+        $result = $this->repository->findCursorPaginated(
+            $perPage,
+            $cursor,
+            $searchColumns,
+            $searchTerm,
+            $sorts
+        );
 
-                // UMA ÚNICA query com cursorPaginate() - resolve N+1
-                $paginator = $query->cursorPaginate(
-                    perPage: $perPage,
-                    cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null
-                );
+        // Converte entidades para DTOs
+        $dtos = array_map(
+            fn ($entity) => SubscriptionDTO::fromEntity($entity),
+            $result['data']
+        );
 
-                // Converte para DTOs
-                $items = $paginator->getCollection()
-                    ->map(fn ($model) => SubscriptionDTO::fromDatabase($model))
-                    ->all();
-
-                return new CursorPaginator(
-                    items: $items,
-                    perPage: $paginator->perPage(),
-                    cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null,
-                    options: [
-                        'path' => request()->url(),
-                        'parameters' => [
-                            'next' => $paginator->nextCursor()?->encode(),
-                            'prev' => $paginator->previousCursor()?->encode(),
-                        ],
-                    ]
-                );
-            }
+        return new SubscriptionCursorPaginatedDTO(
+            data: $dtos,
+            nextCursor: $result['next_cursor'],
+            prevCursor: $result['prev_cursor'],
         );
     }
 }
+

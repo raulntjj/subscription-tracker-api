@@ -16,6 +16,9 @@ use Modules\User\Infrastructure\Persistence\Eloquent\UserModel;
 
 final class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
+    private const MIN_CACHE_TTL = 600;
+    private const MAX_CACHE_TTL = 3600;
+
     protected function getCacheTags(): array
     {
         return ['users'];
@@ -56,24 +59,32 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
 
     public function findById(UuidInterface $id): ?User
     {
-        $model = UserModel::find($id->toString());
+        $cacheKey = "user:{$id->toString()}";
 
-        if ($model === null) {
-            return null;
-        }
+        return $this->findWithCache($cacheKey, function () use ($id) {
+            $model = UserModel::find($id->toString());
 
-        return $this->toDomain($model);
+            if ($model === null) {
+                return null;
+            }
+
+            return $this->toDomain($model);
+        }, self::MAX_CACHE_TTL);
     }
 
     public function findByEmail(string $email): ?User
     {
-        $model = UserModel::where('email', $email)->first();
+        $cacheKey = "user:email:{$email}";
 
-        if ($model === null) {
-            return null;
-        }
+        return $this->findWithCache($cacheKey, function () use ($email) {
+            $model = UserModel::where('email', $email)->first();
 
-        return $this->toDomain($model);
+            if ($model === null) {
+                return null;
+            }
+
+            return $this->toDomain($model);
+        }, self::MAX_CACHE_TTL);
     }
 
     public function delete(UuidInterface $id): void
@@ -87,71 +98,88 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
 
     public function findAll(): array
     {
-        $models = UserModel::orderBy('created_at', 'desc')->get();
+        $cacheKey = "users:all";
 
-        return $models->map(fn (UserModel $model) => $this->toDomain($model))->all();
+        return $this->findWithCache($cacheKey, function () {
+            $models = UserModel::orderBy('created_at', 'desc')->get();
+
+            return $models->map(fn (UserModel $model) => $this->toDomain($model))->all();
+        }, self::MAX_CACHE_TTL);
     }
 
     public function findPaginated(int $page, int $perPage): array
     {
-        $paginator = UserModel::orderBy('created_at', 'desc')
-            ->paginate($perPage, ['*'], 'page', $page);
+        $cacheKey = "users:paginated:page:{$page}:per_page:{$perPage}";
 
-        return [
-            'data' => $paginator->items() ? array_map(
-                fn (UserModel $model) => $this->toDomain($model),
-                $paginator->items()
-            ) : [],
-            'total' => $paginator->total(),
-            'per_page' => $paginator->perPage(),
-            'current_page' => $paginator->currentPage(),
-            'last_page' => $paginator->lastPage(),
-        ];
+        return $this->findWithCache($cacheKey, function () use ($page, $perPage) {
+            $paginator = UserModel::orderBy('created_at', 'desc')
+                ->paginate($perPage, ['*'], 'page', $page);
+
+            return [
+                'data' => $paginator->items() ? array_map(
+                    fn (UserModel $model) => $this->toDomain($model),
+                    $paginator->items()
+                ) : [],
+                'total' => $paginator->total(),
+                'per_page' => $paginator->perPage(),
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+            ];
+        }, self::MIN_CACHE_TTL);
     }
 
     public function findCursorPaginated(int $limit, ?string $cursor = null): array
     {
-        $query = UserModel::orderBy('created_at', 'desc');
+        $cursorKey = $cursor ?? 'none';
+        $cacheKey = "users:cursor_paginated:cursor:{$cursorKey}:limit:{$limit}";
 
-        if ($cursor !== null) {
-            $query->where('created_at', '<', $cursor);
-        }
+        return $this->findWithCache($cacheKey, function () use ($limit, $cursor) {
+            $query = UserModel::orderBy('created_at', 'desc');
 
-        $models = $query->limit($limit + 1)->get();
+            if ($cursor !== null) {
+                $query->where('created_at', '<', $cursor);
+            }
 
-        $hasMore = $models->count() > $limit;
-        if ($hasMore) {
-            $models = $models->slice(0, $limit);
-        }
+            $models = $query->limit($limit + 1)->get();
 
-        $data = $models->map(fn (UserModel $model) => $this->toDomain($model))->all();
+            $hasMore = $models->count() > $limit;
+            if ($hasMore) {
+                $models = $models->slice(0, $limit);
+            }
 
-        $nextCursor = null;
-        if ($hasMore && count($data) > 0) {
-            $lastItem = end($data);
-            $nextCursor = $lastItem->createdAt()->format('Y-m-d H:i:s');
-        }
+            $data = $models->map(fn (UserModel $model) => $this->toDomain($model))->all();
 
-        // Para cursor anterior, seria necessário inverter a query
-        $prevCursor = $cursor; // Simplificado
+            $nextCursor = null;
+            if ($hasMore && count($data) > 0) {
+                $lastItem = end($data);
+                $nextCursor = $lastItem->createdAt()->format('Y-m-d H:i:s');
+            }
 
-        return [
-            'data' => $data,
-            'next_cursor' => $nextCursor,
-            'prev_cursor' => $prevCursor,
-        ];
+            // Para cursor anterior, seria necessário inverter a query
+            $prevCursor = $cursor;
+
+            return [
+                'data' => $data,
+                'next_cursor' => $nextCursor,
+                'prev_cursor' => $prevCursor,
+            ];
+        }, self::MIN_CACHE_TTL);
     }
 
     public function findOptions(): array
     {
-        return UserModel::select('id', 'name')
-            ->orderBy('name')
-            ->get()
-            ->map(fn (UserModel $model) => [
-                'id' => $model->id,
-                'name' => $model->name . ($model->surname ? " {$model->surname}" : ''),
-            ])
-            ->all();
+        $cacheKey = "users:options";
+
+        return $this->findWithCache($cacheKey, function () {
+            return UserModel::select('id', 'name', 'surname')
+                ->orderBy('name')
+                ->get()
+                ->map(fn (UserModel $model) => [
+                    'id' => $model->id,
+                    'name' => $model->name . ($model->surname ? " {$model->surname}" : ''),
+                ])
+                ->all();
+        }, self::MIN_CACHE_TTL);
     }
 
     private function toDomain(UserModel $model): User
