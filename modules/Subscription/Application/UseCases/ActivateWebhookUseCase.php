@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
-use Throwable;
 
 final readonly class ActivateWebhookUseCase
 {
     use Loggable;
 
     public function __construct(
-        private WebhookConfigRepositoryInterface $repository
+        private WebhookConfigRepositoryInterface $repository,
     ) {
     }
 
@@ -44,7 +44,7 @@ final readonly class ActivateWebhookUseCase
                 action: 'activate',
                 entityType: 'WebhookConfig',
                 entityId: $id,
-                context: []
+                context: [],
             );
 
             return WebhookConfigDTO::fromEntity($webhook);

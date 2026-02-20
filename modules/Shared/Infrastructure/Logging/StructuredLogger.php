@@ -14,7 +14,7 @@ final class StructuredLogger implements LoggerInterface
 {
     public function __construct(
         private readonly string $module,
-        private readonly LogChannel $channel = LogChannel::APPLICATION
+        private readonly LogChannel $channel = LogChannel::APPLICATION,
     ) {
     }
 
@@ -73,7 +73,7 @@ final class StructuredLogger implements LoggerInterface
             array_merge($context, [
                 'event_name' => $eventName,
                 'event_type' => 'domain_event',
-            ])
+            ]),
         );
     }
 
@@ -90,7 +90,7 @@ final class StructuredLogger implements LoggerInterface
                 'user_id' => $context['user_id'] ?? 'system',
                 'ip' => request()?->ip() ?? 'cli',
                 'user_agent' => request()?->userAgent() ?? 'cli',
-            ])
+            ]),
         );
     }
 

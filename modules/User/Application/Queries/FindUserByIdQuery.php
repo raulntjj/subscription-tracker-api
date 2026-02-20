@@ -17,7 +17,7 @@ final readonly class FindUserByIdQuery
     use Loggable;
 
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
     ) {
     }
 

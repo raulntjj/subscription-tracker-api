@@ -15,7 +15,7 @@ final readonly class TestWebhookUseCase
     use Loggable;
 
     public function __construct(
-        private WebhookConfigRepositoryInterface $repository
+        private WebhookConfigRepositoryInterface $repository,
     ) {
     }
 

@@ -17,7 +17,7 @@ final class UserServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             abstract: UserRepositoryInterface::class,
-            concrete: UserRepository::class
+            concrete: UserRepository::class,
         );
     }
 

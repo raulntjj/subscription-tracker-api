@@ -13,7 +13,7 @@ final class ClearQueueMonitorLogsUseCase
     use Loggable;
 
     public function __construct(
-        private readonly QueueMonitorRepositoryInterface $queueMonitorRepository
+        private readonly QueueMonitorRepositoryInterface $queueMonitorRepository,
     ) {
     }
 

@@ -36,7 +36,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $this->assertEquals($this->uuid, $user->id());
@@ -57,7 +57,7 @@ final class UserTest extends UserTestCase
             password: $this->password,
             createdAt: $this->createdAt,
             surname: 'Doe',
-            profilePath: '/uploads/avatar.jpg'
+            profilePath: '/uploads/avatar.jpg',
         );
 
         $this->assertEquals('John', $user->name());
@@ -72,7 +72,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $this->assertInstanceOf(UuidInterface::class, $user->id());
@@ -85,7 +85,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $this->assertInstanceOf(Email::class, $user->email());
@@ -98,7 +98,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $this->assertInstanceOf(Password::class, $user->password());
@@ -111,7 +111,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $this->assertInstanceOf(DateTimeImmutable::class, $user->createdAt());
@@ -124,7 +124,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $this->assertEquals('John', $user->fullName());
@@ -138,7 +138,7 @@ final class UserTest extends UserTestCase
             email: $this->email,
             password: $this->password,
             createdAt: $this->createdAt,
-            surname: 'Doe'
+            surname: 'Doe',
         );
 
         $this->assertEquals('John Doe', $user->fullName());
@@ -152,7 +152,7 @@ final class UserTest extends UserTestCase
             email: $this->email,
             password: $this->password,
             createdAt: $this->createdAt,
-            surname: null
+            surname: null,
         );
 
         // Quando surname é null, fullName não deve ter espaços extras
@@ -167,7 +167,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $user->changeName('Jane');
@@ -183,7 +183,7 @@ final class UserTest extends UserTestCase
             email: $this->email,
             password: $this->password,
             createdAt: $this->createdAt,
-            surname: 'Doe'
+            surname: 'Doe',
         );
 
         $user->changeSurname('Smith');
@@ -199,7 +199,7 @@ final class UserTest extends UserTestCase
             email: $this->email,
             password: $this->password,
             createdAt: $this->createdAt,
-            surname: 'Doe'
+            surname: 'Doe',
         );
 
         $user->changeSurname(null);
@@ -214,7 +214,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $newEmail = new Email('newemail@example.com');
@@ -231,7 +231,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $newPassword = Password::fromPlainText('NewSecurePass456');
@@ -249,7 +249,7 @@ final class UserTest extends UserTestCase
             email: $this->email,
             password: $this->password,
             createdAt: $this->createdAt,
-            profilePath: '/uploads/old-avatar.jpg'
+            profilePath: '/uploads/old-avatar.jpg',
         );
 
         $user->changeProfilePath('/uploads/new-avatar.jpg');
@@ -265,7 +265,7 @@ final class UserTest extends UserTestCase
             email: $this->email,
             password: $this->password,
             createdAt: $this->createdAt,
-            profilePath: '/uploads/avatar.jpg'
+            profilePath: '/uploads/avatar.jpg',
         );
 
         $user->changeProfilePath(null);
@@ -287,7 +287,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $user->changeName('Jane');
@@ -310,7 +310,7 @@ final class UserTest extends UserTestCase
             name: 'John',
             email: $this->email,
             password: $this->password,
-            createdAt: $createdAt
+            createdAt: $createdAt,
         );
 
         $retrievedCreatedAt = $user->createdAt();
@@ -329,7 +329,7 @@ final class UserTest extends UserTestCase
             name: '',
             email: $this->email,
             password: $this->password,
-            createdAt: $this->createdAt
+            createdAt: $this->createdAt,
         );
 
         $this->assertEquals('', $user->name());

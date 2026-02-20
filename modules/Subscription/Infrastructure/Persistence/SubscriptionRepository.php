@@ -40,7 +40,7 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
                 'user_id' => $entity->userId()->toString(),
                 'created_at' => $entity->createdAt(),
                 'updated_at' => $entity->updatedAt(),
-            ]
+            ],
         );
     }
 
@@ -133,10 +133,10 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
         int $perPage,
         ?array $searchColumns = null,
         ?string $searchTerm = null,
-        ?array $sorts = null
+        ?array $sorts = null,
     ): array {
-        $searchKey = $searchTerm !== null && $searchTerm !== '' 
-            ? md5(json_encode($searchColumns) . $searchTerm) 
+        $searchKey = $searchTerm !== null && $searchTerm !== ''
+            ? md5(json_encode($searchColumns) . $searchTerm)
             : 'none';
         $sortKey = $sorts !== null && count($sorts) > 0
             ? md5(json_encode($sorts))
@@ -196,10 +196,10 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
         ?string $cursor = null,
         ?array $searchColumns = null,
         ?string $searchTerm = null,
-        ?array $sorts = null
+        ?array $sorts = null,
     ): array {
-        $searchKey = $searchTerm !== null && $searchTerm !== '' 
-            ? md5(json_encode($searchColumns) . $searchTerm) 
+        $searchKey = $searchTerm !== null && $searchTerm !== ''
+            ? md5(json_encode($searchColumns) . $searchTerm)
             : 'none';
 
         $sortKey = $sorts !== null && count($sorts) > 0
@@ -235,7 +235,7 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
             /** @var \Illuminate\Pagination\CursorPaginator $paginator */
             $paginator = $query->cursorPaginate(
                 perPage: $limit,
-                cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null
+                cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null,
             );
 
             // Converte para DTOs
@@ -253,10 +253,10 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
 
     public function findOptions(?array $searchColumns = null, ?string $searchTerm = null): array
     {
-        $searchKey = $searchTerm !== null && $searchTerm !== '' 
-            ? md5(json_encode($searchColumns) . $searchTerm) 
+        $searchKey = $searchTerm !== null && $searchTerm !== ''
+            ? md5(json_encode($searchColumns) . $searchTerm)
             : 'all';
-        
+
         return $this->findWithCache("subscription_options:{$searchKey}", function () use ($searchColumns, $searchTerm) {
             $query = SubscriptionModel::query()
                 ->whereNull('deleted_at')
@@ -294,7 +294,7 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
             status: SubscriptionStatusEnum::from($model->status),
             userId: Uuid::fromString($model->user_id),
             createdAt: new DateTimeImmutable($model->created_at->format('Y-m-d H:i:s')),
-            updatedAt: $model->updated_at ? new DateTimeImmutable($model->updated_at->format('Y-m-d H:i:s')) : null
+            updatedAt: $model->updated_at ? new DateTimeImmutable($model->updated_at->format('Y-m-d H:i:s')) : null,
         );
     }
 }

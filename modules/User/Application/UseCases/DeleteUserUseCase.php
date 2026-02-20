@@ -13,7 +13,7 @@ final readonly class DeleteUserUseCase
     use Loggable;
 
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
     ) {
     }
 
@@ -45,7 +45,7 @@ final readonly class DeleteUserUseCase
                 context: [
                     'email' => $user->email()->value(),
                     'name' => $user->name(),
-                ]
+                ],
             );
         } catch (\Throwable $e) {
             $this->logger()->error('Failed to delete user', [

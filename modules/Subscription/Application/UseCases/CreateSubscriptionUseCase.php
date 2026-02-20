@@ -20,7 +20,7 @@ final readonly class CreateSubscriptionUseCase
     use Loggable;
 
     public function __construct(
-        private SubscriptionRepositoryInterface $repository
+        private SubscriptionRepositoryInterface $repository,
     ) {
     }
 
@@ -69,7 +69,7 @@ final readonly class CreateSubscriptionUseCase
                     'currency' => $entity->currency()->value,
                     'billing_cycle' => $entity->billingCycle()->value,
                     'category' => $entity->category(),
-                ]
+                ],
             );
 
             return SubscriptionDTO::fromEntity($entity);

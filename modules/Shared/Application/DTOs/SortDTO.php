@@ -111,7 +111,7 @@ final readonly class SortDTO
 
         $parts = array_map(
             fn (array $sort) => "{$sort['column']}:{$sort['direction']}",
-            $this->sorts
+            $this->sorts,
         );
 
         return 'sort:' . implode('|', $parts);

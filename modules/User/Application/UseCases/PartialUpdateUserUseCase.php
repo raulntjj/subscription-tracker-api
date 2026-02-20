@@ -17,7 +17,7 @@ final readonly class PartialUpdateUserUseCase
     use Loggable;
 
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
     ) {
     }
 
@@ -72,7 +72,7 @@ final readonly class PartialUpdateUserUseCase
                     'updated_fields' => array_keys($dto->toArray()),
                     'email' => $user->email()->value(),
                     'name' => $user->name(),
-                ]
+                ],
             );
 
             return UserDTO::fromEntity($user);

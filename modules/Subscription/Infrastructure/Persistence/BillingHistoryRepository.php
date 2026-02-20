@@ -14,7 +14,6 @@ use Modules\Subscription\Infrastructure\Persistence\Eloquent\BillingHistoryModel
 
 final class BillingHistoryRepository extends BaseRepository implements BillingHistoryRepositoryInterface
 {
-
     private const MIN_CACHE_TTL = 600;
     private const MAX_CACHE_TTL = 3600;
 
@@ -33,7 +32,7 @@ final class BillingHistoryRepository extends BaseRepository implements BillingHi
                 'amount_paid' => $entity->amountPaid(),
                 'paid_at' => $entity->paidAt(),
                 'created_at' => $entity->createdAt(),
-            ]
+            ],
         );
     }
 
@@ -81,7 +80,7 @@ final class BillingHistoryRepository extends BaseRepository implements BillingHi
             subscriptionId: Uuid::fromString($model->subscription_id),
             amountPaid: (int) $model->amount_paid,
             paidAt: new DateTimeImmutable($model->paid_at->format('Y-m-d H:i:s')),
-            createdAt: new DateTimeImmutable($model->created_at->format('Y-m-d H:i:s'))
+            createdAt: new DateTimeImmutable($model->created_at->format('Y-m-d H:i:s')),
         );
     }
 }

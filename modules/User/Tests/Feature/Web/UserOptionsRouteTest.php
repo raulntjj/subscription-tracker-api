@@ -32,7 +32,7 @@ final class UserOptionsRouteTest extends FeatureTestCase
 
         $response = $this->getJson(
             '/api/web/v1/users/options',
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200)
@@ -41,8 +41,8 @@ final class UserOptionsRouteTest extends FeatureTestCase
                 'message',
                 'data' => [
                     'options' => [
-                        '*' => ['id', 'name']
-                    ]
+                        '*' => ['id', 'name'],
+                    ],
                 ],
             ]);
 

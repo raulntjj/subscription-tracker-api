@@ -50,14 +50,14 @@ final class AuthController
 
             return ApiResponse::success(
                 data: $token->toArray(),
-                message: 'Login performed successfully.'
+                message: 'Login performed successfully.',
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
         } catch (InvalidArgumentException $e) {
             return ApiResponse::error(
                 message: $e->getMessage(),
-                status: 400
+                status: 400,
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Login error', context: [
@@ -90,14 +90,14 @@ final class AuthController
             return ApiResponse::success(
                 data: $token->toArray(),
                 message: 'User registered successfully.',
-                status: 201
+                status: 201,
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
         } catch (InvalidArgumentException $e) {
             return ApiResponse::error(
                 message: $e->getMessage(),
-                status: 400
+                status: 400,
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Register error', context: [
@@ -119,7 +119,7 @@ final class AuthController
             $this->logoutUseCase->execute();
 
             return ApiResponse::success(
-                message: 'Logout performed successfully.'
+                message: 'Logout performed successfully.',
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Logout error', context: [
@@ -148,7 +148,7 @@ final class AuthController
 
             return ApiResponse::success(
                 data: $token->toArray(),
-                message: 'Token refreshed successfully.'
+                message: 'Token refreshed successfully.',
             );
         } catch (\PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException $e) {
             return ApiResponse::unauthorized(message: 'Token expired. Please login again.');
@@ -183,7 +183,7 @@ final class AuthController
 
             return ApiResponse::success(
                 data: $user->toArray(),
-                message: 'Authenticated user retrieved successfully.'
+                message: 'Authenticated user retrieved successfully.',
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Get authenticated user error', context: [

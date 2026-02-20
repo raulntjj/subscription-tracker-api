@@ -22,7 +22,7 @@ final class Authenticate
     {
         /** @var JWTGuard $guard */
         $guard = auth('api');
-        
+
         try {
             $guard->userOrFail();
         } catch (TokenExpiredException $e) {

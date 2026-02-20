@@ -41,7 +41,7 @@ final readonly class UserCursorPaginatedDTO
         return [
             'users' => array_map(
                 fn (UserDTO $user) => $user->toArray(),
-                $this->users
+                $this->users,
             ),
             'next_cursor' => $this->nextCursor,
             'prev_cursor' => $this->prevCursor,

@@ -54,24 +54,24 @@ final class MobileUserController extends Controller
 
             $search = SearchDTO::fromRequest(
                 params: $request->query(),
-                searchableColumns: self::SEARCHABLE_COLUMNS
+                searchableColumns: self::SEARCHABLE_COLUMNS,
             );
 
             $sort = SortDTO::fromRequest(
                 params: $request->query(),
-                sortableColumns: self::SORTABLE_COLUMNS
+                sortableColumns: self::SORTABLE_COLUMNS,
             );
 
             $cursorPaginatedDTO = $this->findUsersCursorPaginatedQuery->execute(
                 cursor: $cursor,
                 perPage: $perPage,
                 search: $search,
-                sort: $sort
+                sort: $sort,
             );
 
             return ApiResponse::success(
                 data: $cursorPaginatedDTO->toArray(),
-                message: 'Users retrieved successfully'
+                message: 'Users retrieved successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);

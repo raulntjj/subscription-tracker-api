@@ -19,7 +19,7 @@ class TestRabbitMQJob implements ShouldQueue
     use SerializesModels;
 
     public function __construct(
-        private readonly string $message
+        private readonly string $message,
     ) {
     }
 

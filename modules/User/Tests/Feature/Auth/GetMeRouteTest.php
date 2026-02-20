@@ -21,7 +21,7 @@ final class GetMeRouteTest extends FeatureTestCase
 
         $response = $this->getJson(
             '/api/auth/v1/me',
-            $this->authHeaders($auth['token'])
+            $this->authHeaders($auth['token']),
         );
 
         $response->assertStatus(200)

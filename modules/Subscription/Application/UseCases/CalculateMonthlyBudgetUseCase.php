@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
-use DateTimeImmutable;
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
-use Modules\Shared\Infrastructure\Logging\StructuredLogger;
-use Modules\Subscription\Application\DTOs\MonthlyBudgetDTO;
-use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 use Throwable;
+use DateTimeImmutable;
+use Modules\Subscription\Application\DTOs\MonthlyBudgetDTO;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 
 /**
  * Caso de uso para calcular o orçamento mensal de assinaturas
@@ -61,7 +60,7 @@ final readonly class CalculateMonthlyBudgetUseCase
                 // Normaliza o preço para valor mensal
                 $monthlyPrice = $this->normalizeToMonthlyPrice(
                     $subscription->price(),
-                    $subscription->billingCycle()->value
+                    $subscription->billingCycle()->value,
                 );
 
                 // Adiciona ao breakdown por categoria

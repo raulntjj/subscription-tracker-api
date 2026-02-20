@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Jobs;
 
-use InvalidArgumentException;
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Throwable;
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 use Illuminate\Bus\Queueable;
+use InvalidArgumentException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Modules\Shared\Infrastructure\Logging\StructuredLogger;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
-use RuntimeException;
-use Throwable;
 
 /**
  * Job para testar webhook via RabbitMQ
@@ -55,7 +54,7 @@ final class TestWebhookJob implements ShouldQueue
      * Executa o job
      */
     public function handle(
-        WebhookConfigRepositoryInterface $repository
+        WebhookConfigRepositoryInterface $repository,
     ): void {
         $this->logger()->info('Starting webhook test job', [
             'webhook_config_id' => $this->webhookConfigId,

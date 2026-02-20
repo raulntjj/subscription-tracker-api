@@ -20,7 +20,7 @@ final class BillingHistory
         UuidInterface $subscriptionId,
         int $amountPaid,
         DateTimeImmutable $paidAt,
-        DateTimeImmutable $createdAt
+        DateTimeImmutable $createdAt,
     ) {
         $this->validateAmount($amountPaid);
 

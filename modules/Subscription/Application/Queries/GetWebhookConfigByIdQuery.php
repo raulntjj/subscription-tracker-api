@@ -17,7 +17,7 @@ final readonly class GetWebhookConfigByIdQuery
     use Loggable;
 
     public function __construct(
-        private WebhookConfigRepositoryInterface $repository
+        private WebhookConfigRepositoryInterface $repository,
     ) {
     }
 
@@ -30,7 +30,7 @@ final readonly class GetWebhookConfigByIdQuery
 
         $webhookConfig = $this->repository->findByIdAndUserId(
             Uuid::fromString($id),
-            Uuid::fromString($userId)
+            Uuid::fromString($userId),
         );
 
         if ($webhookConfig === null) {

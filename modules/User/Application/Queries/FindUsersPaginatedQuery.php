@@ -22,7 +22,7 @@ final readonly class FindUsersPaginatedQuery
     private const DEFAULT_PER_PAGE = 15;
 
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
     ) {
     }
 
@@ -41,7 +41,7 @@ final readonly class FindUsersPaginatedQuery
 
         $searchColumns = $search?->columns;
         $searchTerm = $search?->term;
-        
+
         $sorts = $sort?->sorts;
 
         $paginationData = $this->userRepository->findPaginated(
@@ -49,13 +49,13 @@ final readonly class FindUsersPaginatedQuery
             perPage: $perPage,
             searchColumns: $searchColumns,
             searchTerm: $searchTerm,
-            sorts: $sorts
+            sorts: $sorts,
         );
 
         // Converte entidades para DTOs
         $usersDTO = array_map(
             fn ($user) => UserDTO::fromEntity($user),
-            $paginationData['users']
+            $paginationData['users'],
         );
 
         return new UserPaginatedDTO(

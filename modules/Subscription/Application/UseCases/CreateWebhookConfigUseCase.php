@@ -17,7 +17,7 @@ final readonly class CreateWebhookConfigUseCase
     use Loggable;
 
     public function __construct(
-        private WebhookConfigRepositoryInterface $repository
+        private WebhookConfigRepositoryInterface $repository,
     ) {
     }
 
@@ -53,7 +53,7 @@ final readonly class CreateWebhookConfigUseCase
                 context: [
                     'url' => $entity->url(),
                     'is_active' => $entity->isActive(),
-                ]
+                ],
             );
 
             return WebhookConfigDTO::fromEntity($entity);

@@ -18,7 +18,7 @@ final readonly class CreateUserUseCase
     use Loggable;
 
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
     ) {
     }
 
@@ -27,7 +27,7 @@ final readonly class CreateUserUseCase
         string $email,
         string $password,
         ?string $surname = null,
-        ?string $profilePath = null
+        ?string $profilePath = null,
     ): UserDTO {
         $this->logger()->info('Creating new user', [
             'email' => $email,
@@ -43,7 +43,7 @@ final readonly class CreateUserUseCase
                 password: Password::fromPlainText($password),
                 createdAt: new DateTimeImmutable(),
                 surname: $surname,
-                profilePath: $profilePath
+                profilePath: $profilePath,
             );
 
             // Persiste no MySQL e invalida o cache da tag 'users'
@@ -62,7 +62,7 @@ final readonly class CreateUserUseCase
                     'email' => $user->email()->value(),
                     'name' => $user->name(),
                     'surname' => $user->surname(),
-                ]
+                ],
             );
 
             return UserDTO::fromEntity($user);

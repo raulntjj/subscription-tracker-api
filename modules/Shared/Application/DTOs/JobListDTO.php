@@ -25,7 +25,7 @@ final readonly class JobListDTO
     {
         $jobs = array_map(
             fn (array $jobData) => JobDTO::fromArray($jobData),
-            $jobsData
+            $jobsData,
         );
 
         return new self(
@@ -45,7 +45,7 @@ final readonly class JobListDTO
             'total' => $this->total,
             'jobs' => array_map(
                 fn (JobDTO $job) => $job->toArray(),
-                $this->jobs
+                $this->jobs,
             ),
         ];
     }

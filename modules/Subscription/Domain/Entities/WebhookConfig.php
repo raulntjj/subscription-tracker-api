@@ -24,7 +24,7 @@ final class WebhookConfig
         ?string $secret,
         bool $isActive,
         DateTimeImmutable $createdAt,
-        ?DateTimeImmutable $updatedAt = null
+        ?DateTimeImmutable $updatedAt = null,
     ) {
         $this->validateUrl($url);
 

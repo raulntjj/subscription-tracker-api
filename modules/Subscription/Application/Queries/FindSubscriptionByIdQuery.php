@@ -17,7 +17,7 @@ final readonly class FindSubscriptionByIdQuery
     use Loggable;
 
     public function __construct(
-        private SubscriptionRepositoryInterface $repository
+        private SubscriptionRepositoryInterface $repository,
     ) {
     }
 

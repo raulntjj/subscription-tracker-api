@@ -10,7 +10,7 @@ use Modules\Shared\Domain\Contracts\QueueMonitorRepositoryInterface;
 final class GetAllJobsQuery
 {
     public function __construct(
-        private readonly QueueMonitorRepositoryInterface $queueMonitorRepository
+        private readonly QueueMonitorRepositoryInterface $queueMonitorRepository,
     ) {
     }
 

@@ -31,7 +31,7 @@ final class SubscriptionRenewed
         string $currency,
         DateTimeImmutable $billingDate,
         DateTimeImmutable $nextBillingDate,
-        ?DateTimeImmutable $occurredAt = null
+        ?DateTimeImmutable $occurredAt = null,
     ) {
         $this->subscriptionId = $subscriptionId;
         $this->userId = $userId;

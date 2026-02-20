@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Jobs;
 
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
-use Modules\Subscription\Application\DTOs\SubscriptionDTO;
-use Modules\Subscription\Domain\Entities\Subscription;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Illuminate\Bus\Queueable;
@@ -14,8 +11,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Modules\Subscription\Domain\Entities\Subscription;
 use Modules\Subscription\Domain\Entities\BillingHistory;
-use Modules\Shared\Infrastructure\Logging\StructuredLogger;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
 
@@ -69,7 +67,7 @@ final class CheckBillingJob implements ShouldQueue
                     $this->processSubscriptionBilling(
                         $subscription,
                         $subscriptionRepository,
-                        $billingHistoryRepository
+                        $billingHistoryRepository,
                     );
 
                     $processedCount++;
@@ -121,7 +119,7 @@ final class CheckBillingJob implements ShouldQueue
             subscriptionId: $subscription->id(),
             amountPaid: $subscription->price(),
             paidAt: new DateTimeImmutable('now'),
-            createdAt: new DateTimeImmutable('now')
+            createdAt: new DateTimeImmutable('now'),
         );
 
         $billingHistoryRepository->save($billingHistory);
@@ -182,7 +180,7 @@ final class CheckBillingJob implements ShouldQueue
                 $subscriptionId,
                 $userId,
                 $billingHistory->id()->toString(),
-                $eventData
+                $eventData,
             );
 
             $this->logger()->info(message: 'Webhook dispatched for subscription renewal', context: [

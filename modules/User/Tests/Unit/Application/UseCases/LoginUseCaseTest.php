@@ -29,7 +29,7 @@ final class LoginUseCaseTest extends UserTestCase
         $email = 'john' . uniqid() . '@example.com';
         $dto = new LoginDTO(
             email: $email,
-            password: 'SecurePass123'
+            password: 'SecurePass123',
         );
 
         $this->jwtService
@@ -56,7 +56,7 @@ final class LoginUseCaseTest extends UserTestCase
         $email = 'wrong' . uniqid() . '@example.com';
         $dto = new LoginDTO(
             email: $email,
-            password: 'WrongPassword'
+            password: 'WrongPassword',
         );
 
         $this->jwtService
@@ -75,7 +75,7 @@ final class LoginUseCaseTest extends UserTestCase
     {
         $dto = new LoginDTO(
             email: 'user@test.com',
-            password: 'password123'
+            password: 'password123',
         );
 
         $this->jwtService
@@ -98,7 +98,7 @@ final class LoginUseCaseTest extends UserTestCase
         $email = 'test' . uniqid() . '@example.com';
         $dto = new LoginDTO(
             email: $email,
-            password: 'TestPass456'
+            password: 'TestPass456',
         );
 
         $expectedCredentials = [
@@ -124,7 +124,7 @@ final class LoginUseCaseTest extends UserTestCase
     {
         $dto = new LoginDTO(
             email: 'error@test.com',
-            password: 'password'
+            password: 'password',
         );
 
         $this->jwtService

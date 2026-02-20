@@ -6,12 +6,12 @@ namespace Modules\Shared\Infrastructure\Auth\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 use Symfony\Component\HttpFoundation\Response;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use Modules\Shared\Interface\Http\Responses\ApiResponse;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
-use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 
 final class RefreshToken
 {

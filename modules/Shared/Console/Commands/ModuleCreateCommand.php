@@ -91,7 +91,7 @@ final class ModuleCreateCommand extends Command
             $content = str_replace(
                 array_keys($replacements),
                 array_values($replacements),
-                $content
+                $content,
             );
 
             $targetFullPath = $modulePath . '/' . $targetRelativePath;

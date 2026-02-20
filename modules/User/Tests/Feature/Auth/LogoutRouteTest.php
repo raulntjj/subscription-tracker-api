@@ -18,7 +18,7 @@ final class LogoutRouteTest extends FeatureTestCase
         $response = $this->postJson(
             '/api/auth/v1/logout',
             [],
-            $this->authHeaders($auth['token'])
+            $this->authHeaders($auth['token']),
         );
 
         $response->assertStatus(200);

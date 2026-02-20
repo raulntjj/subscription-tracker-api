@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Modules\Shared\Infrastructure\Auth;
 
 use Exception;
-use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 use RuntimeException;
 use PHPOpenSourceSaver\JWTAuth\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 use Modules\Shared\Domain\Contracts\JwtServiceInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;

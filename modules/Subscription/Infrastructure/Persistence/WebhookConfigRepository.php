@@ -35,7 +35,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
                 'url' => $webhookConfig->url(),
                 'secret' => $webhookConfig->secret(),
                 'is_active' => $webhookConfig->isActive(),
-            ]
+            ],
         );
     }
 
@@ -144,7 +144,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
             secret: $model->secret,
             isActive: $model->is_active,
             createdAt: new DateTimeImmutable($model->created_at->toDateTimeString()),
-            updatedAt: $model->updated_at ? new DateTimeImmutable($model->updated_at->toDateTimeString()) : null
+            updatedAt: $model->updated_at ? new DateTimeImmutable($model->updated_at->toDateTimeString()) : null,
         );
     }
 }

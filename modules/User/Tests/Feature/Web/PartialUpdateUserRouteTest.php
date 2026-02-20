@@ -36,7 +36,7 @@ final class PartialUpdateUserRouteTest extends FeatureTestCase
         $response = $this->patchJson(
             "/api/web/v1/users/{$user->id}",
             $updateData,
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200);
@@ -61,7 +61,7 @@ final class PartialUpdateUserRouteTest extends FeatureTestCase
         $response = $this->patchJson(
             "/api/web/v1/users/{$user->id}",
             $updateData,
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200);

@@ -15,7 +15,7 @@ final readonly class UpdateWebhookConfigUseCase
     use Loggable;
 
     public function __construct(
-        private WebhookConfigRepositoryInterface $repository
+        private WebhookConfigRepositoryInterface $repository,
     ) {
     }
 
@@ -54,7 +54,7 @@ final readonly class UpdateWebhookConfigUseCase
                     'url' => $entity->url(),
                     'url_updated' => $dto->url !== null,
                     'secret_updated' => $dto->secret !== null,
-                ]
+                ],
             );
 
             return WebhookConfigDTO::fromEntity($entity);

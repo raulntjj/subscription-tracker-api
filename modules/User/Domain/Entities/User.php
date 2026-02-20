@@ -26,7 +26,7 @@ final class User
         Password $password,
         DateTimeImmutable $createdAt,
         ?string $surname = null,
-        ?string $profilePath = null
+        ?string $profilePath = null,
     ) {
         $this->id = $id;
         $this->name = $name;

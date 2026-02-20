@@ -45,7 +45,7 @@ final readonly class UserPaginatedDTO
         return [
             'users' => array_map(
                 fn (UserDTO $user) => $user->toArray(),
-                $this->users
+                $this->users,
             ),
             'total' => $this->total,
             'per_page' => $this->perPage,

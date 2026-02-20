@@ -19,7 +19,7 @@ final readonly class UpdateSubscriptionUseCase
     use Loggable;
 
     public function __construct(
-        private SubscriptionRepositoryInterface $repository
+        private SubscriptionRepositoryInterface $repository,
     ) {
     }
 
@@ -51,7 +51,7 @@ final readonly class UpdateSubscriptionUseCase
             $entity->changeName($dto->name);
             $entity->changePrice($dto->price);
             $entity->changeBillingCycle(
-                BillingCycleEnum::from($dto->billingCycle)
+                BillingCycleEnum::from($dto->billingCycle),
             );
             $entity->changeCategory($dto->category);
             $entity->updateNextBillingDate(new DateTimeImmutable($dto->nextBillingDate));
@@ -78,7 +78,7 @@ final readonly class UpdateSubscriptionUseCase
                     'name' => $entity->name(),
                     'price' => $entity->price(),
                     'status' => $entity->status()->value,
-                ]
+                ],
             );
 
             return SubscriptionDTO::fromEntity($entity);

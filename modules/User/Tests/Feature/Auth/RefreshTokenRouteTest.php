@@ -18,7 +18,7 @@ final class RefreshTokenRouteTest extends FeatureTestCase
         $response = $this->postJson(
             '/api/auth/v1/refresh',
             [],
-            $this->authHeaders($auth['token'])
+            $this->authHeaders($auth['token']),
         );
 
         $response->assertStatus(200)

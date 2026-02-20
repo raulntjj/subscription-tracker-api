@@ -49,7 +49,7 @@ final readonly class RegisterUseCase
                 email: $dto->email,
                 password: $dto->password,
                 surname: $dto->surname,
-                profilePath: $dto->profilePath
+                profilePath: $dto->profilePath,
             );
 
             $token = $this->jwtService->attemptLogin([

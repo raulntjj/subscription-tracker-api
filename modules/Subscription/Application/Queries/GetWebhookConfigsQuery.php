@@ -17,7 +17,7 @@ final readonly class GetWebhookConfigsQuery
     use Loggable;
 
     public function __construct(
-        private WebhookConfigRepositoryInterface $repository
+        private WebhookConfigRepositoryInterface $repository,
     ) {
     }
 
@@ -31,12 +31,12 @@ final readonly class GetWebhookConfigsQuery
         ]);
 
         $webhookConfigs = $this->repository->findAllByUserId(
-            Uuid::fromString($userId)
+            Uuid::fromString($userId),
         );
 
         return array_map(
             fn ($entity) => WebhookConfigDTO::fromEntity($entity)->toArray(),
-            $webhookConfigs
+            $webhookConfigs,
         );
     }
 }

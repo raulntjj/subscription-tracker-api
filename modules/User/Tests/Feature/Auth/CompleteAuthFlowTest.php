@@ -32,7 +32,7 @@ final class CompleteAuthFlowTest extends FeatureTestCase
         // 3. Verifica dados do usuário autenticado
         $meResponse = $this->getJson(
             '/api/auth/v1/me',
-            $this->authHeaders($token)
+            $this->authHeaders($token),
         );
 
         $meResponse->assertStatus(200);
@@ -42,7 +42,7 @@ final class CompleteAuthFlowTest extends FeatureTestCase
         $refreshResponse = $this->postJson(
             '/api/auth/v1/refresh',
             [],
-            $this->authHeaders($token)
+            $this->authHeaders($token),
         );
 
         $refreshResponse->assertStatus(200);
@@ -52,7 +52,7 @@ final class CompleteAuthFlowTest extends FeatureTestCase
         // 5. Usa o novo token
         $meResponse2 = $this->getJson(
             '/api/auth/v1/me',
-            $this->authHeaders($newToken)
+            $this->authHeaders($newToken),
         );
 
         $meResponse2->assertStatus(200);
@@ -62,7 +62,7 @@ final class CompleteAuthFlowTest extends FeatureTestCase
         $logoutResponse = $this->postJson(
             '/api/auth/v1/logout',
             [],
-            $this->authHeaders($newToken)
+            $this->authHeaders($newToken),
         );
 
         $logoutResponse->assertStatus(200);

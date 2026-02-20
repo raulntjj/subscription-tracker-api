@@ -40,12 +40,12 @@ interface UserRepositoryInterface
         int $perPage,
         ?array $searchColumns = null,
         ?string $searchTerm = null,
-        ?array $sorts = null
+        ?array $sorts = null,
     ): array;
 
     /**
      * Retorna Usuários com cursor pagination
-     * 
+     *
      * @param int $limit
      * @param string|null $cursor
      * @param array<string>|null $searchColumns Colunas para busca
@@ -58,7 +58,7 @@ interface UserRepositoryInterface
         ?string $cursor = null,
         ?array $searchColumns = null,
         ?string $searchTerm = null,
-        ?array $sorts = null
+        ?array $sorts = null,
     ): array;
 
     /**

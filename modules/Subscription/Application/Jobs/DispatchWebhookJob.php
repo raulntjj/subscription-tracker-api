@@ -5,19 +5,18 @@ declare(strict_types=1);
 namespace Modules\Subscription\Application\Jobs;
 
 use Exception;
-use Illuminate\Http\Client\ConnectionException;
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Throwable;
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Modules\Shared\Infrastructure\Logging\StructuredLogger;
+use Illuminate\Http\Client\ConnectionException;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
-use RuntimeException;
-use Throwable;
 
 /**
  * Job para despachar webhooks de renovação de subscrição
@@ -58,7 +57,7 @@ final class DispatchWebhookJob implements ShouldQueue
         string $subscriptionId,
         string $userId,
         string $billingHistoryId,
-        array $eventData
+        array $eventData,
     ) {
         $this->onQueue('webhook');
 

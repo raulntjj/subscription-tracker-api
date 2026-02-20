@@ -17,7 +17,7 @@ final readonly class FindAllUsersQuery
     use Loggable;
 
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
     ) {
     }
 
@@ -29,7 +29,7 @@ final readonly class FindAllUsersQuery
 
         $usersDTO = array_map(
             fn ($user) => UserDTO::fromEntity($user),
-            $users
+            $users,
         );
 
         return UserListDTO::fromArray($usersDTO);

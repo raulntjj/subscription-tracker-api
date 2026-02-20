@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Infrastructure\Persistence\Concerns;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Trait para adicionar campos de auditoria de usuário aos models

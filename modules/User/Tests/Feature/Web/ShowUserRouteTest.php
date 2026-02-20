@@ -31,7 +31,7 @@ final class ShowUserRouteTest extends FeatureTestCase
 
         $response = $this->getJson(
             "/api/web/v1/users/{$user->id}",
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200)
@@ -52,7 +52,7 @@ final class ShowUserRouteTest extends FeatureTestCase
 
         $response = $this->getJson(
             "/api/web/v1/users/{$fakeId}",
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(404);

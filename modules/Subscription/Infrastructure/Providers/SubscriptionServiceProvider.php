@@ -25,17 +25,17 @@ final class SubscriptionServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             SubscriptionRepositoryInterface::class,
-            SubscriptionRepository::class
+            SubscriptionRepository::class,
         );
 
         $this->app->bind(
             BillingHistoryRepositoryInterface::class,
-            BillingHistoryRepository::class
+            BillingHistoryRepository::class,
         );
 
         $this->app->bind(
             WebhookConfigRepositoryInterface::class,
-            WebhookConfigRepository::class
+            WebhookConfigRepository::class,
         );
     }
 
@@ -55,7 +55,7 @@ final class SubscriptionServiceProvider extends ServiceProvider
         // Registra event listeners
         Event::listen(
             SubscriptionRenewed::class,
-            DispatchWebhookOnSubscriptionRenewed::class
+            DispatchWebhookOnSubscriptionRenewed::class,
         );
 
         // Registra comandos do console

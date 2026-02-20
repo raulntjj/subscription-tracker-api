@@ -35,7 +35,7 @@ final readonly class UserListDTO
             'total' => $this->total,
             'users' => array_map(
                 fn (UserDTO $user) => $user->toArray(),
-                $this->users
+                $this->users,
             ),
         ];
     }

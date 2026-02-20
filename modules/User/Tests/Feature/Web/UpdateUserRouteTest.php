@@ -38,7 +38,7 @@ final class UpdateUserRouteTest extends FeatureTestCase
         $response = $this->putJson(
             "/api/web/v1/users/{$user->id}",
             $updateData,
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200)
@@ -72,7 +72,7 @@ final class UpdateUserRouteTest extends FeatureTestCase
         $response = $this->putJson(
             "/api/web/v1/users/{$user->id}",
             $updateData,
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(422)

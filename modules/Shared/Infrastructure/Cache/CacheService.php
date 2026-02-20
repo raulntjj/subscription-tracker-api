@@ -14,7 +14,7 @@ final class CacheService implements CacheServiceInterface
 
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly array $tags = []
+        private readonly array $tags = [],
     ) {
     }
 

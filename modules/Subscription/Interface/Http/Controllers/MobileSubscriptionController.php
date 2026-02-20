@@ -66,7 +66,7 @@ final class MobileSubscriptionController extends Controller
                 cursor: $cursor,
                 perPage: $perPage,
                 search: $search,
-                sort: $sort
+                sort: $sort,
             );
 
             return ApiResponse::success(

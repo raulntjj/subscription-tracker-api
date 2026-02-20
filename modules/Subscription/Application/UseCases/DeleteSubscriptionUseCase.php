@@ -14,7 +14,7 @@ final readonly class DeleteSubscriptionUseCase
     use Loggable;
 
     public function __construct(
-        private SubscriptionRepositoryInterface $repository
+        private SubscriptionRepositoryInterface $repository,
     ) {
     }
 
@@ -45,7 +45,7 @@ final readonly class DeleteSubscriptionUseCase
                 entityId: $id,
                 context: [
                     'name' => $entity->name(),
-                ]
+                ],
             );
         } catch (\Throwable $e) {
             $this->logger()->error('Failed to delete subscription', [

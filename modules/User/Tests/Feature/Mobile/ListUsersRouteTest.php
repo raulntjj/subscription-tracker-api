@@ -33,7 +33,7 @@ final class ListUsersRouteTest extends FeatureTestCase
 
         $response = $this->getJson(
             '/api/mobile/v1/users',
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200)
@@ -42,7 +42,7 @@ final class ListUsersRouteTest extends FeatureTestCase
                 'message',
                 'data' => [
                     'data' => [
-                        '*' => ['id', 'name', 'email', 'created_at']
+                        '*' => ['id', 'name', 'email', 'created_at'],
                     ],
                     'next_cursor',
                     'prev_cursor',
@@ -59,13 +59,13 @@ final class ListUsersRouteTest extends FeatureTestCase
         for ($i = 0; $i < 15; $i++) {
             $this->createUser([
                 'name' => "User {$i}",
-                'email' => "user{$i}" . uniqid() . "@example.com"
+                'email' => "user{$i}" . uniqid() . "@example.com",
             ]);
         }
 
         $response = $this->getJson(
             '/api/mobile/v1/users?per_page=5',
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200);
@@ -79,13 +79,13 @@ final class ListUsersRouteTest extends FeatureTestCase
         for ($i = 0; $i < 25; $i++) {
             $this->createUser([
                 'name' => "User {$i}",
-                'email' => "user{$i}" . uniqid() . "@example.com"
+                'email' => "user{$i}" . uniqid() . "@example.com",
             ]);
         }
 
         $response = $this->getJson(
             '/api/mobile/v1/users?per_page=5',
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200);
@@ -103,13 +103,13 @@ final class ListUsersRouteTest extends FeatureTestCase
         for ($i = 0; $i < 15; $i++) {
             $this->createUser([
                 'name' => "User {$i}",
-                'email' => "user{$i}" . uniqid() . "@example.com"
+                'email' => "user{$i}" . uniqid() . "@example.com",
             ]);
         }
 
         $firstPageResponse = $this->getJson(
             '/api/mobile/v1/users?per_page=5',
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $firstPageResponse->assertStatus(200);
@@ -118,7 +118,7 @@ final class ListUsersRouteTest extends FeatureTestCase
         if ($nextCursor) {
             $secondPageResponse = $this->getJson(
                 "/api/mobile/v1/users?per_page=5&cursor={$nextCursor}",
-                $this->authHeaders($this->token)
+                $this->authHeaders($this->token),
             );
 
             $secondPageResponse->assertStatus(200);
@@ -133,7 +133,7 @@ final class ListUsersRouteTest extends FeatureTestCase
         $this->authenticate();
         $response = $this->getJson(
             '/api/mobile/v1/users?cursor=invalid-cursor',
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $this->assertContains($response->status(), [200, 400, 422]);
@@ -152,7 +152,7 @@ final class ListUsersRouteTest extends FeatureTestCase
 
         $response = $this->getJson(
             '/api/mobile/v1/users',
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200)
@@ -173,13 +173,13 @@ final class ListUsersRouteTest extends FeatureTestCase
         for ($i = 1; $i <= 10; $i++) {
             $this->createUser([
                 'name' => "User {$i}",
-                'email' => "user{$i}" . uniqid() . "@example.com"
+                'email' => "user{$i}" . uniqid() . "@example.com",
             ]);
         }
 
         $firstResponse = $this->getJson(
             '/api/mobile/v1/users?per_page=5',
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $firstResponse->assertStatus(200);
@@ -197,7 +197,7 @@ final class ListUsersRouteTest extends FeatureTestCase
         for ($i = 0; $i < 10; $i++) {
             $this->createUser([
                 'name' => "User {$i}",
-                'email' => "user{$i}" . uniqid() . "@example.com"
+                'email' => "user{$i}" . uniqid() . "@example.com",
             ]);
         }
 
@@ -206,7 +206,7 @@ final class ListUsersRouteTest extends FeatureTestCase
         foreach ($perPageValues as $perPage) {
             $response = $this->getJson(
                 "/api/mobile/v1/users?per_page={$perPage}",
-                $this->authHeaders($this->token)
+                $this->authHeaders($this->token),
             );
 
             $response->assertStatus(200);
@@ -223,7 +223,7 @@ final class ListUsersRouteTest extends FeatureTestCase
 
         $response = $this->getJson(
             '/api/mobile/v1/users',
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200);
@@ -236,7 +236,7 @@ final class ListUsersRouteTest extends FeatureTestCase
         $this->authenticate();
         $response = $this->getJson(
             '/api/mobile/v1/users',
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200)

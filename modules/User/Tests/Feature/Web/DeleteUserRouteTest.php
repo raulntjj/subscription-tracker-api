@@ -32,7 +32,7 @@ final class DeleteUserRouteTest extends FeatureTestCase
         $response = $this->deleteJson(
             "/api/web/v1/users/{$user->id}",
             [],
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(200);
@@ -51,7 +51,7 @@ final class DeleteUserRouteTest extends FeatureTestCase
         $response = $this->deleteJson(
             "/api/web/v1/users/{$fakeId}",
             [],
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(404);

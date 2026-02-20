@@ -79,7 +79,7 @@ final class ModuleTestCommand extends Command
                 2 => ['pipe', 'w'],
             ],
             $pipes,
-            base_path()
+            base_path(),
         );
 
         if (is_resource($process)) {

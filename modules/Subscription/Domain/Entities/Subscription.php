@@ -35,7 +35,7 @@ final class Subscription
         SubscriptionStatusEnum $status,
         UuidInterface $userId,
         DateTimeImmutable $createdAt,
-        ?DateTimeImmutable $updatedAt = null
+        ?DateTimeImmutable $updatedAt = null,
     ) {
         $this->validatePrice($price);
         $this->validateNextBillingDate($nextBillingDate);

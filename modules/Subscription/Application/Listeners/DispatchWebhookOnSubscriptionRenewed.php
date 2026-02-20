@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Listeners;
 
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
-use Modules\Shared\Infrastructure\Logging\StructuredLogger;
 use Modules\Subscription\Domain\Events\SubscriptionRenewed;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Application\Jobs\DispatchWebhookJob;
 
 /**
@@ -32,7 +31,7 @@ final class DispatchWebhookOnSubscriptionRenewed
             $event->getSubscriptionId()->toString(),
             $event->getUserId()->toString(),
             $event->getBillingHistoryId()->toString(),
-            $event->toArray()
+            $event->toArray(),
         )->onQueue('webhook');
     }
 }

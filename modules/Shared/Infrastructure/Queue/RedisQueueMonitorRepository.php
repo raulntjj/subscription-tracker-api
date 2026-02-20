@@ -13,7 +13,7 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
     private const PREFIX = 'queue_monitor:';
 
     public function __construct(
-        private readonly string $connection = 'sessions'
+        private readonly string $connection = 'sessions',
     ) {
     }
 

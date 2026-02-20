@@ -17,7 +17,7 @@ final readonly class UpdateUserUseCase
     use Loggable;
 
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
     ) {
     }
 
@@ -71,7 +71,7 @@ final readonly class UpdateUserUseCase
                     'email' => $user->email()->value(),
                     'name' => $user->name(),
                     'surname' => $user->surname(),
-                ]
+                ],
             );
 
             return UserDTO::fromEntity($user);

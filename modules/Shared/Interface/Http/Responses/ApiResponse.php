@@ -15,7 +15,7 @@ final class ApiResponse
     public static function success(
         mixed $data = null,
         string $message = 'Success',
-        int $status = Response::HTTP_OK
+        int $status = Response::HTTP_OK,
     ): JsonResponse {
         return response()->json([
             'success' => true,
@@ -31,7 +31,7 @@ final class ApiResponse
         ?string $message = 'An error occurred',
         mixed $errors = null,
         ?\Throwable $exception = null,
-        int $status = Response::HTTP_BAD_REQUEST
+        int $status = Response::HTTP_BAD_REQUEST,
     ): JsonResponse {
         if ($exception !== null) {
             $message = $exception->getMessage();
@@ -84,7 +84,7 @@ final class ApiResponse
      */
     public static function created(
         mixed $data = null,
-        string $message = 'Resource created successfully'
+        string $message = 'Resource created successfully',
     ): JsonResponse {
         return self::success(data: $data, message: $message, status: Response::HTTP_CREATED);
     }
@@ -93,7 +93,7 @@ final class ApiResponse
      * Resposta de não encontrado (404 Not Found)
      */
     public static function notFound(
-        string $message = 'Resource not found'
+        string $message = 'Resource not found',
     ): JsonResponse {
         return self::error(message: $message, errors: null, status: Response::HTTP_NOT_FOUND);
     }
@@ -103,7 +103,7 @@ final class ApiResponse
      */
     public static function validationError(
         mixed $errors,
-        string $message = 'Validation failed'
+        string $message = 'Validation failed',
     ): JsonResponse {
         return self::error(message: $message, errors: $errors, status: Response::HTTP_UNPROCESSABLE_ENTITY);
     }
@@ -112,7 +112,7 @@ final class ApiResponse
      * Resposta de não autorizado (401 Unauthorized)
      */
     public static function unauthorized(
-        string $message = 'Unauthorized'
+        string $message = 'Unauthorized',
     ): JsonResponse {
         return self::error(message: $message, status: Response::HTTP_UNAUTHORIZED);
     }
@@ -121,7 +121,7 @@ final class ApiResponse
      * Resposta de proibido (403 Forbidden)
      */
     public static function forbidden(
-        string $message = 'Forbidden'
+        string $message = 'Forbidden',
     ): JsonResponse {
         return self::error(message: $message, status: Response::HTTP_FORBIDDEN);
     }
@@ -131,7 +131,7 @@ final class ApiResponse
      */
     public static function conflict(
         string $message = 'Conflict',
-        mixed $errors = null
+        mixed $errors = null,
     ): JsonResponse {
         return self::error(message: $message, errors: $errors, status: Response::HTTP_CONFLICT);
     }
@@ -140,7 +140,7 @@ final class ApiResponse
      * Resposta de erro interno do servidor (500 Internal Server Error)
      */
     public static function serverError(
-        string $message = 'Internal server error'
+        string $message = 'Internal server error',
     ): JsonResponse {
         return self::error(message: $message, status: Response::HTTP_INTERNAL_SERVER_ERROR);
     }
@@ -161,7 +161,7 @@ final class ApiResponse
         int $total,
         int $perPage,
         int $currentPage,
-        string $message = 'Data retrieved successfully'
+        string $message = 'Data retrieved successfully',
     ): JsonResponse {
         return self::success([
             'items' => $items,

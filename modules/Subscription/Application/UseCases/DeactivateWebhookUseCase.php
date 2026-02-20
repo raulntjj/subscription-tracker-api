@@ -14,7 +14,7 @@ final readonly class DeactivateWebhookUseCase
     use Loggable;
 
     public function __construct(
-        private WebhookConfigRepositoryInterface $repository
+        private WebhookConfigRepositoryInterface $repository,
     ) {
     }
 
@@ -43,7 +43,7 @@ final readonly class DeactivateWebhookUseCase
                 action: 'deactivate',
                 entityType: 'WebhookConfig',
                 entityId: $id,
-                context: []
+                context: [],
             );
 
             return WebhookConfigDTO::fromEntity($entity);

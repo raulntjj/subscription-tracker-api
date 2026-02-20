@@ -36,7 +36,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
                 'surname' => $user->surname(),
                 'profile_path' => $user->profilePath(),
                 'created_at' => $user->createdAt(),
-            ]
+            ],
         );
     }
 
@@ -112,7 +112,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
         int $perPage,
         ?array $searchColumns = null,
         ?string $searchTerm = null,
-        ?array $sorts = null
+        ?array $sorts = null,
     ): array {
         $cacheKey = "users:paginated:page:{$page}:per_page:{$perPage}";
 
@@ -144,7 +144,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
             return [
                 'users' => $paginator->items() ? array_map(
                     fn (UserModel $model) => $this->toEntity($model),
-                    $paginator->items()
+                    $paginator->items(),
                 ) : [],
                 'total' => $paginator->total(),
                 'per_page' => $paginator->perPage(),
@@ -159,10 +159,10 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
         ?string $cursor = null,
         ?array $searchColumns = null,
         ?string $searchTerm = null,
-        ?array $sorts = null
+        ?array $sorts = null,
     ): array {
-        $searchKey = $searchTerm !== null && $searchTerm !== '' 
-            ? md5(json_encode($searchColumns) . $searchTerm) 
+        $searchKey = $searchTerm !== null && $searchTerm !== ''
+            ? md5(json_encode($searchColumns) . $searchTerm)
             : 'none';
 
         $sortKey = $sorts !== null && count($sorts) > 0
@@ -198,7 +198,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
             /** @var \Illuminate\Pagination\CursorPaginator $paginator */
             $paginator = $query->cursorPaginate(
                 perPage: $limit,
-                cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null
+                cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null,
             );
 
             // Converte para entidades de domínio
@@ -239,7 +239,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
             password: Password::fromHash($model->password),
             createdAt: new DateTimeImmutable($model->created_at->format('Y-m-d H:i:s')),
             surname: $model->surname,
-            profilePath: $model->profile_path
+            profilePath: $model->profile_path,
         );
     }
 }

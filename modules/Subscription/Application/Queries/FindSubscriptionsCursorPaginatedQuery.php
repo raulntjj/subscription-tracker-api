@@ -22,7 +22,7 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
     private const DEFAULT_PER_PAGE = 20;
 
     public function __construct(
-        private SubscriptionRepositoryInterface $repository
+        private SubscriptionRepositoryInterface $repository,
     ) {
     }
 
@@ -58,13 +58,13 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
             $cursor,
             $searchColumns,
             $searchTerm,
-            $sorts
+            $sorts,
         );
 
         // Converte entidades para DTOs
         $dtos = array_map(
             fn ($entity) => SubscriptionDTO::fromEntity($entity),
-            $result['subscriptions']
+            $result['subscriptions'],
         );
 
         return new SubscriptionCursorPaginatedDTO(
@@ -74,4 +74,3 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
         );
     }
 }
-

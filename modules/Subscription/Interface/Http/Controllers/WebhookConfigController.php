@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Interface\Http\Controllers;
 
-use Illuminate\Http\Response;
 use Throwable;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Modules\Shared\Interface\Http\Responses\ApiResponse;
-use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Subscription\Application\DTOs\CreateWebhookConfigDTO;
 use Modules\Subscription\Application\DTOs\UpdateWebhookConfigDTO;
 use Modules\Subscription\Application\UseCases\TestWebhookUseCase;
@@ -72,7 +70,7 @@ final class WebhookConfigController extends Controller
 
             return ApiResponse::success(
                 data: $item->toArray(),
-                message: 'Webhook config retrieved successfully'
+                message: 'Webhook config retrieved successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -98,7 +96,7 @@ final class WebhookConfigController extends Controller
 
             return ApiResponse::created(
                 data: $item->toArray(),
-                message: 'Webhook config created successfully'
+                message: 'Webhook config created successfully',
             );
         } catch (\Illuminate\Validation\ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -137,7 +135,7 @@ final class WebhookConfigController extends Controller
 
             return ApiResponse::success(
                 data: $item->toArray(),
-                message: 'Webhook config updated successfully'
+                message: 'Webhook config updated successfully',
             );
         } catch (\Illuminate\Validation\ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -188,7 +186,7 @@ final class WebhookConfigController extends Controller
 
             return ApiResponse::success(
                 data: $item->toArray(),
-                message: 'Webhook config activated successfully'
+                message: 'Webhook config activated successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -214,7 +212,7 @@ final class WebhookConfigController extends Controller
 
             return ApiResponse::success(
                 data: $item->toArray(),
-                message: 'Webhook config deactivated successfully'
+                message: 'Webhook config deactivated successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -250,7 +248,7 @@ final class WebhookConfigController extends Controller
 
             return ApiResponse::success(
                 data: $result,
-                message: $message
+                message: $message,
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);

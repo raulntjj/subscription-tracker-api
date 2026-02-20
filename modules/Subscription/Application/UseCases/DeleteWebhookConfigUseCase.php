@@ -13,7 +13,7 @@ final readonly class DeleteWebhookConfigUseCase
     use Loggable;
 
     public function __construct(
-        private WebhookConfigRepositoryInterface $repository
+        private WebhookConfigRepositoryInterface $repository,
     ) {
     }
 
@@ -40,7 +40,7 @@ final readonly class DeleteWebhookConfigUseCase
                 action: 'delete',
                 entityType: 'WebhookConfig',
                 entityId: $id,
-                context: []
+                context: [],
             );
         } catch (\Throwable $e) {
             $this->logger()->error('Failed to delete webhook config', [

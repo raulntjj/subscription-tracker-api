@@ -87,7 +87,7 @@ abstract class BaseRepository
     protected function findWithCache(
         string $cacheKey,
         callable $fetchFromDatabase,
-        int $ttl = 3600
+        int $ttl = 3600,
     ): mixed {
         return $this->cache->remember($cacheKey, $ttl, $fetchFromDatabase);
     }

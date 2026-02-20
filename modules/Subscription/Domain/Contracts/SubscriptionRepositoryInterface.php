@@ -35,7 +35,7 @@ interface SubscriptionRepositoryInterface
 
     /**
      * Retorna assinaturas paginadas
-     * 
+     *
      * @param int $page
      * @param int $perPage
      * @param array<string>|null $searchColumns Colunas para busca
@@ -48,12 +48,12 @@ interface SubscriptionRepositoryInterface
         int $perPage,
         ?array $searchColumns = null,
         ?string $searchTerm = null,
-        ?array $sorts = null
+        ?array $sorts = null,
     ): array;
 
     /**
      * Retorna assinaturas com cursor pagination
-     * 
+     *
      * @param int $limit
      * @param string|null $cursor
      * @param array<string>|null $searchColumns Colunas para busca
@@ -66,12 +66,12 @@ interface SubscriptionRepositoryInterface
         ?string $cursor = null,
         ?array $searchColumns = null,
         ?string $searchTerm = null,
-        ?array $sorts = null
+        ?array $sorts = null,
     ): array;
 
     /**
      * Retorna opções de assinaturas para dropdowns/selects
-     * 
+     *
      * @param array<string>|null $searchColumns Colunas para busca
      * @param string|null $searchTerm Termo de busca
      * @return array<array{id: string, name: string}>

@@ -31,15 +31,15 @@ final readonly class QueueMetricsDTO
             statistics: QueueStatisticsDTO::fromArray($data['statistics']),
             activeJobs: array_map(
                 fn (array $jobData) => JobDTO::fromArray($jobData),
-                $data['active_jobs']
+                $data['active_jobs'],
             ),
             recentCompleted: array_map(
                 fn (array $jobData) => JobDTO::fromArray($jobData),
-                $data['recent_completed']
+                $data['recent_completed'],
             ),
             recentFailed: array_map(
                 fn (array $jobData) => JobDTO::fromArray($jobData),
-                $data['recent_failed']
+                $data['recent_failed'],
             ),
         );
     }
@@ -55,15 +55,15 @@ final readonly class QueueMetricsDTO
             'statistics' => $this->statistics->toArray(),
             'active_jobs' => array_map(
                 fn (JobDTO $job) => $job->toArray(),
-                $this->activeJobs
+                $this->activeJobs,
             ),
             'recent_completed' => array_map(
                 fn (JobDTO $job) => $job->toArray(),
-                $this->recentCompleted
+                $this->recentCompleted,
             ),
             'recent_failed' => array_map(
                 fn (JobDTO $job) => $job->toArray(),
-                $this->recentFailed
+                $this->recentFailed,
             ),
         ];
     }

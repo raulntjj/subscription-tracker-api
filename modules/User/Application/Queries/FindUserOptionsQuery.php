@@ -18,7 +18,7 @@ final readonly class FindUserOptionsQuery
     use Loggable;
 
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
     ) {
     }
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\User\Interface\Http\Controllers;
 
-use Illuminate\Http\Response;
 use Throwable;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Shared\Application\DTOs\SortDTO;
@@ -65,24 +65,24 @@ final class UserController extends Controller
 
             $search = SearchDTO::fromRequest(
                 params: $request->query(),
-                searchableColumns: self::SEARCHABLE_COLUMNS
+                searchableColumns: self::SEARCHABLE_COLUMNS,
             );
 
             $sort = SortDTO::fromRequest(
                 params: $request->query(),
-                sortableColumns: self::SORTABLE_COLUMNS
+                sortableColumns: self::SORTABLE_COLUMNS,
             );
 
             $paginatedDTO = $this->findUsersPaginatedQuery->execute(
                 page: $page,
                 perPage: $perPage,
                 search: $search,
-                sort: $sort
+                sort: $sort,
             );
 
             return ApiResponse::success(
                 data: $paginatedDTO->toArray(),
-                message: 'Users retrieved successfully'
+                message: 'Users retrieved successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -102,14 +102,14 @@ final class UserController extends Controller
         try {
             $search = SearchDTO::fromRequest(
                 params: $request->query(),
-                searchableColumns: self::SEARCHABLE_COLUMNS
+                searchableColumns: self::SEARCHABLE_COLUMNS,
             );
 
             $optionsDTO = $this->findUserOptionsQuery->execute(search: $search);
 
             return ApiResponse::success(
                 data: $optionsDTO->toArray(),
-                message: 'User options retrieved successfully'
+                message: 'User options retrieved successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -130,7 +130,7 @@ final class UserController extends Controller
 
             return ApiResponse::success(
                 data: $user->toArray(),
-                message: 'User retrieved successfully'
+                message: 'User retrieved successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -158,12 +158,12 @@ final class UserController extends Controller
                 email: $dto->email,
                 password: $dto->password,
                 surname: $dto->surname,
-                profilePath: $dto->profilePath
+                profilePath: $dto->profilePath,
             );
 
             return ApiResponse::created(
                 data: $user->toArray(),
-                message: 'User created successfully'
+                message: 'User created successfully',
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -193,7 +193,7 @@ final class UserController extends Controller
 
             return ApiResponse::success(
                 data: $user->toArray(),
-                message: 'User updated successfully'
+                message: 'User updated successfully',
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -225,7 +225,7 @@ final class UserController extends Controller
 
             return ApiResponse::success(
                 data: $user->toArray(),
-                message: 'User patched successfully'
+                message: 'User patched successfully',
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());

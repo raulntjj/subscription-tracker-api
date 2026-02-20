@@ -37,7 +37,7 @@ final class CreateUserRouteTest extends FeatureTestCase
         $response = $this->postJson(
             '/api/web/v1/users',
             $userData,
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(201)
@@ -72,7 +72,7 @@ final class CreateUserRouteTest extends FeatureTestCase
         $response = $this->postJson(
             '/api/web/v1/users',
             $userData,
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(422)
@@ -91,7 +91,7 @@ final class CreateUserRouteTest extends FeatureTestCase
         $response = $this->postJson(
             '/api/web/v1/users',
             $userData,
-            $this->authHeaders($this->token)
+            $this->authHeaders($this->token),
         );
 
         $response->assertStatus(422)

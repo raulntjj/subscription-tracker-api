@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Interface\Http\Controllers;
 
-use Illuminate\Http\Response;
 use Throwable;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Shared\Application\DTOs\SortDTO;
 use Illuminate\Validation\ValidationException;
 use Modules\Shared\Application\DTOs\SearchDTO;
-use Modules\Shared\Application\DTOs\PaginationDTO;
 use Modules\Shared\Interface\Http\Responses\ApiResponse;
-use Modules\Subscription\Application\DTOs\SubscriptionDTO;
 use Modules\Subscription\Application\DTOs\CreateSubscriptionDTO;
 use Modules\Subscription\Application\DTOs\UpdateSubscriptionDTO;
 use Modules\Subscription\Application\Queries\FindSubscriptionByIdQuery;
@@ -67,24 +65,24 @@ final class SubscriptionController extends Controller
 
             $search = SearchDTO::fromRequest(
                 params: $request->query(),
-                searchableColumns: self::SEARCHABLE_COLUMNS
+                searchableColumns: self::SEARCHABLE_COLUMNS,
             );
 
             $sort = SortDTO::fromRequest(
                 params: $request->query(),
-                sortableColumns: self::SORTABLE_COLUMNS
+                sortableColumns: self::SORTABLE_COLUMNS,
             );
 
             $result = $this->findPaginatedQuery->execute(
                 page: $page,
                 perPage: $perPage,
                 search: $search,
-                sort: $sort
+                sort: $sort,
             );
 
             return ApiResponse::success(
                 data: $result->toArray(),
-                message: 'Subscriptions retrieved successfully'
+                message: 'Subscriptions retrieved successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -103,14 +101,14 @@ final class SubscriptionController extends Controller
         try {
             $search = SearchDTO::fromRequest(
                 params: $request->query(),
-                searchableColumns: self::SEARCHABLE_COLUMNS
+                searchableColumns: self::SEARCHABLE_COLUMNS,
             );
 
             $result = $this->findOptionsQuery->execute(search: $search);
 
             return ApiResponse::success(
                 data: $result->toArray(),
-                message: 'Subscription options retrieved successfully'
+                message: 'Subscription options retrieved successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -131,7 +129,7 @@ final class SubscriptionController extends Controller
 
             return ApiResponse::success(
                 data: $item->toArray(),
-                message: 'Subscription retrieved successfully'
+                message: 'Subscription retrieved successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -162,7 +160,7 @@ final class SubscriptionController extends Controller
 
             return ApiResponse::created(
                 data: $item->toArray(),
-                message: 'Subscription created successfully'
+                message: 'Subscription created successfully',
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -194,7 +192,7 @@ final class SubscriptionController extends Controller
 
             return ApiResponse::success(
                 $item->toArray(),
-                'Subscription updated successfully'
+                'Subscription updated successfully',
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -227,7 +225,7 @@ final class SubscriptionController extends Controller
 
             return ApiResponse::success(
                 data: $budgetDTO->toArray(),
-                message: 'Monthly budget calculated successfully'
+                message: 'Monthly budget calculated successfully',
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
