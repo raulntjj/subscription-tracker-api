@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
@@ -58,7 +59,7 @@ final readonly class UpdateWebhookConfigUseCase
             );
 
             return WebhookConfigDTO::fromEntity($entity);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to update webhook config', [
                 'webhook_config_id' => $dto->id,
             ], $e);

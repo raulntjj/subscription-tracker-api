@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Infrastructure\Cache;
 
+use Throwable;
 use Illuminate\Support\Facades\Cache;
 use Modules\Shared\Domain\Contracts\LoggerInterface;
 use Modules\Shared\Domain\Contracts\CacheServiceInterface;
@@ -32,7 +33,7 @@ final class CacheService implements CacheServiceInterface
             ]);
 
             return $value;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache get failed', ['key' => $key], $e);
             return $default;
         }
@@ -53,7 +54,7 @@ final class CacheService implements CacheServiceInterface
             ]);
 
             return $result;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache put failed', ['key' => $key, 'ttl' => $ttl], $e);
             return false;
         }
@@ -72,7 +73,7 @@ final class CacheService implements CacheServiceInterface
             ]);
 
             return $result;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache forever failed', ['key' => $key], $e);
             return false;
         }
@@ -91,7 +92,7 @@ final class CacheService implements CacheServiceInterface
             ]);
 
             return $value;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache remember failed', ['key' => $key, 'ttl' => $ttl], $e);
             return $callback();
         }
@@ -110,7 +111,7 @@ final class CacheService implements CacheServiceInterface
             ]);
 
             return $result;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache forget failed', ['key' => $key], $e);
             return false;
         }
@@ -135,7 +136,7 @@ final class CacheService implements CacheServiceInterface
             ]);
 
             return $success;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache forgetMany failed', ['keys_count' => count($keys)], $e);
             return false;
         }
@@ -155,7 +156,7 @@ final class CacheService implements CacheServiceInterface
             ]);
 
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache invalidateTags failed', ['tags' => $tags], $e);
             return false;
         }
@@ -165,7 +166,7 @@ final class CacheService implements CacheServiceInterface
     {
         try {
             return $this->getCacheInstance()->has($key);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache has failed', ['key' => $key], $e);
             return false;
         }
@@ -184,7 +185,7 @@ final class CacheService implements CacheServiceInterface
             ]);
 
             return $result;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache flush failed', [], $e);
             return false;
         }
@@ -194,7 +195,7 @@ final class CacheService implements CacheServiceInterface
     {
         try {
             return $this->getCacheInstance()->increment($key, $value);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache increment failed', ['key' => $key, 'value' => $value], $e);
             return false;
         }
@@ -204,7 +205,7 @@ final class CacheService implements CacheServiceInterface
     {
         try {
             return $this->getCacheInstance()->decrement($key, $value);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache decrement failed', ['key' => $key, 'value' => $value], $e);
             return false;
         }
@@ -214,7 +215,7 @@ final class CacheService implements CacheServiceInterface
     {
         try {
             return $this->getCacheInstance()->many($keys);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache many failed', ['keys_count' => count($keys)], $e);
             return [];
         }
@@ -226,7 +227,7 @@ final class CacheService implements CacheServiceInterface
 
         try {
             return $this->getCacheInstance()->putMany($values, $ttl);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Cache putMany failed', [
                 'values_count' => count($values),
                 'ttl' => $ttl,

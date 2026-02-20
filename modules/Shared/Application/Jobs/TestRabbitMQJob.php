@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Application\Jobs;
 
+use Throwable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
@@ -40,7 +41,7 @@ class TestRabbitMQJob implements ShouldQueue
         ]);
     }
 
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
         Log::error('RabbitMQ Job Falhou!', [
             'message' => $this->message,

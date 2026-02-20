@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Modules\Subscription\Domain\Enums\CurrencyEnum;
@@ -73,7 +74,7 @@ final readonly class CreateSubscriptionUseCase
             );
 
             return SubscriptionDTO::fromEntity($entity);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to create subscription', [
                 'name' => $dto->name,
             ], $e);

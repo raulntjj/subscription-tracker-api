@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\User\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Modules\User\Domain\Entities\User;
@@ -66,7 +67,7 @@ final readonly class CreateUserUseCase
             );
 
             return UserDTO::fromEntity($user);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to create user', [
                 'email' => $email,
                 'name' => $name,

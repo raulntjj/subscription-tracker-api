@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Modules\{{MODULE_NAME}}\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\{{MODULE_NAME}}\Domain\Entities\{{MODULE_NAME}};
 use Modules\{{MODULE_NAME}}\Application\DTOs\{{MODULE_NAME}}DTO;
 use Modules\{{MODULE_NAME}}\Application\DTOs\Create{{MODULE_NAME}}DTO;
 use Modules\{{MODULE_NAME}}\Domain\Contracts\{{MODULE_NAME}}RepositoryInterface;
-use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 
 final readonly class Create{{MODULE_NAME}}UseCase
 {
@@ -50,7 +51,7 @@ final readonly class Create{{MODULE_NAME}}UseCase
             );
 
             return {{MODULE_NAME}}DTO::fromEntity($entity);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to create {{MODULE_NAME_LOWER}}', [
                 'name' => $dto->name,
             ], $e);

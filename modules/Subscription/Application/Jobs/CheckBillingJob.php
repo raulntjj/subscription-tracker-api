@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Jobs;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Illuminate\Bus\Queueable;
@@ -71,7 +72,7 @@ final class CheckBillingJob implements ShouldQueue
                     );
 
                     $processedCount++;
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     $failedCount++;
 
                     $this->logger()->error('Failed to process subscription billing', [
@@ -88,7 +89,7 @@ final class CheckBillingJob implements ShouldQueue
                 'processed' => $processedCount,
                 'failed' => $failedCount,
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Billing check job failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -188,7 +189,7 @@ final class CheckBillingJob implements ShouldQueue
                 'user_id' => $userId,
                 'billing_history_id' => $billingHistory->id()->toString(),
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->warning('Failed to dispatch webhook for subscription renewal', context: [
                 'subscription_id' => $subscription->id()->toString(),
                 'error' => $e->getMessage(),
@@ -199,7 +200,7 @@ final class CheckBillingJob implements ShouldQueue
     /**
      * Lida com falha do job
      */
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
         $this->logger()->error('Billing check job failed permanently', [
             'error' => $exception->getMessage(),

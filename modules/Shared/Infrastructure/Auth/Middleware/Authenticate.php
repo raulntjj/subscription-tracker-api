@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Shared\Infrastructure\Auth\Middleware;
 
 use Closure;
+use Throwable;
 use Illuminate\Http\Request;
 use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +32,7 @@ final class Authenticate
             return ApiResponse::unauthorized(message: 'Invalid token.');
         } catch (JWTException $e) {
             return ApiResponse::unauthorized(message: 'Token not provided.');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return ApiResponse::unauthorized(message: 'Unauthorized.');
         }
 

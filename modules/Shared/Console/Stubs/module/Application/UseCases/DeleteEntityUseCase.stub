@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\{{MODULE_NAME}}\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
-use Modules\{{MODULE_NAME}}\Domain\Contracts\{{MODULE_NAME}}RepositoryInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\{{MODULE_NAME}}\Domain\Contracts\{{MODULE_NAME}}RepositoryInterface;
 
 final readonly class Delete{{MODULE_NAME}}UseCase
 {
@@ -46,7 +47,7 @@ final readonly class Delete{{MODULE_NAME}}UseCase
                     'name' => $entity->name(),
                 ]
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to delete {{MODULE_NAME_LOWER}}', [
                 '{{MODULE_NAME_SNAKE}}_id' => $id,
             ], $e);

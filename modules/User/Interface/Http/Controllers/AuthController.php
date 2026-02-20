@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\User\Interface\Http\Controllers;
 
 use Throwable;
+use RuntimeException;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 use Illuminate\Http\JsonResponse;
@@ -14,10 +15,13 @@ use Modules\User\Application\DTOs\CreateUserDTO;
 use Modules\User\Application\UseCases\LoginUseCase;
 use Modules\User\Application\UseCases\LogoutUseCase;
 use Modules\User\Application\UseCases\RegisterUseCase;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use Modules\Shared\Interface\Http\Responses\ApiResponse;
 use Modules\User\Application\UseCases\RefreshTokenUseCase;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\User\Application\Queries\GetAuthenticatedUserQuery;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
 
 final class AuthController
 {
@@ -132,14 +136,6 @@ final class AuthController
 
     /**
      * POST /auth/refresh
-     *
-     * Renova o token JWT expirado (dentro do refresh_ttl de 14 dias).
-     *
-     * Esta rota aceita tokens EXPIRADOS desde que estejam dentro da janela
-     * de refresh (JWT_REFRESH_TTL configurado no .env).
-     *
-     * Se o token expirou há mais de 14 dias, retorna erro 401 e o usuário
-     * precisa fazer login novamente.
      */
     public function refresh(): JsonResponse
     {
@@ -150,13 +146,13 @@ final class AuthController
                 data: $token->toArray(),
                 message: 'Token refreshed successfully.',
             );
-        } catch (\PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException $e) {
+        } catch (TokenExpiredException $e) {
             return ApiResponse::unauthorized(message: 'Token expired. Please login again.');
-        } catch (\PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException $e) {
+        } catch (TokenInvalidException $e) {
             return ApiResponse::unauthorized(message: 'Token invalid.');
-        } catch (\PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException $e) {
+        } catch (JWTException $e) {
             return ApiResponse::unauthorized(message: 'Token not provided.');
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             return ApiResponse::unauthorized(message: $e->getMessage());
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Token refresh error', context: [

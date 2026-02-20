@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\User\Application\UseCases;
 
+use Throwable;
 use InvalidArgumentException;
 use Modules\User\Application\DTOs\LoginDTO;
 use Modules\User\Application\DTOs\AuthTokenDTO;
@@ -42,7 +43,7 @@ final class LoginUseCase
             ]);
 
             return AuthTokenDTO::fromToken($token, $this->jwtService->getTokenTtl());
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Login error', [
                 'error' => $e->getMessage(),
                 'email' => $dto->email,

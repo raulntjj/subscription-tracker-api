@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\User\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use Modules\User\Domain\Contracts\UserRepositoryInterface;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
@@ -47,7 +48,7 @@ final readonly class DeleteUserUseCase
                     'name' => $user->name(),
                 ],
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to delete user', [
                 'user_id' => $id,
             ], $e);

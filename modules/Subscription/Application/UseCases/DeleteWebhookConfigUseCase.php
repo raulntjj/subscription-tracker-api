@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
@@ -42,7 +43,7 @@ final readonly class DeleteWebhookConfigUseCase
                 entityId: $id,
                 context: [],
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to delete webhook config', [
                 'webhook_config_id' => $id,
             ], $e);

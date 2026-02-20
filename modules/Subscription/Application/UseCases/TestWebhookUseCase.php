@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Http;
 use Modules\Subscription\Application\Jobs\TestWebhookJob;
@@ -69,7 +70,7 @@ final readonly class TestWebhookUseCase
                 'webhook_config_id' => $id,
                 'message' => 'Webhook test dispatched to RabbitMQ queue. Check logs for results.',
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to dispatch webhook test job', [
                 'webhook_config_id' => $id,
             ], $e);
@@ -136,7 +137,7 @@ final readonly class TestWebhookUseCase
                 'response_body' => $responseBody,
                 'request_payload' => $payload,
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to test webhook config', [
                 'webhook_config_id' => $id,
             ], $e);

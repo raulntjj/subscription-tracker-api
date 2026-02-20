@@ -23,7 +23,7 @@ Route::get('/status', function () {
     try {
         DB::connection()->getPdo();
         $dbStatus = 'connected';
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         $dbStatus = 'error: ' . $e->getMessage();
     }
 
@@ -31,7 +31,7 @@ Route::get('/status', function () {
     try {
         Cache::set('health_check', true, 10);
         $cacheStatus = Cache::get('health_check') ? 'connected' : 'error';
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         $cacheStatus = 'error: ' . $e->getMessage();
     }
 

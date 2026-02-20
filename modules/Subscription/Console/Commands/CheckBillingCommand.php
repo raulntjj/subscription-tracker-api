@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Console\Commands;
 
+use Throwable;
 use Illuminate\Console\Command;
 use Modules\Subscription\Application\Jobs\CheckBillingJob;
 
@@ -51,7 +52,7 @@ final class CheckBillingCommand extends Command
             $this->info('Billing check job dispatched successfully!');
 
             return self::SUCCESS;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->error('Failed to dispatch billing check job:');
             $this->error($e->getMessage());
 

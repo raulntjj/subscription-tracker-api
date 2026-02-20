@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -82,7 +83,7 @@ final readonly class UpdateSubscriptionUseCase
             );
 
             return SubscriptionDTO::fromEntity($entity);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to update subscription', [
                 'subscription_id' => $id,
             ], $e);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Modules\Subscription\Domain\Entities\WebhookConfig;
@@ -57,7 +58,7 @@ final readonly class CreateWebhookConfigUseCase
             );
 
             return WebhookConfigDTO::fromEntity($entity);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to create webhook config', [
                 'url' => $dto->url,
             ], $e);

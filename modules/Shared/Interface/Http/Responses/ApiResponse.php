@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Interface\Http\Responses;
 
+use Throwable;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -30,7 +31,7 @@ final class ApiResponse
     public static function error(
         ?string $message = 'An error occurred',
         mixed $errors = null,
-        ?\Throwable $exception = null,
+        ?Throwable $exception = null,
         int $status = Response::HTTP_BAD_REQUEST,
     ): JsonResponse {
         if ($exception !== null) {

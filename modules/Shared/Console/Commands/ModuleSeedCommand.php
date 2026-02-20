@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Console\Commands;
 
+use Throwable;
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -208,7 +209,7 @@ final class ModuleSeedCommand extends Command
             $this->seededClasses[] = $className;
             $this->info("{$seederName} executado com sucesso!");
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->error("Erro ao executar {$seederName}:");
             $this->error("{$e->getMessage()}");
             if ($this->output->isVerbose()) {

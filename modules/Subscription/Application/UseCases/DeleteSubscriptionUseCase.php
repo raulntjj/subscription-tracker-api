@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use InvalidArgumentException;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
@@ -47,7 +48,7 @@ final readonly class DeleteSubscriptionUseCase
                     'name' => $entity->name(),
                 ],
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to delete subscription', [
                 'subscription_id' => $id,
             ], $e);

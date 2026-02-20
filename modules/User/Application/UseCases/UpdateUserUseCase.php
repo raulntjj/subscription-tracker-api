@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\User\Application\UseCases;
 
+use Throwable;
 use Ramsey\Uuid\Uuid;
 use Modules\User\Application\DTOs\UserDTO;
 use Modules\User\Domain\ValueObjects\Email;
@@ -75,7 +76,7 @@ final readonly class UpdateUserUseCase
             );
 
             return UserDTO::fromEntity($user);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to update user', [
                 'user_id' => $id,
             ], $e);

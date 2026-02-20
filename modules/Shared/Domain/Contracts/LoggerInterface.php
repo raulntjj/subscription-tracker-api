@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Shared\Domain\Contracts;
 
+use Throwable;
+
 interface LoggerInterface
 {
     /**
@@ -24,12 +26,12 @@ interface LoggerInterface
     /**
      * Log de erro (falhas que precisam atenção)
      */
-    public function error(string $message, array $context = [], ?\Throwable $exception = null): void;
+    public function error(string $message, array $context = [], ?Throwable $exception = null): void;
 
     /**
      * Log crítico (sistema pode estar comprometido)
      */
-    public function critical(string $message, array $context = [], ?\Throwable $exception = null): void;
+    public function critical(string $message, array $context = [], ?Throwable $exception = null): void;
 
     /**
      * Log de evento de negócio (domain events)
