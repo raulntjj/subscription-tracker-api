@@ -65,7 +65,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
             return null;
         }
 
-        return $this->toDomain($model);
+        return $this->toEntity($model);
     }
 
     /**
@@ -78,7 +78,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
             ->whereNull('deleted_at')
             ->first();
 
-        return $model ? $this->toDomain($model) : null;
+        return $model ? $this->toEntity($model) : null;
     }
 
     /**
@@ -94,7 +94,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
                 ->whereNull('deleted_at')
                 ->first();
 
-            return $model ? $this->toDomain($model) : null;
+            return $model ? $this->toEntity($model) : null;
         }, self::MAX_CACHE_TTL);
     }
 
@@ -113,7 +113,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
 
             $webhookConfigs = [];
             foreach ($models as $model) {
-                $webhookConfigs[] = $this->toDomain($model);
+                $webhookConfigs[] = $this->toEntity($model);
             }
 
             return $webhookConfigs;
@@ -135,7 +135,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
     /**
      * Converte Model para Entity
      */
-    private function toDomain(WebhookConfigModel $model): WebhookConfig
+    private function toEntity(WebhookConfigModel $model): WebhookConfig
     {
         return new WebhookConfig(
             id: Uuid::fromString($model->id),

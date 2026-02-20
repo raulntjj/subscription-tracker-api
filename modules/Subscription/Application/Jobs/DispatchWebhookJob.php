@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Jobs;
 
+use Exception;
+use Illuminate\Http\Client\ConnectionException;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -13,6 +16,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Modules\Shared\Infrastructure\Logging\StructuredLogger;
 use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
+use RuntimeException;
+use Throwable;
 
 /**
  * Job para despachar webhooks de renovação de subscrição
@@ -23,6 +28,7 @@ use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
  */
 final class DispatchWebhookJob implements ShouldQueue
 {
+    use Loggable;
     use Queueable;
     use Dispatchable;
     use SerializesModels;
@@ -67,9 +73,7 @@ final class DispatchWebhookJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $logger = new StructuredLogger('Subscription');
-
-        $logger->info('Processing webhook dispatch', [
+        $this->logger()->info('Processing webhook dispatch', [
             'subscription_id' => $this->subscriptionId,
             'user_id' => $this->userId,
             'billing_history_id' => $this->billingHistoryId,
@@ -83,10 +87,10 @@ final class DispatchWebhookJob implements ShouldQueue
             ->first();
 
         if ($webhookConfig === null) {
-            $logger->info('No active webhook configuration found for user', [
+            $this->logger()->info('No active webhook configuration found for user', [
                 'user_id' => $this->userId,
             ]);
-            return; // Não falhar o job, apenas não processar
+            return;
         }
 
         // 2. Montar payload JSON
@@ -98,7 +102,7 @@ final class DispatchWebhookJob implements ShouldQueue
             ? hash_hmac('sha256', $payloadJson, $webhookConfig->secret)
             : null;
 
-        $logger->info('Sending webhook request', [
+        $this->logger()->info('Sending webhook request', [
             'webhook_url' => $webhookConfig->url,
             'user_id' => $this->userId,
             'payload_size' => strlen($payloadJson),
@@ -125,7 +129,7 @@ final class DispatchWebhookJob implements ShouldQueue
 
             // 5. Verificar resposta
             if ($response->successful()) {
-                $logger->info('Webhook delivered successfully', [
+                $this->logger()->info('Webhook delivered successfully', [
                     'webhook_url' => $webhookConfig->url,
                     'status_code' => $response->status(),
                     'user_id' => $this->userId,
@@ -133,12 +137,11 @@ final class DispatchWebhookJob implements ShouldQueue
                     'attempt' => $this->attempts(),
                 ]);
             } else {
-                // Resposta não bem-sucedida (4xx ou 5xx)
-                $this->handleFailedResponse($response, $webhookConfig->url, $logger);
+                $this->handleFailedResponse($response, $webhookConfig->url);
             }
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        } catch (ConnectionException $e) {
             // Erro de conexão (timeout, DNS, etc)
-            $logger->error('Webhook connection failed', [
+            $this->logger()->error('Webhook connection failed', [
                 'webhook_url' => $webhookConfig->url,
                 'error' => $e->getMessage(),
                 'user_id' => $this->userId,
@@ -147,9 +150,9 @@ final class DispatchWebhookJob implements ShouldQueue
 
             // Retentar automaticamente
             throw $e;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Outros erros
-            $logger->error('Webhook dispatch failed with exception', [
+            $this->logger()->error('Webhook dispatch failed with exception', [
                 'webhook_url' => $webhookConfig->url,
                 'error' => $e->getMessage(),
                 'user_id' => $this->userId,
@@ -230,15 +233,15 @@ final class DispatchWebhookJob implements ShouldQueue
     /**
      * Lida com resposta falha (4xx ou 5xx)
      */
-    private function handleFailedResponse($response, string $url, StructuredLogger $logger): void
+    private function handleFailedResponse($response, string $url): void
     {
         $statusCode = $response->status();
         $responseBody = $response->body();
 
-        $logger->warning('Webhook returned error status', [
+        $this->logger()->warning('Webhook returned error status', [
             'webhook_url' => $url,
             'status_code' => $statusCode,
-            'response_body' => substr($responseBody, 0, 500), // Limitar tamanho do log
+            'response_body' => substr($responseBody, 0, 500),
             'user_id' => $this->userId,
             'subscription_id' => $this->subscriptionId,
             'attempt' => $this->attempts(),
@@ -246,19 +249,15 @@ final class DispatchWebhookJob implements ShouldQueue
 
         // Decidir se deve retentar baseado no status code
         if ($statusCode >= 500) {
-            // Erros de servidor (5xx) - retentar
-            throw new \RuntimeException("Webhook returned server error: {$statusCode}");
+            throw new RuntimeException("Webhook returned server error: {$statusCode}");
         } elseif ($statusCode === 429) {
-            // Rate limit - retentar
-            throw new \RuntimeException("Webhook rate limited: {$statusCode}");
+            throw new RuntimeException("Webhook rate limited: {$statusCode}");
         } elseif ($statusCode >= 400 && $statusCode < 500) {
-            // Erros de cliente (4xx) - geralmente não retentar (exceto 429)
-            // Mas vamos retentar para dar chance de correção
             if ($this->attempts() < 3) {
-                throw new \RuntimeException("Webhook returned client error: {$statusCode}");
+                throw new RuntimeException("Webhook returned client error: {$statusCode}");
             }
 
-            $logger->error('Webhook permanently failed with client error', [
+            $this->logger()->error('Webhook permanently failed with client error', [
                 'webhook_url' => $url,
                 'status_code' => $statusCode,
                 'user_id' => $this->userId,
@@ -270,11 +269,9 @@ final class DispatchWebhookJob implements ShouldQueue
     /**
      * Lida com falha permanente do job
      */
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
-        $logger = app(StructuredLogger::class);
-
-        $logger->error('Webhook dispatch job failed permanently', [
+        $this->logger()->error('Webhook dispatch job failed permanently', [
             'subscription_id' => $this->subscriptionId,
             'user_id' => $this->userId,
             'billing_history_id' => $this->billingHistoryId,

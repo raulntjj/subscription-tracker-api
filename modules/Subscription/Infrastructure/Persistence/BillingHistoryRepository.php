@@ -45,7 +45,7 @@ final class BillingHistoryRepository extends BaseRepository implements BillingHi
             return null;
         }
 
-        return $this->toDomain($model);
+        return $this->toEntity($model);
     }
 
     public function findBySubscriptionId(string $subscriptionId): array
@@ -74,7 +74,7 @@ final class BillingHistoryRepository extends BaseRepository implements BillingHi
             ->sum('billing_histories.amount_paid');
     }
 
-    private function toDomain(BillingHistoryModel $model): BillingHistory
+    private function toEntity(BillingHistoryModel $model): BillingHistory
     {
         return new BillingHistory(
             id: Uuid::fromString($model->id),

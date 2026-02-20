@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Modules\Subscription\Application\UseCases;
 
 use DateTimeImmutable;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Shared\Infrastructure\Logging\StructuredLogger;
 use Modules\Subscription\Application\DTOs\MonthlyBudgetDTO;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
+use Throwable;
 
 /**
  * Caso de uso para calcular o orçamento mensal de assinaturas
@@ -19,12 +21,11 @@ use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
  */
 final readonly class CalculateMonthlyBudgetUseCase
 {
-    private StructuredLogger $logger;
+    use Loggable;
 
     public function __construct(
         private SubscriptionRepositoryInterface $repository,
     ) {
-        $this->logger = new StructuredLogger('Subscription');
     }
 
     /**
@@ -36,7 +37,7 @@ final readonly class CalculateMonthlyBudgetUseCase
      */
     public function execute(string $userId, string $currency = 'BRL'): MonthlyBudgetDTO
     {
-        $this->logger->info('Calculating monthly budget', [
+        $this->logger()->info('Calculating monthly budget', [
             'user_id' => $userId,
             'currency' => $currency,
         ]);
@@ -52,25 +53,25 @@ final readonly class CalculateMonthlyBudgetUseCase
             $today = new DateTimeImmutable('today');
 
             foreach ($subscriptions as $subscription) {
-                // Normaliza o preço para valor mensal
-                $monthlyPrice = $this->normalizeToMonthlyPrice(
-                    $subscription->price,
-                    $subscription->billing_cycle
-                );
-
                 // Filtra apenas assinaturas na moeda solicitada
-                if ($subscription->currency !== $currency) {
+                if ($subscription->currency()->value !== $currency) {
                     continue;
                 }
 
+                // Normaliza o preço para valor mensal
+                $monthlyPrice = $this->normalizeToMonthlyPrice(
+                    $subscription->price(),
+                    $subscription->billingCycle()->value
+                );
+
                 // Adiciona ao breakdown por categoria
-                $category = $subscription->category;
+                $category = $subscription->category();
                 if (!isset($breakdown[$category])) {
                     $breakdown[$category] = 0;
                 }
                 $breakdown[$category] += $monthlyPrice;
 
-                $nextBillingDate = new DateTimeImmutable($subscription->next_billing_date->format('Y-m-d'));
+                $nextBillingDate = $subscription->nextBillingDate();
 
                 // Se já venceu (data passada), conta como committed
                 if ($nextBillingDate <= $today) {
@@ -84,7 +85,7 @@ final readonly class CalculateMonthlyBudgetUseCase
 
             $totalMonthly = $totalCommitted + $upcomingBills;
 
-            $this->logger->info('Monthly budget calculated successfully', [
+            $this->logger()->info('Monthly budget calculated successfully', [
                 'user_id' => $userId,
                 'total_committed' => $totalCommitted,
                 'upcoming_bills' => $upcomingBills,
@@ -99,8 +100,8 @@ final readonly class CalculateMonthlyBudgetUseCase
                 currency: $currency,
                 totalMonthly: $totalMonthly,
             );
-        } catch (\Throwable $e) {
-            $this->logger->error('Failed to calculate monthly budget', [
+        } catch (Throwable $e) {
+            $this->logger()->error('Failed to calculate monthly budget', [
                 'user_id' => $userId,
                 'currency' => $currency,
                 'error' => $e->getMessage(),

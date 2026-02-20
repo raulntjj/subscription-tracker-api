@@ -34,7 +34,7 @@ final class LoginUseCase
                     'email' => $dto->email,
                 ]);
 
-                throw new InvalidArgumentException('Credenciais inválidas.');
+                throw new InvalidArgumentException('Invalid credentials.');
             }
 
             $this->logger()->event('user.logged_in', [

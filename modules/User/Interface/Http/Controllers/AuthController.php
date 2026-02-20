@@ -41,7 +41,7 @@ final class AuthController
     {
         try {
             $validated = $request->validate(rules: [
-                'email'    => ['required', 'string', 'email'],
+                'email' => ['required', 'string', 'email'],
                 'password' => ['required', 'string', 'min:8'],
             ]);
 
@@ -50,7 +50,7 @@ final class AuthController
 
             return ApiResponse::success(
                 data: $token->toArray(),
-                message: 'Login realizado com sucesso.'
+                message: 'Login performed successfully.'
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
@@ -77,10 +77,10 @@ final class AuthController
     {
         try {
             $validated = $request->validate(rules: [
-                'name'         => ['required', 'string', 'max:255'],
-                'email'        => ['required', 'string', 'email', 'max:255'],
-                'password'     => ['required', 'string', 'min:8', 'confirmed'],
-                'surname'      => ['nullable', 'string', 'max:255'],
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+                'surname' => ['nullable', 'string', 'max:255'],
                 'profile_path' => ['nullable', 'string', 'max:500'],
             ]);
 
@@ -89,7 +89,7 @@ final class AuthController
 
             return ApiResponse::success(
                 data: $token->toArray(),
-                message: 'Usuário registrado com sucesso.',
+                message: 'User registered successfully.',
                 status: 201
             );
         } catch (ValidationException $e) {
@@ -119,7 +119,7 @@ final class AuthController
             $this->logoutUseCase->execute();
 
             return ApiResponse::success(
-                message: 'Logout realizado com sucesso.'
+                message: 'Logout performed successfully.'
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Logout error', context: [
@@ -148,18 +148,18 @@ final class AuthController
 
             return ApiResponse::success(
                 data: $token->toArray(),
-                message: 'Token renovado com sucesso.'
+                message: 'Token refreshed successfully.'
             );
         } catch (\PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException $e) {
-            return ApiResponse::unauthorized('Token expirou. Faça login novamente.');
+            return ApiResponse::unauthorized(message: 'Token expired. Please login again.');
         } catch (\PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException $e) {
-            return ApiResponse::unauthorized('Token inválido.');
+            return ApiResponse::unauthorized(message: 'Token invalid.');
         } catch (\PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException $e) {
-            return ApiResponse::unauthorized('Token não fornecido.');
+            return ApiResponse::unauthorized(message: 'Token not provided.');
         } catch (\RuntimeException $e) {
-            return ApiResponse::unauthorized($e->getMessage());
+            return ApiResponse::unauthorized(message: $e->getMessage());
         } catch (Throwable $e) {
-            $this->logger()->error('Token refresh error', [
+            $this->logger()->error(message: 'Token refresh error', context: [
                 'error' => $e->getMessage(),
             ]);
 
@@ -178,12 +178,12 @@ final class AuthController
             $user = $this->getAuthenticatedUserQuery->execute();
 
             if ($user === null) {
-                return ApiResponse::unauthorized(message: 'Usuário não encontrado.');
+                return ApiResponse::unauthorized(message: 'Authenticated user not found.');
             }
 
             return ApiResponse::success(
                 data: $user->toArray(),
-                message: 'Usuário autenticado.'
+                message: 'Authenticated user retrieved successfully.'
             );
         } catch (Throwable $e) {
             $this->logger()->error(message: 'Get authenticated user error', context: [

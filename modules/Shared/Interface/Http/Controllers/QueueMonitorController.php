@@ -42,10 +42,10 @@ final class QueueMonitorController extends Controller
 
             return ApiResponse::success(
                 data: $jobList->toArray(),
-                message: 'Jobs recuperados com sucesso.'
+                message: 'Jobs retrieved successfully.'
             );
         } catch (Throwable $e) {
-            $this->logger()->error('Error fetching all jobs', [
+            $this->logger()->error(message: 'Error fetching all jobs', context: [
                 'error' => $e->getMessage(),
             ]);
 
@@ -65,10 +65,10 @@ final class QueueMonitorController extends Controller
 
             return ApiResponse::success(
                 data: $metrics->toArray(),
-                message: 'Métricas recuperadas com sucesso.'
+                message: 'Queue metrics retrieved successfully.'
             );
         } catch (Throwable $e) {
-            $this->logger()->error('Error fetching queue metrics', [
+            $this->logger()->error(message: 'Error fetching queue metrics', context: [
                 'error' => $e->getMessage(),
             ]);
 
@@ -88,10 +88,10 @@ final class QueueMonitorController extends Controller
 
             return ApiResponse::success(
                 data: $jobList->toArray(),
-                message: 'Jobs ativos recuperados com sucesso.'
+                message: 'Active jobs retrieved successfully.'
             );
         } catch (Throwable $e) {
-            $this->logger()->error('Error fetching active jobs', [
+            $this->logger()->error(message: 'Error fetching active jobs', context: [
                 'error' => $e->getMessage(),
             ]);
 
@@ -111,10 +111,10 @@ final class QueueMonitorController extends Controller
 
             return ApiResponse::success(
                 data: $jobList->toArray(),
-                message: 'Jobs falhados recuperados com sucesso.'
+                message: 'Failed jobs retrieved successfully.'
             );
         } catch (Throwable $e) {
-            $this->logger()->error('Error fetching failed jobs', [
+            $this->logger()->error(message: 'Error fetching failed jobs', context: [
                 'error' => $e->getMessage(),
             ]);
 
@@ -130,18 +130,18 @@ final class QueueMonitorController extends Controller
     public function show(string $jobId): JsonResponse
     {
         try {
-            $job = $this->getJobDetailsQuery->execute($jobId);
+            $job = $this->getJobDetailsQuery->execute(jobId: $jobId);
 
             if ($job === null) {
-                return ApiResponse::notFound('Job não encontrado ou expirado.');
+                return ApiResponse::notFound(message: 'Job not found or expired.');
             }
 
             return ApiResponse::success(
                 data: $job->toArray(),
-                message: 'Detalhes do job recuperados com sucesso.'
+                message: 'Job details retrieved successfully.'
             );
         } catch (Throwable $e) {
-            $this->logger()->error('Error fetching job details', [
+            $this->logger()->error(message: 'Error fetching job details', context: [
                 'job_id' => $jobId,
                 'error' => $e->getMessage(),
             ]);
@@ -162,10 +162,10 @@ final class QueueMonitorController extends Controller
 
             return ApiResponse::success(
                 data: $result->toArray(),
-                message: "Limpeza concluída. {$result->deletedCount} jobs removidos."
+                message: "Cleanup completed. {$result->deletedCount} jobs removed."
             );
         } catch (Throwable $e) {
-            $this->logger()->error('Error clearing queue monitor logs', [
+            $this->logger()->error(message: 'Error clearing queue monitor logs', context: [
                 'error' => $e->getMessage(),
             ]);
 

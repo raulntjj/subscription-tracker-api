@@ -68,7 +68,7 @@ final readonly class FindSubscriptionsPaginatedQuery
         );
 
         return new SubscriptionPaginatedDTO(
-            data: $dtos,
+            subscriptions: $dtos,
             total: $result['total'],
             perPage: $result['per_page'],
             currentPage: $result['current_page'],

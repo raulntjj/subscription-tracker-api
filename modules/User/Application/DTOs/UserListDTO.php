@@ -17,9 +17,6 @@ final readonly class UserListDTO
 
     /**
      * Cria um UserListDTO a partir de um array de UserDTO
-     *
-     * @param UserDTO[] $users
-     * @return self
      */
     public static function fromArray(array $users): self
     {
@@ -31,8 +28,6 @@ final readonly class UserListDTO
 
     /**
      * Converte o DTO para array
-     *
-     * @return array
      */
     public function toArray(): array
     {

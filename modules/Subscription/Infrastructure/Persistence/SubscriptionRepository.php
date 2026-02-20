@@ -75,7 +75,7 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
                 return null;
             }
 
-            return $this->toDomain($model);
+            return $this->toEntity($model);
         }, self::MAX_CACHE_TTL);
     }
 
@@ -96,8 +96,12 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
             ->get();
 
         $subscriptions = [];
+
+        /**
+         * @var SubscriptionModel $model
+         */
         foreach ($models as $model) {
-            $subscriptions[] = $this->toDomain($model);
+            $subscriptions[] = $this->toEntity($model);
         }
 
         return $subscriptions;
@@ -113,8 +117,12 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
             ->get();
 
         $subscriptions = [];
+
+        /**
+         * @var SubscriptionModel $model
+         */
         foreach ($models as $model) {
-            $subscriptions[] = $this->toDomain($model);
+            $subscriptions[] = $this->toEntity($model);
         }
 
         return $subscriptions;
@@ -165,8 +173,12 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
                 ->get();
 
             $subscriptions = [];
+
+            /**
+             * @var SubscriptionModel $model
+             */
             foreach ($models as $model) {
-                $subscriptions[] = $this->toDomain($model);
+                $subscriptions[] = $this->toEntity($model);
             }
 
             return [
@@ -220,42 +232,21 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
                 $query->orderBy('id', 'desc');
             }
 
-            if ($cursor) {
-                $parts = explode('|', base64_decode($cursor));
-                if (count($parts) === 2) {
-                    [$timestamp, $id] = $parts;
-                    $query->where(function ($q) use ($timestamp, $id) {
-                        $q->where('created_at', '<', $timestamp)
-                            ->orWhere(function ($q) use ($timestamp, $id) {
-                                $q->where('created_at', '=', $timestamp)
-                                    ->where('id', '<', $id);
-                            });
-                    });
-                }
-            }
+            /** @var \Illuminate\Pagination\CursorPaginator $paginator */
+            $paginator = $query->cursorPaginate(
+                perPage: $limit,
+                cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null
+            );
 
-            $models = $query->take($limit + 1)->get();
-            $hasMore = $models->count() > $limit;
-
-            if ($hasMore) {
-                $models = $models->take($limit);
-            }
-
-            $nextCursor = null;
-            if ($hasMore && $models->isNotEmpty()) {
-                $lastModel = $models->last();
-                $nextCursor = base64_encode($lastModel->created_at->format('Y-m-d H:i:s') . '|' . $lastModel->id);
-            }
-
-            $subscriptions = [];
-            foreach ($models as $model) {
-                $subscriptions[] = $this->toDomain($model);
-            }
+            // Converte para DTOs
+            $subscriptions = $paginator->getCollection()
+                ->map(fn ($model) => $this->toEntity($model))
+                ->toArray();
 
             return [
-                'data' => $subscriptions,
-                'next_cursor' => $nextCursor,
-                'prev_cursor' => null,
+                'subscriptions' => $subscriptions,
+                'next_cursor' => $paginator->nextCursor()?->encode(),
+                'prev_cursor' => $paginator->previousCursor()?->encode(),
             ];
         }, self::MIN_CACHE_TTL);
     }
@@ -290,7 +281,7 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
         });
     }
 
-    private function toDomain(SubscriptionModel $model): Subscription
+    private function toEntity(SubscriptionModel $model): Subscription
     {
         return new Subscription(
             id: Uuid::fromString($model->id),

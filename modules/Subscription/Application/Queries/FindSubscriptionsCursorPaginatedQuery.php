@@ -64,11 +64,11 @@ final readonly class FindSubscriptionsCursorPaginatedQuery
         // Converte entidades para DTOs
         $dtos = array_map(
             fn ($entity) => SubscriptionDTO::fromEntity($entity),
-            $result['data']
+            $result['subscriptions']
         );
 
         return new SubscriptionCursorPaginatedDTO(
-            data: $dtos,
+            subscriptions: $dtos,
             nextCursor: $result['next_cursor'],
             prevCursor: $result['prev_cursor'],
         );

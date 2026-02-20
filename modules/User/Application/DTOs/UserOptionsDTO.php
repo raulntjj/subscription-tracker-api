@@ -16,9 +16,6 @@ final readonly class UserOptionsDTO
 
     /**
      * Cria um UserOptionsDTO a partir de um array de opções
-     *
-     * @param array<array{id: string, name: string}> $options
-     * @return self
      */
     public static function fromArray(array $options): self
     {
@@ -27,8 +24,6 @@ final readonly class UserOptionsDTO
 
     /**
      * Converte o DTO para array
-     *
-     * @return array
      */
     public function toArray(): array
     {

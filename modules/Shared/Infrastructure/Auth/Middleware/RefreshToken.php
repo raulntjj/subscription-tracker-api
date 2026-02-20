@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use Modules\Shared\Interface\Http\Responses\ApiResponse;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
+use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 
 final class RefreshToken
 {
@@ -19,21 +21,30 @@ final class RefreshToken
      */
     public function handle(Request $request, Closure $next): Response
     {
+        /** @var JWTGuard $guard */
+        $guard = auth('api');
+
         try {
-            auth('api')->userOrFail();
+            // Check if token exists and is valid
+            if (!$guard->check()) {
+                return ApiResponse::unauthorized(message: 'Unauthorized.');
+            }
         } catch (TokenExpiredException) {
             try {
-                $newToken = auth('api')->refresh();
+                $newToken = $guard->refresh();
 
-                /** @var Response $response */
                 $response = $next($request);
 
-                return $this->addTokenToResponse($response, $newToken);
+                return $this->addTokenToResponse(response: $response, token: $newToken);
             } catch (JWTException) {
-                return ApiResponse::unauthorized('Não foi possível renovar o token. Faça login novamente.');
+                return ApiResponse::unauthorized(message: 'Unable to refresh token. Please login again.');
+            } catch (TokenInvalidException) {
+                return ApiResponse::unauthorized(message: 'Invalid token.');
             }
+        } catch (TokenInvalidException) {
+            return ApiResponse::unauthorized(message: 'Invalid token.');
         } catch (JWTException) {
-            return ApiResponse::unauthorized('Token não fornecido ou inválido.');
+            return ApiResponse::unauthorized(message: 'Token not provided or invalid.');
         }
 
         return $next($request);

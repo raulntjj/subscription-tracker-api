@@ -36,21 +36,32 @@ final readonly class FindUsersCursorPaginatedQuery
             'cursor' => $cursor,
             'per_page' => $perPage,
             'search' => $search?->term,
+            'search_columns' => $search?->columns,
             'sort' => $sort?->sorts,
         ]);
 
-        $paginationData = $this->userRepository->findCursorPaginated($perPage, $cursor);
+        $searchColumns = $search?->columns;
+        $searchTerm = $search?->term;
+        
+        $sorts = $sort?->sorts;
 
-        // Converte entidades para DTOs
-        $usersDTO = array_map(
-            fn ($user) => UserDTO::fromEntity($user),
-            $paginationData['data']
+        $paginationData = $this->userRepository->findCursorPaginated(
+            limit: $perPage,
+            cursor: $cursor,
+            searchColumns: $searchColumns,
+            searchTerm: $searchTerm,
+            sorts: $sorts
         );
 
-        return UserCursorPaginatedDTO::fromArray([
-            'data' => $usersDTO,
-            'next_cursor' => $paginationData['next_cursor'],
-            'prev_cursor' => $paginationData['prev_cursor'],
-        ]);
+        $usersDTO = array_map(
+            fn ($user) => UserDTO::fromEntity($user),
+            $paginationData['users']
+        );
+
+        return new UserCursorPaginatedDTO(
+            users: $usersDTO,
+            nextCursor: $paginationData['next_cursor'],
+            prevCursor: $paginationData['prev_cursor'],
+        );
     }
 }

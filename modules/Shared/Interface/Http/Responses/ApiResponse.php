@@ -148,9 +148,9 @@ final class ApiResponse
     /**
      * Resposta sem conteúdo (204 No Content)
      */
-    public static function noContent(): JsonResponse
+    public static function noContent(): Response
     {
-        return response()->json(data: null, status: Response::HTTP_NO_CONTENT);
+        return response()->noContent(status: 204);
     }
 
     /**

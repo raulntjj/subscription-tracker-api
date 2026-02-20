@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Shared\Infrastructure\Auth;
 
 use Exception;
+use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 use RuntimeException;
 use PHPOpenSourceSaver\JWTAuth\JWTAuth;
 use Modules\Shared\Domain\Contracts\JwtServiceInterface;
@@ -22,7 +23,9 @@ final class JwtService implements JwtServiceInterface
 
     public function attemptLogin(array $credentials): ?string
     {
-        $token = auth('api')->attempt($credentials);
+        /** @var JWTGuard $guard */
+        $guard = auth('api');
+        $token = $guard->attempt($credentials);
 
         if (!$token) {
             $this->logger()->info('Failed login attempt', [
@@ -44,7 +47,9 @@ final class JwtService implements JwtServiceInterface
     public function refreshToken(): string
     {
         try {
-            $token = auth('api')->refresh();
+            /** @var JWTGuard $guard */
+            $guard = auth('api');
+            $token = $guard->refresh();
 
             $this->logger()->info('Token refreshed', [
                 'user_id' => auth('api')->id(),
@@ -70,16 +75,20 @@ final class JwtService implements JwtServiceInterface
     {
         $userId = auth('api')->id();
 
-        auth('api')->logout();
+        /** @var JWTGuard $guard */
+        $guard = auth('api');
+        $guard->logout();
 
         $this->logger()->audit('User logged out', 'User', $userId, [
             'user_id' => $userId,
         ]);
     }
 
-    public function getAuthenticatedUser(): mixed
+    public function getAuthenticatedUser(): ?object
     {
-        return auth('api')->user();
+        /** @var JWTGuard $guard */
+        $guard = auth('api');
+        return $guard->user();
     }
 
     public function getTokenTtl(): int

@@ -41,7 +41,7 @@ final readonly class RegisterUseCase
 
             $existingUser = $this->userRepository->findByEmail($normalizedEmail);
             if ($existingUser !== null) {
-                throw new InvalidArgumentException('Email já está em uso.');
+                throw new InvalidArgumentException('Email is already in use.');
             }
 
             $userDTO = $this->createUserUseCase->execute(
@@ -58,7 +58,7 @@ final readonly class RegisterUseCase
             ]);
 
             if ($token === null) {
-                throw new \RuntimeException('Erro ao gerar token após registro.');
+                throw new \RuntimeException('Failed to generate token after registration.');
             }
 
             $this->logger()->event('UserRegistered', [

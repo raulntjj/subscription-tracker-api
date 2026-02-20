@@ -68,7 +68,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
                 return null;
             }
 
-            return $this->toDomain($model);
+            return $this->toEntity($model);
         }, self::MAX_CACHE_TTL);
     }
 
@@ -83,7 +83,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
                 return null;
             }
 
-            return $this->toDomain($model);
+            return $this->toEntity($model);
         }, self::MAX_CACHE_TTL);
     }
 
@@ -103,21 +103,47 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
         return $this->findWithCache($cacheKey, function () {
             $models = UserModel::orderBy('created_at', 'desc')->get();
 
-            return $models->map(fn (UserModel $model) => $this->toDomain($model))->all();
+            return $models->map(fn (UserModel $model) => $this->toEntity($model))->all();
         }, self::MAX_CACHE_TTL);
     }
 
-    public function findPaginated(int $page, int $perPage): array
-    {
+    public function findPaginated(
+        int $page,
+        int $perPage,
+        ?array $searchColumns = null,
+        ?string $searchTerm = null,
+        ?array $sorts = null
+    ): array {
         $cacheKey = "users:paginated:page:{$page}:per_page:{$perPage}";
 
-        return $this->findWithCache($cacheKey, function () use ($page, $perPage) {
-            $paginator = UserModel::orderBy('created_at', 'desc')
-                ->paginate($perPage, ['*'], 'page', $page);
+        return $this->findWithCache($cacheKey, function () use ($page, $perPage, $searchColumns, $searchTerm, $sorts) {
+            $query = UserModel::query();
+
+            // Aplica busca
+            if ($searchColumns !== null && $searchTerm !== null && $searchTerm !== '') {
+                $query->where(function ($q) use ($searchColumns, $searchTerm) {
+                    foreach ($searchColumns as $column) {
+                        $q->orWhere($column, 'LIKE', "%{$searchTerm}%");
+                    }
+                });
+            }
+
+            // Aplica ordenação
+            if ($sorts !== null && count($sorts) > 0) {
+                foreach ($sorts as $sort) {
+                    $query->orderBy($sort['column'], $sort['direction']);
+                }
+                $query->orderBy('id', 'desc');
+            } else {
+                $query->orderBy('created_at', 'desc');
+                $query->orderBy('id', 'desc');
+            }
+
+            $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
             return [
-                'data' => $paginator->items() ? array_map(
-                    fn (UserModel $model) => $this->toDomain($model),
+                'users' => $paginator->items() ? array_map(
+                    fn (UserModel $model) => $this->toEntity($model),
                     $paginator->items()
                 ) : [],
                 'total' => $paginator->total(),
@@ -128,40 +154,62 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
         }, self::MIN_CACHE_TTL);
     }
 
-    public function findCursorPaginated(int $limit, ?string $cursor = null): array
-    {
+    public function findCursorPaginated(
+        int $limit,
+        ?string $cursor = null,
+        ?array $searchColumns = null,
+        ?string $searchTerm = null,
+        ?array $sorts = null
+    ): array {
+        $searchKey = $searchTerm !== null && $searchTerm !== '' 
+            ? md5(json_encode($searchColumns) . $searchTerm) 
+            : 'none';
+
+        $sortKey = $sorts !== null && count($sorts) > 0
+            ? md5(json_encode($sorts))
+            : 'default';
+
         $cursorKey = $cursor ?? 'none';
-        $cacheKey = "users:cursor_paginated:cursor:{$cursorKey}:limit:{$limit}";
+        $cacheKey = "users:cursor_paginated:cursor:{$cursorKey}:limit:{$limit}:search:{$searchKey}:sort:{$sortKey}";
 
-        return $this->findWithCache($cacheKey, function () use ($limit, $cursor) {
-            $query = UserModel::orderBy('created_at', 'desc');
+        return $this->findWithCache($cacheKey, function () use ($limit, $cursor, $searchColumns, $searchTerm, $sorts) {
+            $query = UserModel::query();
 
-            if ($cursor !== null) {
-                $query->where('created_at', '<', $cursor);
+            // Aplica busca
+            if ($searchColumns !== null && $searchTerm !== null && $searchTerm !== '') {
+                $query->where(function ($q) use ($searchColumns, $searchTerm) {
+                    foreach ($searchColumns as $column) {
+                        $q->orWhere($column, 'LIKE', "%{$searchTerm}%");
+                    }
+                });
             }
 
-            $models = $query->limit($limit + 1)->get();
-
-            $hasMore = $models->count() > $limit;
-            if ($hasMore) {
-                $models = $models->slice(0, $limit);
+            // Aplica ordenação
+            if ($sorts !== null && count($sorts) > 0) {
+                foreach ($sorts as $sort) {
+                    $query->orderBy($sort['column'], $sort['direction']);
+                }
+                $query->orderBy('id', 'desc');
+            } else {
+                $query->orderBy('created_at', 'desc');
+                $query->orderBy('id', 'desc');
             }
 
-            $data = $models->map(fn (UserModel $model) => $this->toDomain($model))->all();
+            /** @var \Illuminate\Pagination\CursorPaginator $paginator */
+            $paginator = $query->cursorPaginate(
+                perPage: $limit,
+                cursor: $cursor ? \Illuminate\Pagination\Cursor::fromEncoded($cursor) : null
+            );
 
-            $nextCursor = null;
-            if ($hasMore && count($data) > 0) {
-                $lastItem = end($data);
-                $nextCursor = $lastItem->createdAt()->format('Y-m-d H:i:s');
-            }
-
-            // Para cursor anterior, seria necessário inverter a query
-            $prevCursor = $cursor;
+            // Converte para entidades de domínio
+            $data = $paginator->getCollection()
+                ->map(fn (UserModel $model) => $this->toEntity($model))
+                ->toArray();
 
             return [
-                'data' => $data,
-                'next_cursor' => $nextCursor,
-                'prev_cursor' => $prevCursor,
+                'users' => $data,
+                'next_cursor' => $paginator->nextCursor()?->encode(),
+                'prev_cursor' => $paginator->previousCursor()?->encode(),
             ];
         }, self::MIN_CACHE_TTL);
     }
@@ -182,7 +230,7 @@ final class UserRepository extends BaseRepository implements UserRepositoryInter
         }, self::MIN_CACHE_TTL);
     }
 
-    private function toDomain(UserModel $model): User
+    private function toEntity(UserModel $model): User
     {
         return new User(
             id: Uuid::fromString($model->id),

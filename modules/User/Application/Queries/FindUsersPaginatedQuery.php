@@ -32,27 +32,38 @@ final readonly class FindUsersPaginatedQuery
         ?SearchDTO $search = null,
         ?SortDTO $sort = null,
     ): UserPaginatedDTO {
-        $this->logger()->debug('Finding users with pagination', [
+        $this->logger()->debug(message: 'Finding users with pagination', context: [
             'page' => $page,
             'per_page' => $perPage,
             'search' => $search?->term,
             'sort' => $sort?->sorts,
         ]);
 
-        $paginationData = $this->userRepository->findPaginated($page, $perPage);
+        $searchColumns = $search?->columns;
+        $searchTerm = $search?->term;
+        
+        $sorts = $sort?->sorts;
+
+        $paginationData = $this->userRepository->findPaginated(
+            page: $page,
+            perPage: $perPage,
+            searchColumns: $searchColumns,
+            searchTerm: $searchTerm,
+            sorts: $sorts
+        );
 
         // Converte entidades para DTOs
         $usersDTO = array_map(
             fn ($user) => UserDTO::fromEntity($user),
-            $paginationData['data']
+            $paginationData['users']
         );
 
-        return UserPaginatedDTO::fromArray([
-            'data' => $usersDTO,
-            'total' => $paginationData['total'],
-            'per_page' => $paginationData['per_page'],
-            'current_page' => $paginationData['current_page'],
-            'last_page' => $paginationData['last_page'],
-        ]);
+        return new UserPaginatedDTO(
+            users: $usersDTO,
+            total: $paginationData['total'],
+            perPage: $paginationData['per_page'],
+            currentPage: $paginationData['current_page'],
+            lastPage: $paginationData['last_page'],
+        );
     }
 }

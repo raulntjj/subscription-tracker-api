@@ -7,10 +7,10 @@ namespace Modules\Subscription\Application\DTOs;
 final readonly class SubscriptionCursorPaginatedDTO
 {
     /**
-     * @param SubscriptionDTO[] $data
+     * @param SubscriptionDTO[] $subscriptions
      */
     public function __construct(
-        public array $data,
+        public array $subscriptions,
         public ?string $nextCursor,
         public ?string $prevCursor,
     ) {
@@ -19,7 +19,7 @@ final readonly class SubscriptionCursorPaginatedDTO
     public function toArray(): array
     {
         return [
-            'data' => array_map(fn (SubscriptionDTO $subscription) => $subscription->toArray(), $this->data),
+            'subscriptions' => array_map(fn (SubscriptionDTO $subscription) => $subscription->toArray(), $this->subscriptions),
             'next_cursor' => $this->nextCursor,
             'prev_cursor' => $this->prevCursor,
         ];

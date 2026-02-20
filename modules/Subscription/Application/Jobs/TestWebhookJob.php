@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Jobs;
 
+use InvalidArgumentException;
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -13,6 +15,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Modules\Shared\Infrastructure\Logging\StructuredLogger;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
+use RuntimeException;
+use Throwable;
 
 /**
  * Job para testar webhook via RabbitMQ
@@ -22,6 +26,7 @@ use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
  */
 final class TestWebhookJob implements ShouldQueue
 {
+    use Loggable;
     use Queueable;
     use Dispatchable;
     use SerializesModels;
@@ -52,9 +57,7 @@ final class TestWebhookJob implements ShouldQueue
     public function handle(
         WebhookConfigRepositoryInterface $repository
     ): void {
-        $logger = new StructuredLogger('Subscription');
-
-        $logger->info('Starting webhook test job', [
+        $this->logger()->info('Starting webhook test job', [
             'webhook_config_id' => $this->webhookConfigId,
             'attempt' => $this->attempts(),
         ]);
@@ -63,10 +66,10 @@ final class TestWebhookJob implements ShouldQueue
             $entity = $repository->findById(Uuid::fromString($this->webhookConfigId));
 
             if (!$entity) {
-                $logger->error('Webhook config not found', [
+                $this->logger()->error('Webhook config not found', [
                     'webhook_config_id' => $this->webhookConfigId,
                 ]);
-                $this->fail(new \InvalidArgumentException('Webhook config not found'));
+                $this->fail(new InvalidArgumentException('Webhook config not found'));
                 return;
             }
 
@@ -103,7 +106,7 @@ final class TestWebhookJob implements ShouldQueue
                 $headers['X-Hub-Signature'] = 'sha256=' . $signature;
             }
 
-            $logger->info('Sending test webhook request', [
+            $this->logger()->info('Sending test webhook request', [
                 'webhook_config_id' => $this->webhookConfigId,
                 'url' => $entity->url(),
                 'has_signature' => $entity->secret() !== null,
@@ -118,13 +121,13 @@ final class TestWebhookJob implements ShouldQueue
             $responseBody = $response->body();
 
             if ($success) {
-                $logger->info('Webhook test completed successfully', [
+                $this->logger()->info('Webhook test completed successfully', [
                     'webhook_config_id' => $this->webhookConfigId,
                     'status_code' => $statusCode,
                     'attempt' => $this->attempts(),
                 ]);
             } else {
-                $logger->warning('Webhook test returned non-success status', [
+                $this->logger()->warning('Webhook test returned non-success status', [
                     'webhook_config_id' => $this->webhookConfigId,
                     'status_code' => $statusCode,
                     'response_body' => substr($responseBody, 0, 500),
@@ -133,22 +136,20 @@ final class TestWebhookJob implements ShouldQueue
 
                 // Se não for sucesso e ainda tiver tentativas, lança exceção para retry
                 if ($this->attempts() < $this->tries) {
-                    throw new \RuntimeException("Webhook returned status {$statusCode}");
+                    throw new RuntimeException("Webhook returned status {$statusCode}");
                 }
             }
-        } catch (\Throwable $e) {
-            $logger->error('Failed to test webhook', [
+        } catch (Throwable $e) {
+            $this->logger()->error('Failed to test webhook', [
                 'webhook_config_id' => $this->webhookConfigId,
                 'attempt' => $this->attempts(),
                 'error' => $e->getMessage(),
             ], $e);
 
-            // Re-lança a exceção para que o Laravel tente novamente
             if ($this->attempts() < $this->tries) {
                 throw $e;
             }
 
-            // Se esgotar as tentativas, falha permanentemente
             $this->fail($e);
         }
     }
@@ -156,11 +157,9 @@ final class TestWebhookJob implements ShouldQueue
     /**
      * Lida com falha do job
      */
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
-        $logger = new StructuredLogger('Subscription');
-
-        $logger->error('Webhook test job failed permanently', [
+        $this->logger()->error('Webhook test job failed permanently', [
             'webhook_config_id' => $this->webhookConfigId,
             'attempts' => $this->attempts(),
             'error' => $exception->getMessage(),

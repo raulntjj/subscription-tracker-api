@@ -57,14 +57,7 @@ final readonly class UpdateWebhookConfigUseCase
                 ]
             );
 
-            return WebhookConfigDTO::fromArray([
-                'id' => $entity->id()->toString(),
-                'user_id' => $entity->userId()->toString(),
-                'url' => $entity->url(),
-                'is_active' => $entity->isActive(),
-                'created_at' => $entity->createdAt()->format('Y-m-d H:i:s'),
-                'updated_at' => $entity->updatedAt()->format('Y-m-d H:i:s'),
-            ]);
+            return WebhookConfigDTO::fromEntity($entity);
         } catch (\Throwable $e) {
             $this->logger()->error('Failed to update webhook config', [
                 'webhook_config_id' => $dto->id,

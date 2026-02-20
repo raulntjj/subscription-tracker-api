@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Interface\Http\Controllers;
 
+use Illuminate\Http\Response;
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -43,18 +44,13 @@ final class WebhookConfigController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $userId = Auth::id();
-            $items = $this->getConfigsQuery->execute($userId);
-
-            $data = array_map(
-                fn (WebhookConfigDTO $item) => $item->toArray(),
-                $items
-            );
+            $userId = auth(guard: 'api')->id();
+            $items = $this->getConfigsQuery->execute(userId: $userId);
 
             return ApiResponse::success([
-                'webhooks' => $data,
-                'total' => count($data),
-            ], 'Webhook configs retrieved successfully');
+                'webhooks' => $items,
+                'total' => count(value: $items),
+            ], message: 'Webhook configs retrieved successfully');
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -67,16 +63,16 @@ final class WebhookConfigController extends Controller
     public function show(string $id): JsonResponse
     {
         try {
-            $userId = Auth::id();
-            $item = $this->getConfigByIdQuery->execute($id, $userId);
+            $userId = auth(guard: 'api')->id();
+            $item = $this->getConfigByIdQuery->execute(id: $id, userId: $userId);
 
             if ($item === null) {
-                return ApiResponse::notFound('Webhook config not found');
+                return ApiResponse::notFound(message: 'Webhook config not found');
             }
 
             return ApiResponse::success(
-                $item->toArray(),
-                'Webhook config retrieved successfully'
+                data: $item->toArray(),
+                message: 'Webhook config retrieved successfully'
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -90,22 +86,22 @@ final class WebhookConfigController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
+            $validated = $request->validate(rules: [
                 'url' => ['required', 'string', 'url', 'max:500'],
                 'secret' => ['nullable', 'string', 'min:8', 'max:255'],
             ]);
 
-            $validated['user_id'] = auth('api')->id();
-            $dto = CreateWebhookConfigDTO::fromArray($validated);
+            $validated['user_id'] = auth(guard: 'api')->id();
+            $dto = CreateWebhookConfigDTO::fromArray(data: $validated);
 
-            $item = $this->createUseCase->execute($dto);
+            $item = $this->createUseCase->execute(dto: $dto);
 
             return ApiResponse::created(
-                $item->toArray(),
-                'Webhook config created successfully'
+                data: $item->toArray(),
+                message: 'Webhook config created successfully'
             );
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return ApiResponse::validationError($e->errors());
+            return ApiResponse::validationError(errors: $e->errors());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -119,32 +115,32 @@ final class WebhookConfigController extends Controller
     {
         try {
             // Verifica se o webhook pertence ao usuário
-            $userId = Auth::id();
-            $existing = $this->getConfigByIdQuery->execute($id, $userId);
+            $userId = auth(guard: 'api')->id();
+            $existing = $this->getConfigByIdQuery->execute(id: $id, userId: $userId);
 
             if ($existing === null) {
-                return ApiResponse::notFound('Webhook config not found');
+                return ApiResponse::notFound(message: 'Webhook config not found');
             }
 
-            $validated = $request->validate([
+            $validated = $request->validate(rules: [
                 'url' => ['sometimes', 'string', 'url', 'max:500'],
                 'secret' => ['sometimes', 'string', 'min:8', 'max:255'],
             ]);
 
-            $dto = UpdateWebhookConfigDTO::fromArray([
+            $dto = UpdateWebhookConfigDTO::fromArray(data: [
                 'id' => $id,
                 'url' => $validated['url'] ?? null,
                 'secret' => $validated['secret'] ?? null,
             ]);
 
-            $item = $this->updateUseCase->execute($dto);
+            $item = $this->updateUseCase->execute(dto: $dto);
 
             return ApiResponse::success(
-                $item->toArray(),
-                'Webhook config updated successfully'
+                data: $item->toArray(),
+                message: 'Webhook config updated successfully'
             );
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return ApiResponse::validationError($e->errors());
+            return ApiResponse::validationError(errors: $e->errors());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -154,23 +150,20 @@ final class WebhookConfigController extends Controller
      * DELETE /api/web/v1/webhooks/{id}
      * Remove uma configuração de webhook
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id): Response | JsonResponse
     {
         try {
             // Verifica se o webhook pertence ao usuário
-            $userId = Auth::id();
-            $existing = $this->getConfigByIdQuery->execute($id, $userId);
+            $userId = auth(guard: 'api')->id();
+            $existing = $this->getConfigByIdQuery->execute(id: $id, userId: $userId);
 
             if ($existing === null) {
-                return ApiResponse::notFound('Webhook config not found');
+                return ApiResponse::notFound(message: 'Webhook config not found');
             }
 
-            $this->deleteUseCase->execute($id);
+            $this->deleteUseCase->execute(id: $id);
 
-            return ApiResponse::success(
-                null,
-                'Webhook config deleted successfully'
-            );
+            return ApiResponse::noContent();
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -184,18 +177,18 @@ final class WebhookConfigController extends Controller
     {
         try {
             // Verifica se o webhook pertence ao usuário
-            $userId = Auth::id();
-            $existing = $this->getConfigByIdQuery->execute($id, $userId);
+            $userId = auth(guard: 'api')->id();
+            $existing = $this->getConfigByIdQuery->execute(id: $id, userId: $userId);
 
             if ($existing === null) {
-                return ApiResponse::notFound('Webhook config not found');
+                return ApiResponse::notFound(message: 'Webhook config not found');
             }
 
-            $item = $this->activateUseCase->execute($id);
+            $item = $this->activateUseCase->execute(id: $id);
 
             return ApiResponse::success(
-                $item->toArray(),
-                'Webhook config activated successfully'
+                data: $item->toArray(),
+                message: 'Webhook config activated successfully'
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -210,18 +203,18 @@ final class WebhookConfigController extends Controller
     {
         try {
             // Verifica se o webhook pertence ao usuário
-            $userId = Auth::id();
-            $existing = $this->getConfigByIdQuery->execute($id, $userId);
+            $userId = auth(guard: 'api')->id();
+            $existing = $this->getConfigByIdQuery->execute(id: $id, userId: $userId);
 
             if ($existing === null) {
-                return ApiResponse::notFound('Webhook config not found');
+                return ApiResponse::notFound(message: 'Webhook config not found');
             }
 
-            $item = $this->deactivateUseCase->execute($id);
+            $item = $this->deactivateUseCase->execute(id: $id);
 
             return ApiResponse::success(
-                $item->toArray(),
-                'Webhook config deactivated successfully'
+                data: $item->toArray(),
+                message: 'Webhook config deactivated successfully'
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -239,25 +232,25 @@ final class WebhookConfigController extends Controller
     {
         try {
             // Verifica se o webhook pertence ao usuário
-            $userId = auth('api')->id();
-            $existing = $this->getConfigByIdQuery->execute($id, $userId);
+            $userId = auth(guard: 'api')->id();
+            $existing = $this->getConfigByIdQuery->execute(id: $id, userId: $userId);
 
             if ($existing === null) {
-                return ApiResponse::notFound('Webhook config not found');
+                return ApiResponse::notFound(message: 'Webhook config not found');
             }
 
             // Verifica se deve executar assincronamente via RabbitMQ
-            $async = $request->boolean('async', false);
+            $async = $request->boolean(key: 'async', default: false);
 
-            $result = $this->testUseCase->execute($id, $async);
+            $result = $this->testUseCase->execute(id: $id, async: $async);
 
             $message = $async
                 ? 'Webhook test dispatched to queue. Check logs for results.'
                 : 'Webhook test completed';
 
             return ApiResponse::success(
-                $result,
-                $message
+                data: $result,
+                message: $message
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);

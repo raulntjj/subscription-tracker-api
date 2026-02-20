@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Application\Jobs;
 
+use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Subscription\Application\DTOs\SubscriptionDTO;
+use Modules\Subscription\Domain\Entities\Subscription;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Illuminate\Bus\Queueable;
@@ -24,6 +27,7 @@ use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
  */
 final class CheckBillingJob implements ShouldQueue
 {
+    use Loggable;
     use Queueable;
     use Dispatchable;
     use SerializesModels;
@@ -51,9 +55,7 @@ final class CheckBillingJob implements ShouldQueue
         SubscriptionRepositoryInterface $subscriptionRepository,
         BillingHistoryRepositoryInterface $billingHistoryRepository,
     ): void {
-        $logger = new StructuredLogger('Subscription');
-
-        $logger->info('Starting billing check job');
+        $this->logger()->info('Starting billing check job');
 
         try {
             // Busca todas as assinaturas que devem ser faturadas hoje
@@ -67,30 +69,29 @@ final class CheckBillingJob implements ShouldQueue
                     $this->processSubscriptionBilling(
                         $subscription,
                         $subscriptionRepository,
-                        $billingHistoryRepository,
-                        $logger
+                        $billingHistoryRepository
                     );
 
                     $processedCount++;
                 } catch (\Throwable $e) {
                     $failedCount++;
 
-                    $logger->error('Failed to process subscription billing', [
-                        'subscription_id' => $subscription->id,
-                        'subscription_name' => $subscription->name,
+                    $this->logger()->error('Failed to process subscription billing', [
+                        'subscription_id' => $subscription->id()->toString(),
+                        'subscription_name' => $subscription->name(),
                         'error' => $e->getMessage(),
                         'trace' => $e->getTraceAsString(),
                     ]);
                 }
             }
 
-            $logger->info('Billing check job completed', [
+            $this->logger()->info('Billing check job completed', [
                 'total_subscriptions' => count($subscriptions),
                 'processed' => $processedCount,
                 'failed' => $failedCount,
             ]);
         } catch (\Throwable $e) {
-            $logger->error('Billing check job failed', [
+            $this->logger()->error('Billing check job failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -103,62 +104,51 @@ final class CheckBillingJob implements ShouldQueue
      * Processa o faturamento de uma assinatura
      */
     private function processSubscriptionBilling(
-        object $subscription,
+        Subscription $subscription,
         SubscriptionRepositoryInterface $subscriptionRepository,
         BillingHistoryRepositoryInterface $billingHistoryRepository,
-        StructuredLogger $logger
     ): void {
-        $logger->info('Processing subscription billing', [
-            'subscription_id' => $subscription->id,
-            'subscription_name' => $subscription->name,
-            'amount' => $subscription->price,
-            'billing_cycle' => $subscription->billing_cycle,
+        $this->logger()->info(message: 'Processing subscription billing', context: [
+            'subscription_id' => $subscription->id()->toString(),
+            'subscription_name' => $subscription->name(),
+            'amount' => $subscription->price(),
+            'billing_cycle' => $subscription->billingCycle()->value,
         ]);
 
         // 1. Cria o registro no BillingHistory
         $billingHistory = new BillingHistory(
             id: Uuid::uuid4(),
-            subscriptionId: Uuid::fromString($subscription->id),
-            amountPaid: $subscription->price,
+            subscriptionId: $subscription->id(),
+            amountPaid: $subscription->price(),
             paidAt: new DateTimeImmutable('now'),
             createdAt: new DateTimeImmutable('now')
         );
 
         $billingHistoryRepository->save($billingHistory);
 
-        $logger->info('Billing history created', [
+        $this->logger()->info('Billing history created', [
             'billing_history_id' => $billingHistory->id()->toString(),
-            'subscription_id' => $subscription->id,
-            'amount_paid' => $subscription->price,
+            'subscription_id' => $subscription->id()->toString(),
+            'amount_paid' => $subscription->price(),
         ]);
 
         // 2. Atualiza a next_billing_date da assinatura
-        $subscriptionEntity = $subscriptionRepository->findById(
-            Uuid::fromString($subscription->id)
-        );
+        $oldBillingDate = $subscription->nextBillingDate()->format('Y-m-d');
+        $nextBillingDate = $subscription->calculateNextBillingDate();
+        $subscription->updateNextBillingDate(newDate: $nextBillingDate);
 
-        if ($subscriptionEntity === null) {
-            throw new \RuntimeException("Subscription not found: {$subscription->id}");
-        }
+        $subscriptionRepository->update(entity: $subscription);
 
-        $nextBillingDate = $subscriptionEntity->calculateNextBillingDate();
-        $subscriptionEntity->updateNextBillingDate($nextBillingDate);
-
-        $subscriptionRepository->update($subscriptionEntity);
-
-        $logger->info('Subscription next billing date updated', [
-            'subscription_id' => $subscription->id,
-            'old_billing_date' => $subscription->next_billing_date,
+        $this->logger()->info(message: 'Subscription next billing date updated', context: [
+            'subscription_id' => $subscription->id()->toString(),
+            'old_billing_date' => $oldBillingDate,
             'new_billing_date' => $nextBillingDate->format('Y-m-d'),
         ]);
 
-        // 3. Despachar webhook de renovação
         $this->dispatchWebhook(
-            $subscription,
-            $subscriptionEntity,
-            $billingHistory,
-            $nextBillingDate,
-            $logger
+            subscription: $subscription,
+            billingHistory: $billingHistory,
+            nextBillingDate: $nextBillingDate,
         );
     }
 
@@ -166,43 +156,43 @@ final class CheckBillingJob implements ShouldQueue
      * Despacha webhook de renovação de assinatura
      */
     private function dispatchWebhook(
-        object $subscription,
-        object $subscriptionEntity,
+        Subscription $subscription,
         BillingHistory $billingHistory,
-        \DateTimeImmutable $nextBillingDate,
-        StructuredLogger $logger
+        DateTimeImmutable $nextBillingDate,
     ): void {
         try {
+            $subscriptionId = $subscription->id()->toString();
+            $userId = $subscription->userId()->toString();
+
             $eventData = [
-                'subscription_id' => $subscription->id,
-                'subscription_name' => $subscription->name,
-                'amount' => $subscription->price,
-                'currency' => $subscription->currency,
-                'billing_cycle' => $subscription->billing_cycle,
+                'subscription_id' => $subscriptionId,
+                'subscription_name' => $subscription->name(),
+                'amount' => $subscription->price(),
+                'currency' => $subscription->currency()->value,
+                'billing_cycle' => $subscription->billingCycle()->value,
                 'billing_history_id' => $billingHistory->id()->toString(),
                 'billing_date' => $billingHistory->paidAt()->format('Y-m-d H:i:s'),
                 'next_billing_date' => $nextBillingDate->format('Y-m-d'),
-                'user_id' => $subscription->user_id,
+                'user_id' => $userId,
                 'occurred_at' => now()->toIso8601String(),
-                'status' => $subscription->status,
+                'status' => $subscription->status()->value,
             ];
 
             DispatchWebhookJob::dispatch(
-                $subscription->id,
-                $subscription->user_id,
+                $subscriptionId,
+                $userId,
                 $billingHistory->id()->toString(),
                 $eventData
             );
 
-            $logger->info('Webhook dispatched for subscription renewal', [
-                'subscription_id' => $subscription->id,
-                'user_id' => $subscription->user_id,
+            $this->logger()->info(message: 'Webhook dispatched for subscription renewal', context: [
+                'subscription_id' => $subscriptionId,
+                'user_id' => $userId,
                 'billing_history_id' => $billingHistory->id()->toString(),
             ]);
         } catch (\Throwable $e) {
-            // Não falhar o billing por causa do webhook
-            $logger->warning('Failed to dispatch webhook for subscription renewal', [
-                'subscription_id' => $subscription->id,
+            $this->logger()->warning('Failed to dispatch webhook for subscription renewal', context: [
+                'subscription_id' => $subscription->id()->toString(),
                 'error' => $e->getMessage(),
             ]);
         }
@@ -213,9 +203,7 @@ final class CheckBillingJob implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        $logger = app(StructuredLogger::class);
-
-        $logger->error('Billing check job failed permanently', [
+        $this->logger()->error('Billing check job failed permanently', [
             'error' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString(),
             'attempts' => $this->attempts(),

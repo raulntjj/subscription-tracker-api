@@ -7,10 +7,10 @@ namespace Modules\User\Application\DTOs;
 final readonly class UserPaginatedDTO
 {
     /**
-     * @param UserDTO[] $data
+     * @param UserDTO[] $users
      */
     public function __construct(
-        public array $data,
+        public array $users,
         public int $total,
         public int $perPage,
         public int $currentPage,
@@ -27,7 +27,7 @@ final readonly class UserPaginatedDTO
     public static function fromArray(array $paginationData): self
     {
         return new self(
-            data: $paginationData['data'],
+            users: $paginationData['users'],
             total: $paginationData['total'],
             perPage: $paginationData['per_page'],
             currentPage: $paginationData['current_page'],
@@ -43,9 +43,9 @@ final readonly class UserPaginatedDTO
     public function toArray(): array
     {
         return [
-            'data' => array_map(
+            'users' => array_map(
                 fn (UserDTO $user) => $user->toArray(),
-                $this->data
+                $this->users
             ),
             'total' => $this->total,
             'per_page' => $this->perPage,

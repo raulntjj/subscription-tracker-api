@@ -35,7 +35,7 @@ final readonly class GetWebhookConfigsQuery
         );
 
         return array_map(
-            fn ($entity) => WebhookConfigDTO::fromEntity($entity),
+            fn ($entity) => WebhookConfigDTO::fromEntity($entity)->toArray(),
             $webhookConfigs
         );
     }

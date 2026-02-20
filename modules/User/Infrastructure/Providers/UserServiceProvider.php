@@ -16,8 +16,8 @@ final class UserServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(
-            UserRepositoryInterface::class,
-            UserRepository::class
+            abstract: UserRepositoryInterface::class,
+            concrete: UserRepository::class
         );
     }
 

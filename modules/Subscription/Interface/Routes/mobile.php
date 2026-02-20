@@ -14,7 +14,4 @@ use Modules\Subscription\Interface\Http\Controllers\MobileSubscriptionController
 Route::prefix('subscriptions')->group(function () {
     // Listagem com cursor pagination, busca e ordenação
     Route::get('/', [MobileSubscriptionController::class, 'index']);
-
-    // Opções para selects/autocompletes
-    Route::get('/options', [MobileSubscriptionController::class, 'options']);
 });

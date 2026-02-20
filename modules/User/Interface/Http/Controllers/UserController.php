@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\User\Interface\Http\Controllers;
 
+use Illuminate\Http\Response;
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -59,20 +60,25 @@ final class UserController extends Controller
     public function paginated(Request $request): JsonResponse
     {
         try {
-            $page = (int) ($request->query('page') ?? 1);
-            $perPage = (int) ($request->query('per_page') ?? 15);
+            $page = (int) ($request->query(key: 'page') ?? 1);
+            $perPage = (int) ($request->query(key: 'per_page') ?? 15);
 
             $search = SearchDTO::fromRequest(
-                $request->query(),
-                self::SEARCHABLE_COLUMNS
+                params: $request->query(),
+                searchableColumns: self::SEARCHABLE_COLUMNS
             );
 
             $sort = SortDTO::fromRequest(
-                $request->query(),
-                self::SORTABLE_COLUMNS
+                params: $request->query(),
+                sortableColumns: self::SORTABLE_COLUMNS
             );
 
-            $paginatedDTO = $this->findUsersPaginatedQuery->execute($page, $perPage, $search, $sort);
+            $paginatedDTO = $this->findUsersPaginatedQuery->execute(
+                page: $page,
+                perPage: $perPage,
+                search: $search,
+                sort: $sort
+            );
 
             return ApiResponse::success(
                 data: $paginatedDTO->toArray(),
@@ -95,11 +101,11 @@ final class UserController extends Controller
     {
         try {
             $search = SearchDTO::fromRequest(
-                $request->query(),
-                self::SEARCHABLE_COLUMNS
+                params: $request->query(),
+                searchableColumns: self::SEARCHABLE_COLUMNS
             );
 
-            $optionsDTO = $this->findUserOptionsQuery->execute($search);
+            $optionsDTO = $this->findUserOptionsQuery->execute(search: $search);
 
             return ApiResponse::success(
                 data: $optionsDTO->toArray(),
@@ -116,15 +122,15 @@ final class UserController extends Controller
     public function show(string $id): JsonResponse
     {
         try {
-            $user = $this->findUserByIdQuery->execute($id);
+            $user = $this->findUserByIdQuery->execute(userId: $id);
 
             if ($user === null) {
-                return ApiResponse::notFound('User not found');
+                return ApiResponse::notFound(message: 'User not found');
             }
 
             return ApiResponse::success(
-                $user->toArray(),
-                'User retrieved successfully'
+                data: $user->toArray(),
+                message: 'User retrieved successfully'
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -137,7 +143,7 @@ final class UserController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
+            $validated = $request->validate(rules: [
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|string|min:8',
@@ -145,7 +151,7 @@ final class UserController extends Controller
                 'profile_path' => 'nullable|string|max:500',
             ]);
 
-            $dto = CreateUserDTO::fromArray($validated);
+            $dto = CreateUserDTO::fromArray(data: $validated);
 
             $user = $this->createUserUseCase->execute(
                 name: $dto->name,
@@ -156,11 +162,11 @@ final class UserController extends Controller
             );
 
             return ApiResponse::created(
-                $user->toArray(),
-                'User created successfully'
+                data: $user->toArray(),
+                message: 'User created successfully'
             );
         } catch (ValidationException $e) {
-            return ApiResponse::validationError($e->errors());
+            return ApiResponse::validationError(errors: $e->errors());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -173,7 +179,7 @@ final class UserController extends Controller
     public function update(Request $request, string $id): JsonResponse
     {
         try {
-            $validated = $request->validate([
+            $validated = $request->validate(rules: [
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $id,
                 'password' => 'required|string|min:8',
@@ -181,18 +187,18 @@ final class UserController extends Controller
                 'profile_path' => 'nullable|string|max:500',
             ]);
 
-            $dto = UpdateUserDTO::fromArray($validated);
+            $dto = UpdateUserDTO::fromArray(data: $validated);
 
-            $user = $this->updateUserUseCase->execute($id, $dto);
+            $user = $this->updateUserUseCase->execute(id: $id, dto: $dto);
 
             return ApiResponse::success(
-                $user->toArray(),
-                'User updated successfully'
+                data: $user->toArray(),
+                message: 'User updated successfully'
             );
         } catch (ValidationException $e) {
-            return ApiResponse::validationError($e->errors());
+            return ApiResponse::validationError(errors: $e->errors());
         } catch (\InvalidArgumentException $e) {
-            return ApiResponse::notFound($e->getMessage());
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -205,7 +211,7 @@ final class UserController extends Controller
     public function partialUpdate(Request $request, string $id): JsonResponse
     {
         try {
-            $validated = $request->validate([
+            $validated = $request->validate(rules: [
                 'name' => 'sometimes|string|max:255',
                 'email' => 'sometimes|email|unique:users,email,' . $id,
                 'password' => 'sometimes|string|min:8',
@@ -213,18 +219,18 @@ final class UserController extends Controller
                 'profile_path' => 'nullable|string|max:500',
             ]);
 
-            $dto = UpdateUserDTO::fromArray($validated);
+            $dto = UpdateUserDTO::fromArray(data: $validated);
 
-            $user = $this->partialUpdateUserUseCase->execute($id, $dto);
+            $user = $this->partialUpdateUserUseCase->execute(id: $id, dto: $dto);
 
             return ApiResponse::success(
-                $user->toArray(),
-                'User patched successfully'
+                data: $user->toArray(),
+                message: 'User patched successfully'
             );
         } catch (ValidationException $e) {
-            return ApiResponse::validationError($e->errors());
+            return ApiResponse::validationError(errors: $e->errors());
         } catch (\InvalidArgumentException $e) {
-            return ApiResponse::notFound($e->getMessage());
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -233,14 +239,14 @@ final class UserController extends Controller
     /**
      * DELETE /api/web/v1/users/{id}
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id): Response | JsonResponse
     {
         try {
-            $this->deleteUserUseCase->execute($id);
+            $this->deleteUserUseCase->execute(id: $id);
 
-            return ApiResponse::success(null, 'User deleted successfully');
+            return ApiResponse::noContent();
         } catch (\InvalidArgumentException $e) {
-            return ApiResponse::notFound($e->getMessage());
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }

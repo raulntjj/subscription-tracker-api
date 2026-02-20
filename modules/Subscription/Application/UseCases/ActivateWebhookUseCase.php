@@ -8,6 +8,7 @@ use Ramsey\Uuid\Uuid;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
+use Throwable;
 
 final readonly class ActivateWebhookUseCase
 {
@@ -25,15 +26,15 @@ final readonly class ActivateWebhookUseCase
         ]);
 
         try {
-            $entity = $this->repository->findById(Uuid::fromString($id));
+            $webhook = $this->repository->findById(Uuid::fromString($id));
 
-            if (!$entity) {
+            if (!$webhook) {
                 throw new \InvalidArgumentException('Webhook config not found');
             }
 
-            $entity->activate();
+            $webhook->activate();
 
-            $this->repository->save($entity);
+            $this->repository->save($webhook);
 
             $this->logger()->event('WebhookConfigActivated', [
                 'webhook_config_id' => $id,
@@ -46,15 +47,8 @@ final readonly class ActivateWebhookUseCase
                 context: []
             );
 
-            return WebhookConfigDTO::fromArray([
-                'id' => $entity->id()->toString(),
-                'user_id' => $entity->userId()->toString(),
-                'url' => $entity->url(),
-                'is_active' => $entity->isActive(),
-                'created_at' => $entity->createdAt()->format('Y-m-d H:i:s'),
-                'updated_at' => $entity->updatedAt()?->format('Y-m-d H:i:s') ?? now()->format('Y-m-d H:i:s'),
-            ]);
-        } catch (\Throwable $e) {
+            return WebhookConfigDTO::fromEntity($webhook);
+        } catch (Throwable $e) {
             $this->logger()->error('Failed to activate webhook config', [
                 'webhook_config_id' => $id,
             ], $e);

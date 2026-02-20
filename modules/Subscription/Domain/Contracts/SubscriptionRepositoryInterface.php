@@ -9,7 +9,6 @@ use Modules\Subscription\Domain\Entities\Subscription;
 
 interface SubscriptionRepositoryInterface
 {
-    // Comandos (Write)
     public function save(Subscription $entity): void;
 
     public function update(Subscription $entity): void;
@@ -60,7 +59,7 @@ interface SubscriptionRepositoryInterface
      * @param array<string>|null $searchColumns Colunas para busca
      * @param string|null $searchTerm Termo de busca
      * @param array<array{column: string, direction: string}>|null $sorts Ordenação
-     * @return array{data: Subscription[], next_cursor: string|null, prev_cursor: string|null}
+     * @return array{subscriptions: Subscription[], next_cursor: string|null, prev_cursor: string|null}
      */
     public function findCursorPaginated(
         int $limit,

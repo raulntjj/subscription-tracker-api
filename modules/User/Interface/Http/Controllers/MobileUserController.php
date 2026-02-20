@@ -49,50 +49,29 @@ final class MobileUserController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $cursor = $request->query('cursor');
-            $perPage = (int) ($request->query('per_page') ?? 10);
+            $cursor = $request->query(key: 'cursor');
+            $perPage = (int) ($request->query(key: 'per_page') ?? 10);
 
             $search = SearchDTO::fromRequest(
-                $request->query(),
-                self::SEARCHABLE_COLUMNS
+                params: $request->query(),
+                searchableColumns: self::SEARCHABLE_COLUMNS
             );
 
             $sort = SortDTO::fromRequest(
-                $request->query(),
-                self::SORTABLE_COLUMNS
+                params: $request->query(),
+                sortableColumns: self::SORTABLE_COLUMNS
             );
 
-            $cursorPaginatedDTO = $this->findUsersCursorPaginatedQuery->execute($cursor, $perPage, $search, $sort);
+            $cursorPaginatedDTO = $this->findUsersCursorPaginatedQuery->execute(
+                cursor: $cursor,
+                perPage: $perPage,
+                search: $search,
+                sort: $sort
+            );
 
             return ApiResponse::success(
                 data: $cursorPaginatedDTO->toArray(),
                 message: 'Users retrieved successfully'
-            );
-        } catch (Throwable $e) {
-            return ApiResponse::error(exception: $e);
-        }
-    }
-
-    /**
-     * GET /api/mobile/v1/users/options
-     * Lista opções de usuários para selects/autocompletes (mobile)
-     *
-     * Query params:
-     * - search: termo de busca (busca em name e email)
-     */
-    public function options(Request $request): JsonResponse
-    {
-        try {
-            $search = SearchDTO::fromRequest(
-                $request->query(),
-                self::SEARCHABLE_COLUMNS
-            );
-
-            $optionsDTO = $this->findUserOptionsQuery->execute($search);
-
-            return ApiResponse::success(
-                data: $optionsDTO->toArray(),
-                message: 'User options retrieved successfully'
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);

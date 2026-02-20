@@ -1,11 +1,11 @@
 {
 	"info": {
-		"_postman_id": "a72ce5c6-a83c-4643-b429-ff7b024c7e36",
+		"_postman_id": "02ef922e-a57b-4740-9092-e3d875118e10",
 		"name": "Subscription Tracker API",
 		"description": "Subscription Tracker API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "34921459",
-		"_collection_link": "https://morar-legal.postman.co/workspace/My-Workspace~70a6ab84-315b-4f89-854c-dfffcf9af18f/collection/34921459-a72ce5c6-a83c-4643-b429-ff7b024c7e36?action=share&source=collection_link&creator=34921459"
+		"_collection_link": "https://morar-legal.postman.co/workspace/My-Workspace~70a6ab84-315b-4f89-854c-dfffcf9af18f/collection/34921459-02ef922e-a57b-4740-9092-e3d875118e10?action=share&source=collection_link&creator=34921459"
 	},
 	"item": [
 		{
@@ -30,6 +30,17 @@
 								"packages": {},
 								"requests": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
 						}
 					],
 					"request": {
@@ -48,7 +59,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"John\",\n    \"surname\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"password\": \"SecurePass123\",\n    \"password_confirmation\": \"SecurePass123\"\n}"
+							"raw": "{\n    \"name\": \"{{$randomFirstName}}\",\n    \"surname\": \"{{$randomLastName}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{password}}\",\n    \"password_confirmation\": \"{{password}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/auth/v1/register",
@@ -439,7 +450,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe\",\n    \"surname\": \"Da Silva\",\n    \"email\": \"john.doe1@example.com\",\n    \"password\": \"secret123\"\n}"
+							"raw": "{\n    \"name\": \"{{$randomFirstName}}\",\n    \"surname\": \"{{$randomLastName}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{password}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/users",
@@ -485,7 +496,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe Updated\",\n    \"email\": \"john.updated1@example.com\",\n    \"password\": \"newsecret123\"\n}"
+							"raw": "{\n    \"name\": \"{{$randomFirstName}} Updated\",\n    \"surname\": \"{{$randomLastName}} Updated\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{password}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/users/{{user_id}}",
@@ -532,7 +543,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"John Doe Patched\"\n}"
+							"raw": "{\n    \"name\": \"{{$randomFirstName}} Patched\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/users/{{user_id}}",
@@ -616,7 +627,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/mobile/v1/users",
+							"raw": "{{base_url}}/api/mobile/v1/users?cursor=eyJjcmVhdGVkX2F0IjoiMjAyNi0wMi0xOSAxOToxODowNCIsImlkIjoiMzdjZGJmYjItNjg4MS00YjIzLWI0ZDItYjI3OTY2NmIyMWI0IiwiX3BvaW50c1RvTmV4dEl0ZW1zIjpmYWxzZX0",
 							"host": [
 								"{{base_url}}"
 							],
@@ -629,9 +640,8 @@
 							"query": [
 								{
 									"key": "cursor",
-									"value": "",
-									"description": "Cursor retornado pela resposta anterior (next_cursor)",
-									"disabled": true
+									"value": "eyJjcmVhdGVkX2F0IjoiMjAyNi0wMi0xOSAxOToxODowNCIsImlkIjoiMzdjZGJmYjItNjg4MS00YjIzLWI0ZDItYjI3OTY2NmIyMWI0IiwiX3BvaW50c1RvTmV4dEl0ZW1zIjpmYWxzZX0",
+									"description": "Cursor retornado pela resposta anterior (next_cursor)"
 								}
 							]
 						},
@@ -819,6 +829,54 @@
 				},
 				{
 					"name": "Create Subscription",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomPrice = Math.floor(Math.random() * (200 - 10 + 1)) + 10;",
+									"",
+									"const categories = ['entertainment', 'streaming', 'productivity', 'cloud', 'music'];",
+									"const randomCategory = categories[Math.floor(Math.random() * categories.length)];",
+									"",
+									"const today = new Date();",
+									"const randomDays = Math.floor(Math.random() * 30) + 1;",
+									"const nextDate = new Date(today.setDate(today.getDate() + randomDays));",
+									"const formattedDate = nextDate.toISOString().split('T')[0];",
+									"",
+									"const services = [",
+									"    { name: 'Netflix', desc: 'Plano Padrão' },",
+									"    { name: 'Spotify', desc: 'Premium Individual' },",
+									"    { name: 'Amazon Prime', desc: 'Prime Video + Music' },",
+									"    { name: 'Disney+', desc: 'Plano Anual' },",
+									"    { name: 'Microsoft 365', desc: 'Family Plan' },",
+									"    { name: 'Adobe CC', desc: 'Fotografia' }",
+									"];",
+									"const randomService = services[Math.floor(Math.random() * services.length)];",
+									"",
+									"const billingCycles = ['monthly', 'yearly'];",
+									"const currencies = ['BRL', 'USD', 'EUR'];",
+									"const statuses = ['active', 'paused', 'cancelled'];",
+									"",
+									"const randomBillingCycle = billingCycles[Math.floor(Math.random() * billingCycles.length)];",
+									"const randomCurrency = currencies[Math.floor(Math.random() * currencies.length)];",
+									"const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];",
+									"",
+									"pm.environment.set(\"subscription_name\", randomService.name);",
+									"pm.environment.set(\"subscription_price\", randomPrice);",
+									"pm.environment.set(\"subscription_currency\", randomCurrency);",
+									"pm.environment.set(\"subscription_cycle\", randomBillingCycle);",
+									"pm.environment.set(\"subscription_date\", formattedDate);",
+									"pm.environment.set(\"subscription_category\", randomCategory);",
+									"pm.environment.set(\"subscription_desc\", randomService.desc);",
+									"pm.environment.set(\"subscription_status\", randomStatus);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -845,7 +903,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Netflix\",\n    \"price\": 99999,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-13\",\n    \"category\": \"entertainment\",\n    \"description\": \"Plano Premium 4 telas\",\n    \"status\": \"active\"\n}"
+							"raw": "{\n    \"name\": \"{{subscription_name}}\",\n    \"price\": {{subscription_price}},\n    \"currency\": \"{{subscription_currency}}\",\n    \"billing_cycle\": \"{{subscription_cycle}}\",\n    \"next_billing_date\": \"{{subscription_date}}\",\n    \"category\": \"{{subscription_category}}\",\n    \"description\": \"{{subscription_desc}}\",\n    \"status\": \"{{subscription_status}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/subscriptions",
@@ -865,6 +923,61 @@
 				},
 				{
 					"name": "Update Subscription",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const currentDate = new Date().toISOString().split('T')[0];",
+									"",
+									"const possibleUpdates = {",
+									"    prices: [30000, 32500, 35000, 37500, 40000],",
+									"    statuses: ['active', 'paused'],",
+									"    descriptions: [",
+									"        'Plano de Saúde - Atualizado',",
+									"        'Plano de Saúde + Odonto',",
+									"        'Plano Empresarial',",
+									"        'Plano Familiar'",
+									"    ]",
+									"};",
+									"",
+									"if (Math.random() < 0.7) {",
+									"    const newPrice = possibleUpdates.prices[",
+									"        Math.floor(Math.random() * possibleUpdates.prices.length)",
+									"    ];",
+									"    pm.environment.set(\"update_price\", newPrice);",
+									"} else {",
+									"    pm.environment.set(\"update_price\", 30000);",
+									"}",
+									"",
+									"if (Math.random() < 0.2) {",
+									"    const newStatus = possibleUpdates.statuses[",
+									"        Math.floor(Math.random() * possibleUpdates.statuses.length)",
+									"    ];",
+									"    pm.environment.set(\"update_status\", newStatus);",
+									"} else {",
+									"    pm.environment.set(\"update_status\", \"active\");",
+									"}",
+									"",
+									"if (Math.random() < 0.4) {",
+									"    const newDesc = possibleUpdates.descriptions[",
+									"        Math.floor(Math.random() * possibleUpdates.descriptions.length)",
+									"    ];",
+									"    pm.environment.set(\"update_description\", newDesc);",
+									"} else {",
+									"    pm.environment.set(\"update_description\", \"Plano de Saúde\");",
+									"}",
+									"",
+									"const nextMonth = new Date();",
+									"nextMonth.setMonth(nextMonth.getMonth() + 1);",
+									"pm.environment.set(\"update_date\", nextMonth.toISOString().split('T')[0]);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -891,7 +1004,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Unimed\",\n    \"price\": 30000,\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"2026-03-20\",\n    \"category\": \"health\",\n    \"description\": \"Plano de Saúde\",\n    \"status\": \"active\"\n}"
+							"raw": "{\n    \"name\": \"Unimed\",\n    \"price\": {{update_price}},\n    \"currency\": \"BRL\",\n    \"billing_cycle\": \"monthly\",\n    \"next_billing_date\": \"{{update_date}}\",\n    \"category\": \"health\",\n    \"description\": \"{{update_description}}\",\n    \"status\": \"{{update_status}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/subscriptions/{{subscription_id}}",
@@ -975,7 +1088,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/mobile/v1/subscriptions?limit=20&search=&sort_by=name&sort_direction=asc",
+							"raw": "{{base_url}}/api/mobile/v1/subscriptions?cursor=eyJjcmVhdGVkX2F0IjoiMjAyNi0wMi0yMCAxMToyNjozOCIsImlkIjoiMzViMzcxNWMtYTEwMi00YmQ1LTk2YjUtZGI3ZGE1NmM2MmQ3IiwiX3BvaW50c1RvTmV4dEl0ZW1zIjp0cnVlfQ",
 							"host": [
 								"{{base_url}}"
 							],
@@ -988,25 +1101,28 @@
 							"query": [
 								{
 									"key": "cursor",
-									"value": "",
-									"description": "Cursor retornado pela resposta anterior (next_cursor)",
-									"disabled": true
+									"value": "eyJjcmVhdGVkX2F0IjoiMjAyNi0wMi0yMCAxMToyNjozOCIsImlkIjoiMzViMzcxNWMtYTEwMi00YmQ1LTk2YjUtZGI3ZGE1NmM2MmQ3IiwiX3BvaW50c1RvTmV4dEl0ZW1zIjp0cnVlfQ",
+									"description": "Cursor retornado pela resposta anterior (next_cursor)"
 								},
 								{
 									"key": "limit",
-									"value": "20"
+									"value": "20",
+									"disabled": true
 								},
 								{
 									"key": "search",
-									"value": ""
+									"value": "",
+									"disabled": true
 								},
 								{
 									"key": "sort_by",
-									"value": "name"
+									"value": "name",
+									"disabled": true
 								},
 								{
 									"key": "sort_direction",
-									"value": "asc"
+									"value": "asc",
+									"disabled": true
 								}
 							]
 						},
@@ -1187,7 +1303,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n{\n    \"url\": \"{{webhook_url}}\",\n    \"secret\": \"{{webhook_secret}}\"\n}"
+							"raw": "{\n    \"url\": \"{{webhook_url}}\",\n    \"secret\": \"{{webhook_secret}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/web/v1/webhooks/{{webhook_id}}",

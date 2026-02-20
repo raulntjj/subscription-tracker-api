@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Interface\Http\Controllers;
 
+use Illuminate\Http\Response;
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -61,35 +62,30 @@ final class SubscriptionController extends Controller
     public function paginated(Request $request): JsonResponse
     {
         try {
-            $page = (int) ($request->query('page') ?? 1);
-            $perPage = (int) ($request->query('per_page') ?? 15);
+            $page = (int) ($request->query(key: 'page') ?? 1);
+            $perPage = (int) ($request->query(key: 'per_page') ?? 15);
 
             $search = SearchDTO::fromRequest(
-                $request->query(),
-                self::SEARCHABLE_COLUMNS
+                params: $request->query(),
+                searchableColumns: self::SEARCHABLE_COLUMNS
             );
 
             $sort = SortDTO::fromRequest(
-                $request->query(),
-                self::SORTABLE_COLUMNS
+                params: $request->query(),
+                sortableColumns: self::SORTABLE_COLUMNS
             );
 
-            $result = $this->findPaginatedQuery->execute($page, $perPage, $search, $sort);
-
-            $data = array_map(
-                fn (SubscriptionDTO $item) => $item->toArray(),
-                $result->data
+            $result = $this->findPaginatedQuery->execute(
+                page: $page,
+                perPage: $perPage,
+                search: $search,
+                sort: $sort
             );
 
-            return ApiResponse::success([
-                'subscriptions' => $data,
-                'pagination' => [
-                    'total' => $result->total,
-                    'per_page' => $result->perPage,
-                    'current_page' => $result->currentPage,
-                    'last_page' => $result->lastPage,
-                ],
-            ], 'Subscriptions retrieved successfully');
+            return ApiResponse::success(
+                data: $result->toArray(),
+                message: 'Subscriptions retrieved successfully'
+            );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -106,16 +102,16 @@ final class SubscriptionController extends Controller
     {
         try {
             $search = SearchDTO::fromRequest(
-                $request->query(),
-                self::SEARCHABLE_COLUMNS
+                params: $request->query(),
+                searchableColumns: self::SEARCHABLE_COLUMNS
             );
 
-            $result = $this->findOptionsQuery->execute($search);
+            $result = $this->findOptionsQuery->execute(search: $search);
 
-            return ApiResponse::success([
-                'subscriptions' => $result->options,
-                'total' => count($result->options),
-            ], 'Subscription options retrieved successfully');
+            return ApiResponse::success(
+                data: $result->toArray(),
+                message: 'Subscription options retrieved successfully'
+            );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -127,15 +123,15 @@ final class SubscriptionController extends Controller
     public function show(string $id): JsonResponse
     {
         try {
-            $item = $this->findByIdQuery->execute($id);
+            $item = $this->findByIdQuery->execute(id: $id);
 
             if ($item === null) {
-                return ApiResponse::notFound('Subscription not found');
+                return ApiResponse::notFound(message: 'Subscription not found');
             }
 
             return ApiResponse::success(
-                $item->toArray(),
-                'Subscription retrieved successfully'
+                data: $item->toArray(),
+                message: 'Subscription retrieved successfully'
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -148,7 +144,7 @@ final class SubscriptionController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
+            $validated = $request->validate(rules: [
                 'name' => 'required|string|max:255',
                 'price' => 'required|integer|min:0',
                 'currency' => 'required|string|in:BRL,USD,EUR',
@@ -158,18 +154,18 @@ final class SubscriptionController extends Controller
                 'status' => 'sometimes|string|in:active,paused,cancelled',
             ]);
 
-            $validated['user_id'] = auth('api')->id();
+            $validated['user_id'] = auth(guard: 'api')->id();
 
-            $dto = CreateSubscriptionDTO::fromArray($validated);
+            $dto = CreateSubscriptionDTO::fromArray(data: $validated);
 
-            $item = $this->createUseCase->execute($dto);
+            $item = $this->createUseCase->execute(dto: $dto);
 
             return ApiResponse::created(
-                $item->toArray(),
-                'Subscription created successfully'
+                data: $item->toArray(),
+                message: 'Subscription created successfully'
             );
         } catch (ValidationException $e) {
-            return ApiResponse::validationError($e->errors());
+            return ApiResponse::validationError(errors: $e->errors());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -182,7 +178,7 @@ final class SubscriptionController extends Controller
     public function update(Request $request, string $id): JsonResponse
     {
         try {
-            $validated = $request->validate([
+            $validated = $request->validate(rules: [
                 'name' => 'sometimes|string|max:255',
                 'price' => 'sometimes|integer|min:0',
                 'currency' => 'sometimes|string|in:BRL,USD,EUR',
@@ -192,18 +188,18 @@ final class SubscriptionController extends Controller
                 'status' => 'sometimes|string|in:active,paused,cancelled',
             ]);
 
-            $dto = UpdateSubscriptionDTO::fromArray($validated);
+            $dto = UpdateSubscriptionDTO::fromArray(data: $validated);
 
-            $item = $this->updateUseCase->execute($id, $dto);
+            $item = $this->updateUseCase->execute(id: $id, dto: $dto);
 
             return ApiResponse::success(
                 $item->toArray(),
                 'Subscription updated successfully'
             );
         } catch (ValidationException $e) {
-            return ApiResponse::validationError($e->errors());
+            return ApiResponse::validationError(errors: $e->errors());
         } catch (\InvalidArgumentException $e) {
-            return ApiResponse::notFound($e->getMessage());
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -219,20 +215,19 @@ final class SubscriptionController extends Controller
     public function budget(Request $request): JsonResponse
     {
         try {
-            // Assumindo que o usuário está autenticado via JWT
-            $userId = auth()->id();
+            $userId = auth(guard: 'api')->id();
 
             if (!$userId) {
-                return ApiResponse::unauthorized('User not authenticated');
+                return ApiResponse::unauthorized(message: 'User not authenticated');
             }
 
-            $currency = $request->query('currency', 'BRL');
+            $currency = $request->query(key: 'currency', default: 'BRL');
 
-            $budgetDTO = $this->calculateBudgetUseCase->execute($userId, $currency);
+            $budgetDTO = $this->calculateBudgetUseCase->execute(userId: $userId, currency: $currency);
 
             return ApiResponse::success(
-                $budgetDTO->toArray(),
-                'Monthly budget calculated successfully'
+                data: $budgetDTO->toArray(),
+                message: 'Monthly budget calculated successfully'
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -242,14 +237,14 @@ final class SubscriptionController extends Controller
     /**
      * DELETE /api/web/v1/subscriptions/{id}
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id): Response | JsonResponse
     {
         try {
-            $this->deleteUseCase->execute($id);
+            $this->deleteUseCase->execute(id: $id);
 
-            return ApiResponse::success(null, 'Subscription deleted successfully');
+            return ApiResponse::noContent();
         } catch (\InvalidArgumentException $e) {
-            return ApiResponse::notFound($e->getMessage());
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }

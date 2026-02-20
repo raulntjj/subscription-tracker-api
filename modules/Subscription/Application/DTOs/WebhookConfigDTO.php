@@ -32,7 +32,22 @@ final readonly class WebhookConfigDTO
             url: $entity->url(),
             isActive: $entity->isActive(),
             createdAt: $entity->createdAt()->format('Y-m-d H:i:s'),
-            updatedAt: $entity->updatedAt()?->format('Y-m-d H:i:s') ?? '',
+            updatedAt: $entity->updatedAt()?->format('Y-m-d H:i:s') ?? $entity->createdAt()->format('Y-m-d H:i:s'),
+        );
+    }
+
+    /**
+     * Cria DTO a partir de um registro do banco (stdClass ou array)
+     */
+    public static function fromDatabase(object $data): self
+    {
+        return new self(
+            id: $data->id,
+            userId: $data->user_id,
+            url: $data->url,
+            isActive: (bool) $data->is_active,
+            createdAt: $data->created_at->format('Y-m-d H:i:s'),
+            updatedAt: $data->updated_at?->format('Y-m-d H:i:s') ?? $data->created_at->format('Y-m-d H:i:s'),
         );
     }
 

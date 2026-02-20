@@ -36,10 +36,6 @@ final class QueueServiceProvider extends ServiceProvider
      * - Lista de jobs ativos: set "queue_monitor:active"
      * - Lista de jobs concluídos: set "queue_monitor:completed"
      * - Lista de jobs falhados: set "queue_monitor:failed"
-     *
-     * TTL:
-     * - Jobs concluídos: 1 hora (3600s)
-     * - Jobs falhados: 24 horas (86400s)
      */
     private function registerQueueMonitoring(): void
     {
