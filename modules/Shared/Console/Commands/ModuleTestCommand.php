@@ -48,7 +48,7 @@ final class ModuleTestCommand extends Command
             $testPath = "{$testsPath}/Feature";
             $this->info("Executando testes de FEATURE do módulo {$module}...");
         } else {
-            $this->info("Executando TODOS os testes do módulo {$module}...");
+            $this->info("Executando testes do módulo {$module}...");
         }
 
         if (!is_dir($testPath)) {

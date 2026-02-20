@@ -122,7 +122,7 @@ final class ListUsersRouteTest extends FeatureTestCase
             );
 
             $secondPageResponse->assertStatus(200);
-            $this->assertIsArray($secondPageResponse->json('data.data'));
+            $this->assertIsArray($secondPageResponse->json('data.users'));
         }
 
         $this->assertTrue(true);
@@ -244,14 +244,14 @@ final class ListUsersRouteTest extends FeatureTestCase
                 'success',
                 'message',
                 'data' => [
-                    'data',
+                    'users',
                     'next_cursor',
                     'prev_cursor',
                 ],
             ]);
 
         $this->assertTrue($response->json('success'));
-        $this->assertIsArray($response->json('data.data'));
+        $this->assertIsArray($response->json('data.users'));
         $this->assertArrayHasKey('next_cursor', $response->json('data'));
         $this->assertArrayHasKey('prev_cursor', $response->json('data'));
     }

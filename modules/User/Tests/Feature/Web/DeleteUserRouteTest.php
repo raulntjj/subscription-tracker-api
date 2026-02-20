@@ -35,9 +35,7 @@ final class DeleteUserRouteTest extends FeatureTestCase
             $this->authHeaders($this->token),
         );
 
-        $response->assertStatus(200);
-        $this->assertTrue($response->json('success'));
-
+        $response->assertStatus(204);
         $this->assertSoftDeleted('users', [
             'id' => $user->id,
         ]);

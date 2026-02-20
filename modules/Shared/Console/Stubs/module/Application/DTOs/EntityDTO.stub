@@ -16,7 +16,9 @@ final readonly class {{MODULE_NAME}}DTO
         public string $name,
         public string $createdAt,
         public ?string $updatedAt = null,
-    ) {}
+    ) {
+        
+    }
 
     /**
      * Cria DTO a partir da entidade de domínio

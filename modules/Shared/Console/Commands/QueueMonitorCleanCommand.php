@@ -44,7 +44,7 @@ final class QueueMonitorCleanCommand extends Command
         $totalToClean = $stats['completed_count'] + $stats['failed_count'];
 
         if ($totalToClean === 0) {
-            $this->info('✓ Nenhum job para limpar.');
+            $this->info('Nenhum job para limpar.');
             return self::SUCCESS;
         }
 
@@ -67,7 +67,7 @@ final class QueueMonitorCleanCommand extends Command
         $result = $this->clearQueueMonitorLogsUseCase->execute();
 
         $this->newLine();
-        $this->info("✓ {$result->deletedCount} jobs foram removidos com sucesso!");
+        $this->info("{$result->deletedCount} jobs foram removidos com sucesso!");
 
         return self::SUCCESS;
     }

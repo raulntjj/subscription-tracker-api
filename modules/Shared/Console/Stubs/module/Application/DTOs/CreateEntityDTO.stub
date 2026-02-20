@@ -11,7 +11,9 @@ final readonly class Create{{MODULE_NAME}}DTO
 {
     public function __construct(
         public string $name,
-    ) {}
+    ) {
+
+    }
 
     /**
      * Cria DTO a partir de array

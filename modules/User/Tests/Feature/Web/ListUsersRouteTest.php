@@ -40,7 +40,7 @@ final class ListUsersRouteTest extends FeatureTestCase
                 'success',
                 'message',
                 'data' => [
-                    'data' => [
+                    'users' => [
                         '*' => ['id', 'name', 'email', 'created_at'],
                     ],
                     'total',
