@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Shared\Infrastructure\Auth\Middleware\Authenticate;
 use Modules\Subscription\Interface\Http\Controllers\SubscriptionController;
 use Modules\Subscription\Interface\Http\Controllers\WebhookConfigController;
 
@@ -12,7 +13,7 @@ use Modules\Subscription\Interface\Http\Controllers\WebhookConfigController;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('subscriptions')->group(function () {
+Route::middleware(Authenticate::class)->prefix('subscriptions')->group(function () {
     // Listagem paginada com busca e ordenação
     Route::get('/', [SubscriptionController::class, 'paginated']);
 
@@ -29,7 +30,7 @@ Route::prefix('subscriptions')->group(function () {
     Route::delete('/{id}', [SubscriptionController::class, 'destroy']);
 });
 
-Route::prefix('webhooks')->group(function () {
+Route::middleware(Authenticate::class)->prefix('webhooks')->group(function () {
     // Listagem
     Route::get('/', [WebhookConfigController::class, 'index']);
 

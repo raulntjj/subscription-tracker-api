@@ -6,6 +6,7 @@ namespace Modules\Subscription\Application\Queries;
 
 use Modules\Shared\Application\DTOs\SearchDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
+use Modules\Subscription\Application\DTOs\SubscriptionDTO;
 use Modules\Subscription\Application\DTOs\SubscriptionOptionsDTO;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 

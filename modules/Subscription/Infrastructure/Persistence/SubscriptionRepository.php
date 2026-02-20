@@ -274,8 +274,8 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
             return $query
                 ->get(['id', 'name'])
                 ->map(fn ($model) => [
-                    'id' => $model->id,
-                    'name' => $model->name,
+                    'value' => $model->id,
+                    'label' => $model->name,
                 ])
                 ->toArray();
         });

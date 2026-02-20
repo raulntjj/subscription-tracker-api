@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Shared\Infrastructure\Auth\Middleware\Authenticate;
 use Modules\Shared\Interface\Http\Controllers\QueueMonitorController;
 
 /*
@@ -9,7 +10,7 @@ use Modules\Shared\Interface\Http\Controllers\QueueMonitorController;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('/monitor')
+Route::middleware(Authenticate::class)->prefix('/monitor')
     ->group(function () {
         Route::get('/', [QueueMonitorController::class, 'index'])->name('queue-monitor.index');
         Route::get('/metrics', [QueueMonitorController::class, 'metrics'])->name('queue-monitor.metrics');

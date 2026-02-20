@@ -27,7 +27,6 @@ final readonly class UpdateSubscriptionDTO
      */
     public static function fromArray(array $data): self
     {
-        // Converte next_billing_date para string se vier como Carbon
         $nextBillingDate = $data['next_billing_date'];
         if ($nextBillingDate instanceof \DateTimeInterface) {
             $nextBillingDate = $nextBillingDate->format('Y-m-d');

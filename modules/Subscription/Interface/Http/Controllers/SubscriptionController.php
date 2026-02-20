@@ -177,13 +177,13 @@ final class SubscriptionController extends Controller
     {
         try {
             $validated = $request->validate(rules: [
-                'name' => 'sometimes|string|max:255',
-                'price' => 'sometimes|integer|min:0',
-                'currency' => 'sometimes|string|in:BRL,USD,EUR',
-                'billing_cycle' => 'sometimes|string|in:monthly,yearly',
-                'next_billing_date' => 'sometimes|date|after_or_equal:today',
-                'category' => 'sometimes|string|max:255',
-                'status' => 'sometimes|string|in:active,paused,cancelled',
+                'name' => 'required|string|max:255',
+                'price' => 'required|integer|min:0',
+                'currency' => 'required|string|in:BRL,USD,EUR',
+                'billing_cycle' => 'required|string|in:monthly,yearly',
+                'next_billing_date' => 'required|date|after_or_equal:today',
+                'category' => 'required|string|max:255',
+                'status' => 'required|string|in:active,paused,cancelled',
             ]);
 
             $dto = UpdateSubscriptionDTO::fromArray(data: $validated);
