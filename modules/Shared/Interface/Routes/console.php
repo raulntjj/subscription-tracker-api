@@ -10,7 +10,7 @@ use Modules\Subscription\Application\Jobs\CheckBillingJob;
 */
 
 Schedule::job(new CheckBillingJob())
-    ->everyMinute()
+    ->everyFiveMinutes()
     // ->dailyAt('00:00')
     // ->timezone('America/Sao_Paulo')
     ->name('check-billing-daily')
