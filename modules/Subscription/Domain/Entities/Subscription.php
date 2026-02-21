@@ -207,7 +207,7 @@ final class Subscription
     private function validatePrice(int $price): void
     {
         if ($price < 0) {
-            throw new InvalidArgumentException(__('Subscription::message.price_cannot_negative'));
+            throw new InvalidArgumentException(__('Subscription::exception.price_cannot_negative'));
         }
     }
 
@@ -215,7 +215,7 @@ final class Subscription
     {
         $today = new DateTimeImmutable('today');
         if ($date < $today) {
-            throw new InvalidArgumentException(__('Subscription::message.next_billing_date_future'));
+            throw new InvalidArgumentException(__('Subscription::exception.next_billing_date_future'));
         }
     }
 

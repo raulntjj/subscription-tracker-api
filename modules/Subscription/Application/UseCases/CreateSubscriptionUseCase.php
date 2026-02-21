@@ -38,7 +38,7 @@ final readonly class CreateSubscriptionUseCase
 
         try {
             if (!$dto->validateNextBillingDate()) {
-                throw new InvalidArgumentException(__('Subscription::message.next_billing_date_future'));
+                throw new InvalidArgumentException(__('Subscription::exception.next_billing_date_future'));
             }
 
             $entity = new Subscription(

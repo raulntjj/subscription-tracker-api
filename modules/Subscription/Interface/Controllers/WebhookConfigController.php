@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Interface\Controllers;
 
+use Dotenv\Exception\ValidationException;
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -48,7 +49,7 @@ final class WebhookConfigController extends Controller
             return ApiResponse::success([
                 'webhooks' => $items,
                 'total' => count(value: $items),
-            ], message: __('Subscription::exception.configs_retrieved_success'));
+            ], message: __('Subscription::message.configs_retrieved_success'));
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -65,12 +66,12 @@ final class WebhookConfigController extends Controller
             $item = $this->getConfigByIdQuery->execute(id: $id, userId: $userId);
 
             if ($item === null) {
-                return ApiResponse::notFound(message: __('Subscription::exception.config_not_found'));
+                return ApiResponse::notFound(message: __('Subscription::message.config_not_found'));
             }
 
             return ApiResponse::success(
                 data: $item->toArray(),
-                message: __('Subscription::exception.config_retrieved_success'),
+                message: __('Subscription::message.config_retrieved_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -96,9 +97,9 @@ final class WebhookConfigController extends Controller
 
             return ApiResponse::created(
                 data: $item->toArray(),
-                message: __('Subscription::exception.config_created_success'),
+                message: __('Subscription::message.config_created_success'),
             );
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -117,7 +118,7 @@ final class WebhookConfigController extends Controller
             $existing = $this->getConfigByIdQuery->execute(id: $id, userId: $userId);
 
             if ($existing === null) {
-                return ApiResponse::notFound(message: __('Subscription::exception.config_not_found'));
+                return ApiResponse::notFound(message: __('Subscription::message.config_not_found'));
             }
 
             $validated = $request->validate(rules: [
@@ -135,9 +136,9 @@ final class WebhookConfigController extends Controller
 
             return ApiResponse::success(
                 data: $item->toArray(),
-                message: __('Subscription::exception.config_updated_success'),
+                message: __('Subscription::message.config_updated_success'),
             );
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -156,7 +157,7 @@ final class WebhookConfigController extends Controller
             $existing = $this->getConfigByIdQuery->execute(id: $id, userId: $userId);
 
             if ($existing === null) {
-                return ApiResponse::notFound(message: __('Subscription::exception.config_not_found'));
+                return ApiResponse::notFound(message: __('Subscription::message.config_not_found'));
             }
 
             $this->deleteUseCase->execute(id: $id);
@@ -186,7 +187,7 @@ final class WebhookConfigController extends Controller
 
             return ApiResponse::success(
                 data: $item->toArray(),
-                message: __('Subscription::exception.config_activated_success'),
+                message: __('Subscription::message.config_activated_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -212,7 +213,7 @@ final class WebhookConfigController extends Controller
 
             return ApiResponse::success(
                 data: $item->toArray(),
-                message: __('Subscription::exception.config_deactivated_success'),
+                message: __('Subscription::message.config_deactivated_success'),
             );
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -243,8 +244,8 @@ final class WebhookConfigController extends Controller
             $result = $this->testUseCase->execute(id: $id, async: $async);
 
             $message = $async
-                ? __('Subscription::exception.test_dispatched')
-                : __('Subscription::exception.test_completed');
+                ? __('Subscription::message.test_dispatched')
+                : __('Subscription::message.test_completed');
 
             return ApiResponse::success(
                 data: $result,

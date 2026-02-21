@@ -13,4 +13,7 @@ return [
     'webhook_rate_limited' => 'Webhook com limite de taxa atingido: :statusCode',
     'webhook_client_error' => 'Webhook retornou erro de cliente: :statusCode',
     'webhook_test_failed' => 'Webhook retornou status :statusCode',
+
+    'config_created_successefully' => 'Configuração criada com sucesso.',
+    'config_not_found' => 'Configuração de webhook não encontrada.',
 ];

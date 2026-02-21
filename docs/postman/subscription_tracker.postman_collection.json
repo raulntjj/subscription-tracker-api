@@ -55,6 +55,12 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -110,6 +116,12 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -165,11 +177,22 @@
 							]
 						},
 						"method": "POST",
-						"header": [
+						"header": [							
 							{
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -207,6 +230,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -244,6 +278,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -271,14 +316,31 @@
 					"name": "API Status",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
 						"url": {
-							"raw": "{{base_url}}/status",
+							"raw": "{{base_url}}/health",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"status"
+								"health"
 							]
 						},
 						"description": "Verifica status da aplicação, database e cache"
@@ -309,6 +371,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -346,6 +419,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -384,6 +468,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -446,6 +541,12 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -492,6 +593,12 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -539,6 +646,12 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -581,6 +694,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -624,10 +748,21 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/mobile/v1/users?cursor=eyJjcmVhdGVkX2F0IjoiMjAyNi0wMi0xOSAxOToxODowNCIsImlkIjoiMzdjZGJmYjItNjg4MS00YjIzLWI0ZDItYjI3OTY2NmIyMWI0IiwiX3BvaW50c1RvTmV4dEl0ZW1zIjpmYWxzZX0",
+							"raw": "{{base_url}}/api/mobile/v1/users",
 							"host": [
 								"{{base_url}}"
 							],
@@ -641,7 +776,8 @@
 								{
 									"key": "cursor",
 									"value": "eyJjcmVhdGVkX2F0IjoiMjAyNi0wMi0xOSAxOToxODowNCIsImlkIjoiMzdjZGJmYjItNjg4MS00YjIzLWI0ZDItYjI3OTY2NmIyMWI0IiwiX3BvaW50c1RvTmV4dEl0ZW1zIjpmYWxzZX0",
-									"description": "Cursor retornado pela resposta anterior (next_cursor)"
+									"description": "Cursor retornado pela resposta anterior (next_cursor)",
+									"disabled": true
 								}
 							]
 						},
@@ -673,6 +809,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -732,6 +879,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -770,6 +928,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -808,6 +977,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -899,6 +1079,12 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -1000,6 +1186,12 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -1042,6 +1234,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -1085,6 +1288,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -1154,6 +1368,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -1191,6 +1416,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -1253,6 +1489,12 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -1299,6 +1541,12 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -1341,6 +1589,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -1380,6 +1639,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -1419,6 +1689,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -1457,6 +1738,17 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
@@ -1507,15 +1799,27 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/queue-monitor",
+							"raw": "{{base_url}}/queue/monitor",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"queue-monitor"
+								"queue",
+								"monitor"
 							]
 						}
 					},
@@ -1540,15 +1844,27 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/queue-monitor/{{job_id}}",
+							"raw": "{{base_url}}/queue/monitor/{{job_id}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"queue-monitor",
+								"queue",
+								"monitor",
 								"{{job_id}}"
 							]
 						}
@@ -1574,15 +1890,27 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "{{lang}}",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/queue-monitor/metrics",
+							"raw": "{{base_url}}/queue/monitor/metrics",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"queue-monitor",
+								"queue",
+								"monitor",
 								"metrics"
 							]
 						}
@@ -1616,7 +1944,14 @@
 		{
 			"key": "base_url",
 			"value": "http://localhost:8001",
-			"type": "string"
+			"type": "string",
+			"description": "URL base da API (ajuste para staging/produção conforme necessário)"
+		},
+		{
+			"key": "lang",
+			"value": "pt-BR",
+			"type": "string",
+			"description": "Idioma para testes de internacionalização (i18n)"
 		},
 		{
 			"key": "jwt_token",
@@ -1627,7 +1962,8 @@
 		{
 			"key": "user_id",
 			"value": "",
-			"type": "string"
+			"type": "string",
+			"description": "ID do usuário para testes"
 		},
 		{
 			"key": "next_cursor",
@@ -1650,32 +1986,38 @@
 		{
 			"key": "password",
 			"value": "",
-			"type": "default"
+			"type": "default",
+			"description": "Senha para testes de autenticação (não use senhas reais)"
 		},
 		{
 			"key": "email",
 			"value": "",
-			"type": "default"
+			"type": "default",
+			"description": "Email para testes de autenticação (use emails de teste)"
 		},
 		{
 			"key": "job_id",
 			"value": "",
-			"type": "default"
+			"type": "default",
+			"description": "ID do job para monitoramento de fila"
 		},
 		{
 			"key": "webhook",
 			"value": "",
-			"type": "default"
+			"type": "default",
+			"description": "Webhook para testes"
 		},
 		{
 			"key": "webhook_url",
 			"value": "",
-			"type": "default"
+			"type": "default",
+			"description": "URL do webhook para testes"
 		},
 		{
 			"key": "webhook_secret",
 			"value": "",
-			"type": "default"
+			"type": "default",
+			"description": "Senha do webhook para testes"
 		}
 	]
 }

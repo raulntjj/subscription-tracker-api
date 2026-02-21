@@ -16,7 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocaleMiddleware::class,
         ]);
 
-        if (app()->environment('production')) {
+        $environment = $_ENV['APP_ENV'] ?? 'production';
+        if ($environment === 'production') {
             $middleware->api(append: [
                 ThrottleRequests::class,
             ]);
