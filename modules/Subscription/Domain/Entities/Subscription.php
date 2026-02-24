@@ -124,6 +124,12 @@ final class Subscription
         $this->updateTimestamp();
     }
 
+    public function changeCurrency(CurrencyEnum $newCurrency): void
+    {
+        $this->currency = $newCurrency;
+        $this->updateTimestamp();
+    }
+
     public function changeBillingCycle(BillingCycleEnum $newCycle): void
     {
         $this->billingCycle = $newCycle;
