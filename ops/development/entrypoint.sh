@@ -15,7 +15,7 @@ chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Garantir que arquivos de log existentes e novos tenham as permissões corretas
 # Usei um loop para evitar repetição de código
-LOG_FILES=("webhook.log" "billing.log" "default.log" "scheduler.log")
+LOG_FILES=("webhook.log" "billing.log" "default.log" "scheduler.log" "server.log")
 
 for LOG in "${LOG_FILES[@]}"; do
     FILE="/var/www/html/storage/logs/workers/$LOG"
@@ -24,8 +24,5 @@ for LOG in "${LOG_FILES[@]}"; do
     chmod 664 "$FILE"
 done
 
-# Iniciar supervisor
-/usr/bin/supervisord -c /etc/supervisor/supervisord.conf &
-
-# Iniciar FrankenPHP
-exec gosu appuser frankenphp php-server --listen 0.0.0.0:8000 --root /var/www/html/public
+rm -f /var/run/supervisor.sock
+exec /usr/bin/supervisord --nodaemon -c /etc/supervisor/supervisord.conf
