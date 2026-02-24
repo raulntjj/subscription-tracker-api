@@ -21,4 +21,5 @@ return [
     'config_deactivated_success' => 'Webhook config deactivated successfully.',
     'test_dispatched' => 'Webhook test dispatched to queue. Check logs for results.',
     'test_completed' => 'Webhook test completed.',
+    'webhook_test' => 'Integration test successful! This message has traveled through a resilient infrastructure, processed via RabbitMQ and delivered through the Subscription Tracker ecosystem.'
 ];

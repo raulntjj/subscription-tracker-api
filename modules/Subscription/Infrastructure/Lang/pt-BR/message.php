@@ -21,4 +21,5 @@ return [
     'config_deactivated_success' => 'Configuração de webhook desativada com sucesso.',
     'test_dispatched' => 'Teste de webhook despachado para a fila. Verifique os logs para resultados.',
     'test_completed' => 'Teste de webhook concluído.',
+    'webhook_test' => 'Teste de integração bem-sucedido! Esta mensagem percorreu uma infraestrutura resiliente, processada via RabbitMQ e distribuída através do ecossistema Subscription Tracker.'
 ];

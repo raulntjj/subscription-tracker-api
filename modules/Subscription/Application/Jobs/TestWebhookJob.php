@@ -74,7 +74,7 @@ final class TestWebhookJob implements ShouldQueue
 
             // Payload de teste
             $payload = [
-                'content' => 'This is a test webhook payload sent via RabbitMQ',
+                'content' => __('Subscription::message.webhook_test'),
                 'event' => 'webhook.test',
                 'timestamp' => now()->toIso8601String(),
                 'test' => true,
