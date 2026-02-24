@@ -1,0 +1,55 @@
+# Vendor e dependências
+/vendor
+composer.lock
+
+# Cache e arquivos temporários
+/bootstrap/cache/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+
+# Arquivos de teste
+/tests
+/phpunit.xml
+/.phpunit.cache
+
+# Arquivos de configuração de desenvolvimento
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Documentação
+README.md
+LICENSE
+CHANGELOG.md
+/docs
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Node (se houver assets)
+node_modules
+package.json
+package-lock.json
+yarn.lock
+webpack.mix.js
+
+# Diversos
+.editorconfig
+.php-cs-fixer.php
+pint.json
+phpstan.neon
