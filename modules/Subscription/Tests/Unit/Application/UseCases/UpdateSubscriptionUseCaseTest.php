@@ -121,7 +121,7 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Streaming',
             status: 'active',
         );
@@ -172,7 +172,7 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Streaming',
             status: 'active',
         );
@@ -200,7 +200,7 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Streaming',
             status: 'paused',
         );
@@ -228,7 +228,7 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Streaming',
             status: 'cancelled',
         );
@@ -313,7 +313,7 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Entertainment',
             status: 'active',
         );
@@ -344,7 +344,7 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Streaming',
             status: 'active',
         );
@@ -373,7 +373,7 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 5990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Streaming',
             status: 'active',
         );
@@ -391,7 +391,7 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: CurrencyEnum::BRL,
             billingCycle: $billingCycle ?? BillingCycleEnum::MONTHLY,
-            nextBillingDate: new DateTimeImmutable('2026-03-01'),
+            nextBillingDate: new DateTimeImmutable(now()->addMonth()->format('Y-m-d')),
             category: 'Streaming',
             status: $status ?? SubscriptionStatusEnum::ACTIVE,
             userId: $this->userId,

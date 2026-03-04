@@ -41,7 +41,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Streaming',
             status: 'active',
             userId: Uuid::uuid4()->toString(),
@@ -97,7 +97,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
                 price: 1000,
                 currency: $currency,
                 billingCycle: 'monthly',
-                nextBillingDate: '2026-03-01',
+                nextBillingDate: now()->addMonth()->format('Y-m-d'),
                 category: 'Test',
                 status: 'active',
                 userId: Uuid::uuid4()->toString(),
@@ -120,7 +120,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 2190,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Music',
             status: 'active',
             userId: Uuid::uuid4()->toString(),
@@ -157,11 +157,12 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
     public function test_passes_correct_entity_to_repository(): void
     {
         $userId = Uuid::uuid4()->toString();
+        $expectedDate = now()->addMonth()->format('Y-m-d');
 
         $this->subscriptionRepository
             ->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (Subscription $subscription) use ($userId): bool {
+            ->with($this->callback(function (Subscription $subscription) use ($userId, $expectedDate): bool {
                 return $subscription->name() === 'Netflix'
                     && $subscription->price() === 4990
                     && $subscription->currency()->value === 'BRL'
@@ -169,7 +170,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
                     && $subscription->category() === 'Streaming'
                     && $subscription->status()->value === 'active'
                     && $subscription->userId()->toString() === $userId
-                    && $subscription->nextBillingDate()->format('Y-m-d') === '2026-03-01'
+                    && $subscription->nextBillingDate()->format('Y-m-d') === $expectedDate
                     && $subscription->createdAt() instanceof DateTimeImmutable;
             }));
 
@@ -178,7 +179,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: $expectedDate,
             category: 'Streaming',
             status: 'active',
             userId: $userId,
@@ -201,7 +202,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Streaming',
             status: 'active',
             userId: Uuid::uuid4()->toString(),
@@ -221,7 +222,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 0,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Free',
             status: 'active',
             userId: Uuid::uuid4()->toString(),
@@ -270,7 +271,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
                 price: 1000,
                 currency: 'BRL',
                 billingCycle: 'monthly',
-                nextBillingDate: '2026-03-01',
+                nextBillingDate: now()->addMonth()->format('Y-m-d'),
                 category: $category,
                 status: 'active',
                 userId: Uuid::uuid4()->toString(),
@@ -296,7 +297,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
             price: 4990,
             currency: 'BRL',
             billingCycle: 'monthly',
-            nextBillingDate: '2026-03-01',
+            nextBillingDate: now()->addMonth()->format('Y-m-d'),
             category: 'Streaming',
             status: 'active',
             userId: Uuid::uuid4()->toString(),
