@@ -8,6 +8,7 @@ use Throwable;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Illuminate\Bus\Queueable;
+use Laravel\Octane\Facades\Octane;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -48,7 +49,20 @@ final class CheckBillingJob implements ShouldQueue
     }
 
     /**
+     * Número máximo de assinaturas processadas concorrentemente por lote
+     */
+    private const CONCURRENCY_CHUNK_SIZE = 10;
+
+    /**
+     * Timeout em milissegundos para cada lote concorrente
+     */
+    private const CONCURRENCY_TIMEOUT_MS = 30000;
+
+    /**
      * Executa o job
+     *
+     * Utiliza Octane::concurrently para processar lotes de assinaturas
+     * em paralelo, reduzindo significativamente o tempo total de processamento.
      */
     public function handle(
         SubscriptionRepositoryInterface $subscriptionRepository,
@@ -63,24 +77,47 @@ final class CheckBillingJob implements ShouldQueue
             $processedCount = 0;
             $failedCount = 0;
 
-            foreach ($subscriptions as $subscription) {
-                try {
-                    $this->processSubscriptionBilling(
+            // Processa em lotes concorrentes via Octane
+            $chunks = array_chunk($subscriptions, self::CONCURRENCY_CHUNK_SIZE);
+
+            foreach ($chunks as $chunk) {
+                $tasks = [];
+                foreach ($chunk as $subscription) {
+                    $tasks[] = fn () => $this->processSubscriptionBilling(
                         $subscription,
                         $subscriptionRepository,
                         $billingHistoryRepository,
                     );
+                }
 
-                    $processedCount++;
+                try {
+                    $results = Octane::concurrently($tasks, self::CONCURRENCY_TIMEOUT_MS);
+                    $processedCount += count($results);
                 } catch (Throwable $e) {
-                    $failedCount++;
-
-                    $this->logger()->error('Failed to process subscription billing', [
-                        'subscription_id' => $subscription->id()->toString(),
-                        'subscription_name' => $subscription->name(),
+                    // Se o concurrently falhar, faz fallback para processamento sequencial
+                    $this->logger()->warning('Concurrent billing processing failed, falling back to sequential', [
                         'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
+                        'chunk_size' => count($chunk),
                     ]);
+
+                    foreach ($chunk as $subscription) {
+                        try {
+                            $this->processSubscriptionBilling(
+                                $subscription,
+                                $subscriptionRepository,
+                                $billingHistoryRepository,
+                            );
+                            $processedCount++;
+                        } catch (Throwable $e) {
+                            $failedCount++;
+                            $this->logger()->error('Failed to process subscription billing', [
+                                'subscription_id' => $subscription->id()->toString(),
+                                'subscription_name' => $subscription->name(),
+                                'error' => $e->getMessage(),
+                                'trace' => $e->getTraceAsString(),
+                            ]);
+                        }
+                    }
                 }
             }
 

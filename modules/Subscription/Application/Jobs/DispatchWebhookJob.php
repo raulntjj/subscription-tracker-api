@@ -9,6 +9,7 @@ use Throwable;
 use Ramsey\Uuid\Uuid;
 use RuntimeException;
 use Illuminate\Bus\Queueable;
+use Laravel\Octane\Facades\Octane;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -69,6 +70,9 @@ final class DispatchWebhookJob implements ShouldQueue
 
     /**
      * Executa o job
+     *
+     * Utiliza Octane::concurrently para buscar a configuração de webhook
+     * e montar o payload em paralelo, reduzindo a latência total.
      */
     public function handle(): void
     {
@@ -79,11 +83,14 @@ final class DispatchWebhookJob implements ShouldQueue
             'attempt' => $this->attempts(),
         ]);
 
-        // 1. Recuperar configuração de webhook ativa do utilizador
-        $webhookConfig = WebhookConfigModel::where('user_id', $this->userId)
-            ->where('is_active', true)
-            ->whereNull('deleted_at')
-            ->first();
+        // Busca a config de webhook e monta o payload em paralelo via Octane
+        [$webhookConfig, $payload] = Octane::concurrently([
+            fn () => WebhookConfigModel::where('user_id', $this->userId)
+                ->where('is_active', true)
+                ->whereNull('deleted_at')
+                ->first(),
+            fn () => $this->buildPayload(),
+        ], 5000);
 
         if ($webhookConfig === null) {
             $this->logger()->info('No active webhook configuration found for user', [
@@ -92,11 +99,10 @@ final class DispatchWebhookJob implements ShouldQueue
             return;
         }
 
-        // 2. Montar payload JSON
-        $payload = $this->buildPayload();
+        // Serializa payload e gera assinatura
         $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-        // 3. Gerar assinatura HMAC SHA256 (apenas se secret existir)
+        // Gera assinatura HMAC SHA256 (apenas se secret existir)
         $signature = $webhookConfig->secret
             ? hash_hmac('sha256', $payloadJson, $webhookConfig->secret)
             : null;
@@ -109,7 +115,7 @@ final class DispatchWebhookJob implements ShouldQueue
         ]);
 
         try {
-            // 4. Executar POST assíncrono com timeout
+            // Executa POST com timeout
             $headers = [
                 'Content-Type' => 'application/json',
                 'X-Event-Type' => 'subscription.renewed',
@@ -126,7 +132,7 @@ final class DispatchWebhookJob implements ShouldQueue
                 ->withHeaders($headers)
                 ->post($webhookConfig->url, $payload);
 
-            // 5. Verificar resposta
+            // Verifica resposta
             if ($response->successful()) {
                 $this->logger()->info('Webhook delivered successfully', [
                     'webhook_url' => $webhookConfig->url,
