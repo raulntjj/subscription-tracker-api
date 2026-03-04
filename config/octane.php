@@ -132,10 +132,13 @@ return [
 
     'warm' => [
         ...Octane::defaultServicesToWarm(),
+        Modules\Shared\Domain\Contracts\CacheServiceInterface::class,
+        Modules\Shared\Domain\Contracts\JwtServiceInterface::class,
+        Modules\Shared\Domain\Contracts\QueueMonitorRepositoryInterface::class,
     ],
 
     'flush' => [
-        //
+        Modules\Shared\Domain\Contracts\LoggerInterface::class,
     ],
 
     /*
@@ -150,9 +153,13 @@ return [
     */
 
     'tables' => [
-        'example:1000' => [
-            'name' => 'string:1000',
-            'votes' => 'int',
+        // Tabela compartilhada entre workers para métricas de fila em tempo real
+        'queue_stats:100' => [
+            'queue_name' => 'string:100',
+            'active_count' => 'int',
+            'completed_count' => 'int',
+            'failed_count' => 'int',
+            'last_updated' => 'int',
         ],
     ],
 

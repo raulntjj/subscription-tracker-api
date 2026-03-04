@@ -8,8 +8,8 @@ use Closure;
 use Illuminate\Http\Request;
 use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 use Symfony\Component\HttpFoundation\Response;
-use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use Modules\Shared\Interface\Responses\ApiResponse;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
 

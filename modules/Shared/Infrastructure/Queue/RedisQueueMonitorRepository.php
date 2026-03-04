@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Shared\Infrastructure\Queue;
 
 use Carbon\Carbon;
+use Laravel\Octane\Facades\Octane;
 use Illuminate\Support\Facades\Redis;
 use Modules\Shared\Domain\Contracts\QueueMonitorRepositoryInterface;
 
@@ -43,13 +44,19 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
         return $this->getJobsDetails($limitedJobIds);
     }
 
+    /**
+     * Retorna todos os jobs utilizando Octane::concurrently
+     * para buscar os IDs de cada status em paralelo no Redis.
+     */
     public function getAllJobs(): array
     {
         $connection = Redis::connection($this->connection);
 
-        $activeJobIds = $connection->smembers(self::PREFIX . 'active');
-        $completedJobIds = $connection->smembers(self::PREFIX . 'completed');
-        $failedJobIds = $connection->smembers(self::PREFIX . 'failed');
+        [$activeJobIds, $completedJobIds, $failedJobIds] = Octane::concurrently([
+            fn () => $connection->smembers(self::PREFIX . 'active'),
+            fn () => $connection->smembers(self::PREFIX . 'completed'),
+            fn () => $connection->smembers(self::PREFIX . 'failed'),
+        ], 3000);
 
         $allJobIds = array_merge($activeJobIds, $completedJobIds, $failedJobIds);
 
@@ -68,13 +75,19 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
         return $this->formatJobDetails($jobId, $details);
     }
 
+    /**
+     * Retorna estatísticas das filas utilizando Octane::concurrently
+     * para buscar as contagens de cada status em paralelo no Redis.
+     */
     public function getStatistics(): array
     {
         $connection = Redis::connection($this->connection);
 
-        $activeCount = $connection->scard(self::PREFIX . 'active');
-        $completedCount = $connection->scard(self::PREFIX . 'completed');
-        $failedCount = $connection->scard(self::PREFIX . 'failed');
+        [$activeCount, $completedCount, $failedCount] = Octane::concurrently([
+            fn () => $connection->scard(self::PREFIX . 'active'),
+            fn () => $connection->scard(self::PREFIX . 'completed'),
+            fn () => $connection->scard(self::PREFIX . 'failed'),
+        ], 3000);
 
         return [
             'active_count' => (int) $activeCount,
@@ -84,12 +97,19 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
         ];
     }
 
+    /**
+     * Limpa jobs concluídos e falhados utilizando Octane::concurrently
+     * para buscar ambas as listas em paralelo antes da remoção.
+     */
     public function clearCompletedAndFailed(): int
     {
         $connection = Redis::connection($this->connection);
 
-        $completedJobs = $connection->smembers(self::PREFIX . 'completed');
-        $failedJobs = $connection->smembers(self::PREFIX . 'failed');
+        // Busca ambas as listas em paralelo
+        [$completedJobs, $failedJobs] = Octane::concurrently([
+            fn () => $connection->smembers(self::PREFIX . 'completed'),
+            fn () => $connection->smembers(self::PREFIX . 'failed'),
+        ], 3000);
 
         $deletedCount = 0;
 
@@ -124,7 +144,11 @@ final class RedisQueueMonitorRepository implements QueueMonitorRepositoryInterfa
             }
         }
 
-        return $jobs;
+        $jobsOrdered = collect($jobs)->sortByDesc('started_at')
+                                     ->values()
+                                     ->all();
+
+        return $jobsOrdered;
     }
 
     /**

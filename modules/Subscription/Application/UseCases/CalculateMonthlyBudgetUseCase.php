@@ -6,6 +6,7 @@ namespace Modules\Subscription\Application\UseCases;
 
 use Throwable;
 use DateTimeImmutable;
+use Laravel\Octane\Facades\Octane;
 use Modules\Subscription\Application\DTOs\MonthlyBudgetDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
@@ -17,6 +18,9 @@ use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
  * - total_committed: O que já venceu/foi pago no mês
  * - upcoming_bills: O que ainda vai vencer no mês
  * - breakdown: Valores por categoria
+ *
+ * Utiliza Octane::concurrently para paralelizar o cálculo
+ * de committed vs upcoming quando há muitas assinaturas.
  */
 final readonly class CalculateMonthlyBudgetUseCase
 {
@@ -45,42 +49,25 @@ final readonly class CalculateMonthlyBudgetUseCase
             // Busca todas as assinaturas ativas do usuário
             $subscriptions = $this->repository->findActiveByUserId($userId);
 
-            $totalCommitted = 0;
-            $upcomingBills = 0;
-            $breakdown = [];
+            // Filtra apenas assinaturas na moeda solicitada
+            $filteredSubscriptions = array_filter(
+                $subscriptions,
+                fn ($sub) => $sub->currency()->value === $currency,
+            );
 
             $today = new DateTimeImmutable('today');
 
-            foreach ($subscriptions as $subscription) {
-                // Filtra apenas assinaturas na moeda solicitada
-                if ($subscription->currency()->value !== $currency) {
-                    continue;
-                }
+            [$committedResult, $upcomingResult] = Octane::concurrently([
+                fn () => $this->calculateCommitted($filteredSubscriptions, $today),
+                fn () => $this->calculateUpcoming($filteredSubscriptions, $today),
+            ], 5000);
 
-                // Normaliza o preço para valor mensal
-                $monthlyPrice = $this->normalizeToMonthlyPrice(
-                    $subscription->price(),
-                    $subscription->billingCycle()->value,
-                );
-
-                // Adiciona ao breakdown por categoria
-                $category = $subscription->category();
-                if (!isset($breakdown[$category])) {
-                    $breakdown[$category] = 0;
-                }
-                $breakdown[$category] += $monthlyPrice;
-
-                $nextBillingDate = $subscription->nextBillingDate();
-
-                // Se já venceu (data passada), conta como committed
-                if ($nextBillingDate <= $today) {
-                    $totalCommitted += $monthlyPrice;
-                }
-                // Se ainda vai vencer, conta como upcoming
-                else {
-                    $upcomingBills += $monthlyPrice;
-                }
-            }
+            $totalCommitted = $committedResult['total'];
+            $upcomingBills = $upcomingResult['total'];
+            $breakdown = $this->mergeBreakdowns(
+                $committedResult['breakdown'],
+                $upcomingResult['breakdown'],
+            );
 
             $totalMonthly = $totalCommitted + $upcomingBills;
 
@@ -109,6 +96,82 @@ final readonly class CalculateMonthlyBudgetUseCase
 
             throw $e;
         }
+    }
+
+    /**
+     * Calcula o total comprometido (assinaturas já vencidas no mês)
+     *
+     * @param array $subscriptions
+     * @param DateTimeImmutable $today
+     * @return array{total: int, breakdown: array<string, int>}
+     */
+    private function calculateCommitted(array $subscriptions, DateTimeImmutable $today): array
+    {
+        $total = 0;
+        $breakdown = [];
+
+        foreach ($subscriptions as $subscription) {
+            if ($subscription->nextBillingDate() <= $today) {
+                $monthlyPrice = $this->normalizeToMonthlyPrice(
+                    $subscription->price(),
+                    $subscription->billingCycle()->value,
+                );
+
+                $total += $monthlyPrice;
+
+                $category = $subscription->category();
+                $breakdown[$category] = ($breakdown[$category] ?? 0) + $monthlyPrice;
+            }
+        }
+
+        return ['total' => $total, 'breakdown' => $breakdown];
+    }
+
+    /**
+     * Calcula o total a vencer (assinaturas futuras no mês)
+     *
+     * @param array $subscriptions
+     * @param DateTimeImmutable $today
+     * @return array{total: int, breakdown: array<string, int>}
+     */
+    private function calculateUpcoming(array $subscriptions, DateTimeImmutable $today): array
+    {
+        $total = 0;
+        $breakdown = [];
+
+        foreach ($subscriptions as $subscription) {
+            if ($subscription->nextBillingDate() > $today) {
+                $monthlyPrice = $this->normalizeToMonthlyPrice(
+                    $subscription->price(),
+                    $subscription->billingCycle()->value,
+                );
+
+                $total += $monthlyPrice;
+
+                $category = $subscription->category();
+                $breakdown[$category] = ($breakdown[$category] ?? 0) + $monthlyPrice;
+            }
+        }
+
+        return ['total' => $total, 'breakdown' => $breakdown];
+    }
+
+    /**
+     * Merge breakdowns de committed e upcoming
+     *
+     * @param array<string, int> $committed
+     * @param array<string, int> $upcoming
+     * @return array<string, int>
+     */
+    private function mergeBreakdowns(array $committed, array $upcoming): array
+    {
+        $merged = $committed;
+
+        foreach ($upcoming as $category => $amount) {
+            $merged[$category] = ($merged[$category] ?? 0) + $amount;
+        }
+
+        return $merged;
     }
 
     /**
