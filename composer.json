@@ -2,13 +2,14 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "Backend Boilerplate for Laravel 12 with Octane, Swoole, and RoadRunner support.",
-    "keywords": ["swoole", "roadrunner", "octane", "laravel", "backend", "boilerplate"],
+    "description": "Subscription Tracker Backend - A Laravel-based backend for managing and tracking user subscriptions.",
+    "keywords": ["swoole", "octane", "laravel", "backend", "subscriptions", "tracking"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0",
         "laravel/octane": "^2.13",
+        "laravel/tinker": "^2.11",
         "php-open-source-saver/jwt-auth": "^2.8",
         "ramsey/uuid": "^4.7",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "^14.4"

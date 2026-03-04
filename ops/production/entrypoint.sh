@@ -3,6 +3,33 @@ set -e
 
 umask 0002
 
+echo "Checking environment configuration..."
+
+if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
+    echo "  APP_KEY not set, generating automatically..."
+    APP_KEY="base64:$(openssl rand -base64 32)"
+    export APP_KEY
+    echo "APP_KEY generated"
+fi
+
+if [ -z "$JWT_SECRET" ] || [ "$JWT_SECRET" = "" ]; then
+    echo "  JWT_SECRET not set, generating automatically..."
+    JWT_SECRET=$(openssl rand -base64 64 | tr -d '\n')
+    export JWT_SECRET
+    echo "JWT_SECRET generated"
+fi
+
+echo "Environment configuration is valid"
+echo ""
+
+# Verifica se o autoload do composer existe para evitar reinstalar dependências desnecessariamente
+if [ -f /var/www/html/vendor/autoload.php ]; then
+    echo "Vendor autoload found, skipping composer install"
+else
+    echo "Vendor autoload not found, running composer install..."
+    composer install --no-interaction --prefer-dist
+fi
+
 # Criar estrutura de diretórios necessária
 # Adicionei o path dos workers aqui
 mkdir -p /var/www/html/storage/logs/workers \
