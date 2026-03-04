@@ -27,7 +27,7 @@ final class SubscriptionTest extends SubscriptionTestCase
 
         $this->id = Uuid::uuid4();
         $this->userId = Uuid::uuid4();
-        $this->nextBillingDate = new DateTimeImmutable('2026-03-01');
+        $this->nextBillingDate = new DateTimeImmutable(now()->addMonth()->format('Y-m-d'));
         $this->createdAt = new DateTimeImmutable('2026-02-20 12:00:00');
     }
 
@@ -229,7 +229,8 @@ final class SubscriptionTest extends SubscriptionTestCase
 
     public function test_calculate_next_billing_date_for_monthly_cycle(): void
     {
-        $currentDate = new DateTimeImmutable('2026-03-01');
+        $now = now();
+        $currentDate = new DateTimeImmutable($now->format('Y-m-d'));
         $subscription = $this->createSubscription(
             billingCycle: BillingCycleEnum::MONTHLY,
             nextBillingDate: $currentDate,
@@ -237,12 +238,13 @@ final class SubscriptionTest extends SubscriptionTestCase
 
         $nextDate = $subscription->calculateNextBillingDate();
 
-        $this->assertEquals('2026-04-01', $nextDate->format('Y-m-d'));
+        $this->assertEquals($now->addMonth()->format('Y-m-d'), $nextDate->format('Y-m-d'));
     }
 
     public function test_calculate_next_billing_date_for_yearly_cycle(): void
     {
-        $currentDate = new DateTimeImmutable('2026-03-01');
+        $now = now();
+        $currentDate = new DateTimeImmutable($now->format('Y-m-d'));
         $subscription = $this->createSubscription(
             billingCycle: BillingCycleEnum::YEARLY,
             nextBillingDate: $currentDate,
@@ -250,7 +252,7 @@ final class SubscriptionTest extends SubscriptionTestCase
 
         $nextDate = $subscription->calculateNextBillingDate();
 
-        $this->assertEquals('2027-03-01', $nextDate->format('Y-m-d'));
+        $this->assertEquals($now->addYear()->format('Y-m-d'), $nextDate->format('Y-m-d'));
     }
 
     public function test_normalized_monthly_price_for_monthly_subscription(): void
