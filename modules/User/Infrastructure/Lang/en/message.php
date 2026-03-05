@@ -15,7 +15,6 @@ return [
     // User CRUD
     'users_retrieved_success' => 'Users retrieved successfully.',
     'user_options_retrieved_success' => 'User options retrieved successfully.',
-    'user_retrieved_success' => 'User retrieved successfully.',
     'user_created_success' => 'User created successfully.',
     'user_updated_success' => 'User updated successfully.',
     'user_patched_success' => 'User patched successfully.',
