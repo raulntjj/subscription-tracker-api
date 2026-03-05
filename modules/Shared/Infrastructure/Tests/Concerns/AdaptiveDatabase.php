@@ -16,6 +16,11 @@ namespace Modules\Shared\Infrastructure\Tests\Concerns;
 trait AdaptiveDatabase
 {
     /**
+     * Track if migrations have already been run.
+     */
+    protected static bool $adaptiveDatabaseMigrated = false;
+
+    /**
      * Define which connections should have their transactions rolled back.
      *
      * @return array<int, string>
@@ -101,9 +106,9 @@ trait AdaptiveDatabase
      */
     protected function refreshTestDatabase(): void
     {
-        if (! \Illuminate\Foundation\Testing\RefreshDatabase::$migrated) {
+        if (! static::$adaptiveDatabaseMigrated) {
             $this->artisan('migrate:fresh', $this->migrateFreshUsing());
-            \Illuminate\Foundation\Testing\RefreshDatabase::$migrated = true;
+            static::$adaptiveDatabaseMigrated = true;
         }
 
         $this->beginDatabaseTransaction();
