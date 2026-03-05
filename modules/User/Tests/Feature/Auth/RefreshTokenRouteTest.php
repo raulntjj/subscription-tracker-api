@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Auth;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class RefreshTokenRouteTest extends FeatureTestCase
 {
-    use DatabaseTransactions;
-
     public function test_can_refresh_token(): void
     {
         $auth = $this->authenticateUser();

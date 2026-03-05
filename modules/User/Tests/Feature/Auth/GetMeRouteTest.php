@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Auth;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class GetMeRouteTest extends FeatureTestCase
 {
-    use DatabaseTransactions;
-
     public function test_can_get_authenticated_user(): void
     {
         $email = 'john' . uniqid() . '@example.com';
