@@ -14,6 +14,7 @@ final class ModuleSeedCommand extends Command
     protected $signature = 'module:seed
                             {module? : Nome do módulo específico para executar seeders (opcional)} 
                             {--class= : Classe do seeder específico para executar}
+                            {--action= : Ação específica para o seeder (populate, clear, etc)}
                             {--force : Força a execução em ambiente de produção}';
 
     protected $description = 'Executa os seeders dos módulos (similar ao migrate para migrations)';
@@ -198,6 +199,9 @@ final class ModuleSeedCommand extends Command
             $this->line("Executando: {$seederName}...");
 
             $seeder = $this->laravel->make($className);
+
+            $seeder->setCommand($this);
+            $seeder->setContainer($this->laravel);
 
             // Suporta tanto run() quanto __invoke()
             if (method_exists($seeder, 'run')) {

@@ -35,7 +35,7 @@ final class LoginUseCase
                     'email' => $dto->email,
                 ]);
 
-                throw new InvalidArgumentException(__('User::message.invalid_credentials'));
+                throw new InvalidArgumentException(__('User::exception.invalid_credentials'));
             }
 
             $this->logger()->event('user.logged_in', [
