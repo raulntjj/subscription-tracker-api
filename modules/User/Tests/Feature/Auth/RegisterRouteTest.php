@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Auth;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class RegisterRouteTest extends FeatureTestCase
 {
-    use DatabaseTransactions;
-
     public function test_can_register_with_valid_data(): void
     {
         $email = 'john.doe' . uniqid() . '@example.com';
