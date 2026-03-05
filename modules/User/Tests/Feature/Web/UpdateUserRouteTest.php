@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace Modules\User\Tests\Feature\Web;
 
 use Modules\User\Tests\Feature\FeatureTestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 final class UpdateUserRouteTest extends FeatureTestCase
 {
-    use DatabaseTransactions;
-
     private string $token;
 
     protected function setUp(): void

@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\Subscription\Tests\Feature\Web;
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Modules\Subscription\Tests\Feature\FeatureTestCase;
 
 final class DeleteSubscriptionRouteTest extends FeatureTestCase
 {
-    use DatabaseTransactions;
-
     private string $token;
     private string $userId;
 
