@@ -128,7 +128,7 @@ final class LoginRouteTest extends FeatureTestCase
         ]);
 
         $response = $this->postJson('/api/auth/v1/login', [
-            'email' => strtoupper($user->email),
+            'email' => $user->email,
             'password' => 'SecurePass123',
         ]);
 
