@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\User\Domain\ValueObjects;
 
+use JsonSerializable;
 use InvalidArgumentException;
 
-final readonly class Email
+final readonly class Email implements JsonSerializable
 {
     private string $value;
 
@@ -35,6 +36,11 @@ final readonly class Email
     }
 
     public function __toString(): string
+    {
+        return $this->value;
+    }
+
+    public function jsonSerialize(): string
     {
         return $this->value;
     }

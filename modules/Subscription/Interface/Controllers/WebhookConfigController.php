@@ -7,9 +7,10 @@ namespace Modules\Subscription\Interface\Controllers;
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use InvalidArgumentException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use Dotenv\Exception\ValidationException;
+use Illuminate\Validation\ValidationException;
 use Modules\Shared\Interface\Responses\ApiResponse;
 use Modules\Subscription\Application\DTOs\CreateWebhookConfigDTO;
 use Modules\Subscription\Application\DTOs\UpdateWebhookConfigDTO;
@@ -73,6 +74,8 @@ final class WebhookConfigController extends Controller
                 data: $item->toArray(),
                 message: __('Subscription::message.config_retrieved_success'),
             );
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -123,13 +126,15 @@ final class WebhookConfigController extends Controller
 
             $validated = $request->validate(rules: [
                 'url' => ['sometimes', 'string', 'url', 'max:500'],
-                'secret' => ['sometimes', 'string', 'min:8', 'max:255'],
+                'secret' => ['sometimes', 'nullable', 'string', 'min:8', 'max:255'],
+                'is_active' => ['sometimes', 'boolean'],
             ]);
 
             $dto = UpdateWebhookConfigDTO::fromArray(data: [
                 'id' => $id,
                 'url' => $validated['url'] ?? null,
                 'secret' => $validated['secret'] ?? null,
+                'is_active' => $validated['is_active'] ?? null,
             ]);
 
             $item = $this->updateUseCase->execute(dto: $dto);
@@ -140,6 +145,8 @@ final class WebhookConfigController extends Controller
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -163,6 +170,8 @@ final class WebhookConfigController extends Controller
             $this->deleteUseCase->execute(id: $id);
 
             return ApiResponse::noContent();
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -189,6 +198,8 @@ final class WebhookConfigController extends Controller
                 data: $item->toArray(),
                 message: __('Subscription::message.config_activated_success'),
             );
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -215,6 +226,8 @@ final class WebhookConfigController extends Controller
                 data: $item->toArray(),
                 message: __('Subscription::message.config_deactivated_success'),
             );
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }

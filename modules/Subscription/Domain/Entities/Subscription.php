@@ -5,20 +5,21 @@ declare(strict_types=1);
 namespace Modules\Subscription\Domain\Entities;
 
 use DateTimeImmutable;
-use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
 use Modules\Subscription\Domain\Enums\CurrencyEnum;
+use Modules\Subscription\Domain\ValueObjects\Money;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
+use Modules\Subscription\Domain\ValueObjects\BillingDate;
 use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
 
 final class Subscription
 {
     private UuidInterface $id;
     private string $name;
-    private int $price; // Armazenado em centavos para evitar problemas de precisão
+    private Money $price;
     private CurrencyEnum $currency;
     private BillingCycleEnum $billingCycle;
-    private DateTimeImmutable $nextBillingDate;
+    private BillingDate $nextBillingDate;
     private string $category;
     private SubscriptionStatusEnum $status;
     private UuidInterface $userId;
@@ -28,19 +29,16 @@ final class Subscription
     public function __construct(
         UuidInterface $id,
         string $name,
-        int $price,
+        Money $price,
         CurrencyEnum $currency,
         BillingCycleEnum $billingCycle,
-        DateTimeImmutable $nextBillingDate,
+        BillingDate $nextBillingDate,
         string $category,
         SubscriptionStatusEnum $status,
         UuidInterface $userId,
         DateTimeImmutable $createdAt,
         ?DateTimeImmutable $updatedAt = null,
     ) {
-        $this->validatePrice($price);
-        $this->validateNextBillingDate($nextBillingDate);
-
         $this->id = $id;
         $this->name = $name;
         $this->price = $price;
@@ -65,7 +63,7 @@ final class Subscription
         return $this->name;
     }
 
-    public function price(): int
+    public function price(): Money
     {
         return $this->price;
     }
@@ -80,7 +78,7 @@ final class Subscription
         return $this->billingCycle;
     }
 
-    public function nextBillingDate(): DateTimeImmutable
+    public function nextBillingDate(): BillingDate
     {
         return $this->nextBillingDate;
     }
@@ -117,9 +115,8 @@ final class Subscription
         $this->updateTimestamp();
     }
 
-    public function changePrice(int $newPrice): void
+    public function changePrice(Money $newPrice): void
     {
-        $this->validatePrice($newPrice);
         $this->price = $newPrice;
         $this->updateTimestamp();
     }
@@ -160,32 +157,29 @@ final class Subscription
         $this->updateTimestamp();
     }
 
-    public function updateNextBillingDate(DateTimeImmutable $newDate): void
+    public function updateNextBillingDate(BillingDate $newDate): void
     {
-        $this->validateNextBillingDate($newDate);
         $this->nextBillingDate = $newDate;
         $this->updateTimestamp();
     }
 
-    public function calculateNextBillingDate(): DateTimeImmutable
+    public function calculateNextBillingDate(): BillingDate
     {
         $months = $this->billingCycle->months();
-        $interval = new \DateInterval("P{$months}M");
-
-        return $this->nextBillingDate->add($interval);
+        return $this->nextBillingDate->addMonths($months);
     }
 
     /**
      * Normaliza o preço para valor mensal (usado para cálculos de budget)
      */
-    public function normalizedMonthlyPrice(): int
+    public function normalizedMonthlyPrice(): Money
     {
         if ($this->billingCycle === BillingCycleEnum::MONTHLY) {
             return $this->price;
         }
 
         // Se for anual, divide por 12
-        return (int) round($this->price / 12);
+        return $this->price->divide(12);
     }
 
     public function isActive(): bool
@@ -205,26 +199,10 @@ final class Subscription
 
     public function isDueForBilling(): bool
     {
-        $today = new DateTimeImmutable('today');
-        return $this->isActive() && $this->nextBillingDate->format('Y-m-d') === $today->format('Y-m-d');
+        return $this->isActive() && $this->nextBillingDate->isToday();
     }
 
     // Private Methods
-    private function validatePrice(int $price): void
-    {
-        if ($price < 0) {
-            throw new InvalidArgumentException(__('Subscription::exception.price_cannot_negative'));
-        }
-    }
-
-    private function validateNextBillingDate(DateTimeImmutable $date): void
-    {
-        $today = new DateTimeImmutable('today');
-        if ($date < $today) {
-            throw new InvalidArgumentException(__('Subscription::exception.next_billing_date_future'));
-        }
-    }
-
     private function updateTimestamp(): void
     {
         $this->updatedAt = new DateTimeImmutable();

@@ -13,6 +13,7 @@ final readonly class UpdateWebhookConfigDTO
         public string $id,
         public ?string $url = null,
         public ?string $secret = null,
+        public ?bool $isActive = null,
     ) {
     }
 
@@ -21,10 +22,17 @@ final readonly class UpdateWebhookConfigDTO
      */
     public static function fromArray(array $data): self
     {
+        // Trata string vazia como null para secret
+        $secret = $data['secret'] ?? null;
+        if ($secret === '') {
+            $secret = null;
+        }
+
         return new self(
             id: $data['id'],
             url: $data['url'] ?? null,
-            secret: $data['secret'] ?? null,
+            secret: $secret,
+            isActive: isset($data['is_active']) ? (bool) $data['is_active'] : null,
         );
     }
 
@@ -41,6 +49,10 @@ final readonly class UpdateWebhookConfigDTO
 
         if ($this->secret !== null) {
             $data['secret'] = $this->secret;
+        }
+
+        if ($this->isActive !== null) {
+            $data['is_active'] = $this->isActive;
         }
 
         return $data;

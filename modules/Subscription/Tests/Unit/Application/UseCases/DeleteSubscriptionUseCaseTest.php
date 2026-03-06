@@ -11,9 +11,11 @@ use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Modules\Subscription\Domain\Enums\CurrencyEnum;
+use Modules\Subscription\Domain\ValueObjects\Money;
 use Modules\Subscription\Tests\SubscriptionTestCase;
 use Modules\Subscription\Domain\Entities\Subscription;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
+use Modules\Subscription\Domain\ValueObjects\BillingDate;
 use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
 use Modules\Subscription\Application\UseCases\DeleteSubscriptionUseCase;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
@@ -213,10 +215,10 @@ final class DeleteSubscriptionUseCaseTest extends SubscriptionTestCase
         $existingSubscription = new Subscription(
             id: Uuid::fromString($validUuid),
             name: 'Netflix',
-            price: 4990,
+            price: Money::fromCents(4990),
             currency: CurrencyEnum::BRL,
             billingCycle: BillingCycleEnum::MONTHLY,
-            nextBillingDate: new DateTimeImmutable(now()->addMonth()->format('Y-m-d')),
+            nextBillingDate: BillingDate::fromString(now()->addMonth()->format('Y-m-d')),
             category: 'Streaming',
             status: SubscriptionStatusEnum::ACTIVE,
             userId: $this->userId,
@@ -277,10 +279,10 @@ final class DeleteSubscriptionUseCaseTest extends SubscriptionTestCase
         return new Subscription(
             id: $this->subscriptionId,
             name: 'Netflix',
-            price: 4990,
+            price: Money::fromCents(4990),
             currency: CurrencyEnum::BRL,
             billingCycle: $billingCycle ?? BillingCycleEnum::MONTHLY,
-            nextBillingDate: new DateTimeImmutable(now()->addMonth()->format('Y-m-d')),
+            nextBillingDate: BillingDate::fromString(now()->addMonth()->format('Y-m-d')),
             category: 'Streaming',
             status: $status ?? SubscriptionStatusEnum::ACTIVE,
             userId: $this->userId,

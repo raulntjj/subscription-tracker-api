@@ -29,7 +29,7 @@ final readonly class WebhookConfigDTO
         return new self(
             id: $entity->id()->toString(),
             userId: $entity->userId()->toString(),
-            url: $entity->url(),
+            url: $entity->url()->value(),
             isActive: $entity->isActive(),
             createdAt: $entity->createdAt()->format('Y-m-d H:i:s'),
             updatedAt: $entity->updatedAt()?->format('Y-m-d H:i:s') ?? $entity->createdAt()->format('Y-m-d H:i:s'),

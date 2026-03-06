@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Modules\Subscription\Domain\Entities;
 
 use DateTimeImmutable;
-use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
+use Modules\Subscription\Domain\ValueObjects\WebhookUrl;
 
 final class WebhookConfig
 {
     private UuidInterface $id;
     private UuidInterface $userId;
-    private string $url;
+    private WebhookUrl $url;
     private ?string $secret;
     private bool $isActive;
     private DateTimeImmutable $createdAt;
@@ -21,14 +21,12 @@ final class WebhookConfig
     public function __construct(
         UuidInterface $id,
         UuidInterface $userId,
-        string $url,
+        WebhookUrl $url,
         ?string $secret,
         bool $isActive,
         DateTimeImmutable $createdAt,
         ?DateTimeImmutable $updatedAt = null,
     ) {
-        $this->validateUrl($url);
-
         $this->id = $id;
         $this->userId = $userId;
         $this->url = $url;
@@ -36,22 +34,6 @@ final class WebhookConfig
         $this->isActive = $isActive;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
-    }
-
-    private function validateUrl(string $url): void
-    {
-        if (empty($url)) {
-            throw new InvalidArgumentException(__('Subscription::exception.webhook_url_empty'));
-        }
-
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new InvalidArgumentException(__('Subscription::exception.webhook_url_invalid'));
-        }
-
-        $parsedUrl = parse_url($url);
-        if (!isset($parsedUrl['scheme']) || !in_array($parsedUrl['scheme'], ['http', 'https'])) {
-            throw new InvalidArgumentException(__('Subscription::exception.webhook_url_protocol'));
-        }
     }
 
     // Getters
@@ -65,7 +47,7 @@ final class WebhookConfig
         return $this->userId;
     }
 
-    public function url(): string
+    public function url(): WebhookUrl
     {
         return $this->url;
     }
@@ -101,9 +83,8 @@ final class WebhookConfig
         $this->isActive = false;
     }
 
-    public function changeUrl(string $url): void
+    public function changeUrl(WebhookUrl $url): void
     {
-        $this->validateUrl($url);
         $this->url = $url;
     }
 

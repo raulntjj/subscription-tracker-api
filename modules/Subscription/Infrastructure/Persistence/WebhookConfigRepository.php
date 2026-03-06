@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
 use Modules\Subscription\Domain\Entities\WebhookConfig;
+use Modules\Subscription\Domain\ValueObjects\WebhookUrl;
 use Modules\Shared\Infrastructure\Persistence\BaseRepository;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
@@ -33,7 +34,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
             [
                 'id' => $webhookConfig->id()->toString(),
                 'user_id' => $webhookConfig->userId()->toString(),
-                'url' => $webhookConfig->url(),
+                'url' => $webhookConfig->url()->value(),
                 'secret' => $webhookConfig->secret(),
                 'is_active' => $webhookConfig->isActive(),
             ],
@@ -48,7 +49,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
             throw new InvalidArgumentException(__('Subscription::exception.webhook_config_not_found'));
         }
 
-        $model->url = $webhookConfig->url();
+        $model->url = $webhookConfig->url()->value();
         $model->secret = $webhookConfig->secret();
         $model->is_active = $webhookConfig->isActive();
 
@@ -141,7 +142,7 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
         return new WebhookConfig(
             id: Uuid::fromString($model->id),
             userId: Uuid::fromString($model->user_id),
-            url: $model->url,
+            url: WebhookUrl::fromString($model->url),
             secret: $model->secret,
             isActive: $model->is_active,
             createdAt: new DateTimeImmutable($model->created_at->toDateTimeString()),

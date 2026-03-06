@@ -9,8 +9,10 @@ use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Modules\Subscription\Domain\Enums\CurrencyEnum;
+use Modules\Subscription\Domain\ValueObjects\Money;
 use Modules\Subscription\Domain\Entities\Subscription;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
+use Modules\Subscription\Domain\ValueObjects\BillingDate;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
@@ -44,10 +46,10 @@ final readonly class CreateSubscriptionUseCase
             $entity = new Subscription(
                 id: Uuid::uuid4(),
                 name: $dto->name,
-                price: $dto->price,
+                price: Money::fromCents($dto->price),
                 currency: CurrencyEnum::from($dto->currency),
                 billingCycle: BillingCycleEnum::from($dto->billingCycle),
-                nextBillingDate: new DateTimeImmutable($dto->nextBillingDate),
+                nextBillingDate: BillingDate::fromString($dto->nextBillingDate),
                 category: $dto->category,
                 status: SubscriptionStatusEnum::from($dto->status),
                 userId: Uuid::fromString($dto->userId),
@@ -67,7 +69,7 @@ final readonly class CreateSubscriptionUseCase
                 entityId: $entity->id()->toString(),
                 context: [
                     'name' => $entity->name(),
-                    'price' => $entity->price(),
+                    'price' => $entity->price()->toCents(),
                     'currency' => $entity->currency()->value,
                     'billing_cycle' => $entity->billingCycle()->value,
                     'category' => $entity->category(),

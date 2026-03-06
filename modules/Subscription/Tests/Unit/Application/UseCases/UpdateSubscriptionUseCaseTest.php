@@ -11,9 +11,11 @@ use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Modules\Subscription\Domain\Enums\CurrencyEnum;
+use Modules\Subscription\Domain\ValueObjects\Money;
 use Modules\Subscription\Tests\SubscriptionTestCase;
 use Modules\Subscription\Domain\Entities\Subscription;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
+use Modules\Subscription\Domain\ValueObjects\BillingDate;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
 use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
 use Modules\Subscription\Application\DTOs\UpdateSubscriptionDTO;
@@ -83,7 +85,7 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
             ->method('update')
             ->with($this->callback(function (Subscription $subscription): bool {
                 return $subscription->name() === 'Updated Name'
-                    && $subscription->price() === 9990
+                    && $subscription->price()->toCents() === 9990
                     && $subscription->billingCycle() === BillingCycleEnum::YEARLY
                     && $subscription->category() === 'Updated Category'
                     && $subscription->status() === SubscriptionStatusEnum::PAUSED;
@@ -388,10 +390,10 @@ final class UpdateSubscriptionUseCaseTest extends SubscriptionTestCase
         return new Subscription(
             id: $this->subscriptionId,
             name: 'Netflix',
-            price: 4990,
+            price: Money::fromCents(4990),
             currency: CurrencyEnum::BRL,
             billingCycle: $billingCycle ?? BillingCycleEnum::MONTHLY,
-            nextBillingDate: new DateTimeImmutable(now()->addMonth()->format('Y-m-d')),
+            nextBillingDate: BillingDate::fromString(now()->addMonth()->format('Y-m-d')),
             category: 'Streaming',
             status: $status ?? SubscriptionStatusEnum::ACTIVE,
             userId: $this->userId,

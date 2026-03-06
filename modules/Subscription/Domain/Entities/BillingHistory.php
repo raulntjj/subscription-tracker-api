@@ -5,26 +5,24 @@ declare(strict_types=1);
 namespace Modules\Subscription\Domain\Entities;
 
 use DateTimeImmutable;
-use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
+use Modules\Subscription\Domain\ValueObjects\Money;
 
 final class BillingHistory
 {
     private UuidInterface $id;
     private UuidInterface $subscriptionId;
-    private int $amountPaid; // Armazenado em centavos
+    private Money $amountPaid;
     private DateTimeImmutable $paidAt;
     private DateTimeImmutable $createdAt;
 
     public function __construct(
         UuidInterface $id,
         UuidInterface $subscriptionId,
-        int $amountPaid,
+        Money $amountPaid,
         DateTimeImmutable $paidAt,
         DateTimeImmutable $createdAt,
     ) {
-        $this->validateAmount($amountPaid);
-
         $this->id = $id;
         $this->subscriptionId = $subscriptionId;
         $this->amountPaid = $amountPaid;
@@ -42,7 +40,7 @@ final class BillingHistory
         return $this->subscriptionId;
     }
 
-    public function amountPaid(): int
+    public function amountPaid(): Money
     {
         return $this->amountPaid;
     }
@@ -55,20 +53,5 @@ final class BillingHistory
     public function createdAt(): DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    /**
-     * Retorna o valor pago formatado (em reais/dólares)
-     */
-    public function amountPaidFormatted(): float
-    {
-        return $this->amountPaid / 100;
-    }
-
-    private function validateAmount(int $amount): void
-    {
-        if ($amount < 0) {
-            throw new InvalidArgumentException(__('Subscription::message.amount_paid_cannot_negative'));
-        }
     }
 }

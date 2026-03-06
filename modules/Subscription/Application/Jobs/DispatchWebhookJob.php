@@ -17,7 +17,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\ConnectionException;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
-use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
+use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 
 /**
  * Job para despachar webhooks de renovação de subscrição
@@ -74,7 +74,7 @@ final class DispatchWebhookJob implements ShouldQueue
      * Utiliza Octane::concurrently para buscar a configuração de webhook
      * e montar o payload em paralelo, reduzindo a latência total.
      */
-    public function handle(): void
+    public function handle(WebhookConfigRepositoryInterface $repository): void
     {
         $this->logger()->info('Processing webhook dispatch', [
             'subscription_id' => $this->subscriptionId,
@@ -85,10 +85,7 @@ final class DispatchWebhookJob implements ShouldQueue
 
         // Busca a config de webhook e monta o payload em paralelo via Octane
         [$webhookConfig, $payload] = Octane::concurrently([
-            fn () => WebhookConfigModel::where('user_id', $this->userId)
-                ->where('is_active', true)
-                ->whereNull('deleted_at')
-                ->first(),
+            fn () => $repository->findActiveByUserId(Uuid::fromString($this->userId)),
             fn () => $this->buildPayload(),
         ], 5000);
 
@@ -103,12 +100,12 @@ final class DispatchWebhookJob implements ShouldQueue
         $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         // Gera assinatura HMAC SHA256 (apenas se secret existir)
-        $signature = $webhookConfig->secret
-            ? hash_hmac('sha256', $payloadJson, $webhookConfig->secret)
+        $signature = $webhookConfig->secret()
+            ? hash_hmac('sha256', $payloadJson, $webhookConfig->secret())
             : null;
 
         $this->logger()->info('Sending webhook request', [
-            'webhook_url' => $webhookConfig->url,
+            'webhook_url' => $webhookConfig->url()->value(),
             'user_id' => $this->userId,
             'payload_size' => strlen($payloadJson),
             'has_signature' => $signature !== null,
@@ -130,24 +127,24 @@ final class DispatchWebhookJob implements ShouldQueue
 
             $response = Http::timeout($this->timeout)
                 ->withHeaders($headers)
-                ->post($webhookConfig->url, $payload);
+                ->post($webhookConfig->url()->value(), $payload);
 
             // Verifica resposta
             if ($response->successful()) {
                 $this->logger()->info('Webhook delivered successfully', [
-                    'webhook_url' => $webhookConfig->url,
+                    'webhook_url' => $webhookConfig->url()->value(),
                     'status_code' => $response->status(),
                     'user_id' => $this->userId,
                     'subscription_id' => $this->subscriptionId,
                     'attempt' => $this->attempts(),
                 ]);
             } else {
-                $this->handleFailedResponse($response, $webhookConfig->url);
+                $this->handleFailedResponse($response, $webhookConfig->url()->value());
             }
         } catch (ConnectionException $e) {
             // Erro de conexão (timeout, DNS, etc)
             $this->logger()->error('Webhook connection failed', [
-                'webhook_url' => $webhookConfig->url,
+                'webhook_url' => $webhookConfig->url()->value(),
                 'error' => $e->getMessage(),
                 'user_id' => $this->userId,
                 'attempt' => $this->attempts(),
@@ -158,7 +155,7 @@ final class DispatchWebhookJob implements ShouldQueue
         } catch (Exception $e) {
             // Outros erros
             $this->logger()->error('Webhook dispatch failed with exception', [
-                'webhook_url' => $webhookConfig->url,
+                'webhook_url' => $webhookConfig->url()->value(),
                 'error' => $e->getMessage(),
                 'user_id' => $this->userId,
                 'attempt' => $this->attempts(),
