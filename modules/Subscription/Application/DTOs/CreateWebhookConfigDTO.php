@@ -13,6 +13,9 @@ final readonly class CreateWebhookConfigDTO
         public string $url,
         public ?string $secret,
         public string $userId,
+        public ?string $platform = null,
+        public ?string $botName = null,
+        public ?string $serverName = null,
     ) {
     }
 
@@ -25,6 +28,9 @@ final readonly class CreateWebhookConfigDTO
             url: $data['url'],
             secret: $data['secret'] ?? null,
             userId: $data['user_id'],
+            platform: $data['platform'] ?? null,
+            botName: $data['bot_name'] ?? null,
+            serverName: $data['server_name'] ?? null,
         );
     }
 
@@ -37,6 +43,9 @@ final readonly class CreateWebhookConfigDTO
             'url' => $this->url,
             'secret' => $this->secret,
             'user_id' => $this->userId,
+            'platform' => $this->platform,
+            'bot_name' => $this->botName,
+            'server_name' => $this->serverName,
         ];
     }
 }

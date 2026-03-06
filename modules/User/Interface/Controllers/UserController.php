@@ -7,6 +7,7 @@ namespace Modules\User\Interface\Controllers;
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use InvalidArgumentException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Modules\Shared\Application\DTOs\SortDTO;
@@ -197,7 +198,7 @@ final class UserController extends Controller
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -229,7 +230,7 @@ final class UserController extends Controller
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
@@ -245,7 +246,7 @@ final class UserController extends Controller
             $this->deleteUserUseCase->execute(id: $id);
 
             return ApiResponse::noContent();
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);

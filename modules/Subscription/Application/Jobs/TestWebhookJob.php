@@ -107,13 +107,13 @@ final class TestWebhookJob implements ShouldQueue
 
             $this->logger()->info('Sending test webhook request', [
                 'webhook_config_id' => $this->webhookConfigId,
-                'url' => $entity->url(),
+                'url' => $entity->url()->value(),
                 'has_signature' => $entity->secret() !== null,
             ]);
 
             $response = Http::timeout($this->timeout)
                 ->withHeaders($headers)
-                ->post($entity->url(), $payload);
+                ->post($entity->url()->value(), $payload);
 
             $success = $response->successful();
             $statusCode = $response->status();

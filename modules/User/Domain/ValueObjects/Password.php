@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\User\Domain\ValueObjects;
 
+use JsonSerializable;
 use InvalidArgumentException;
 
-final readonly class Password
+final readonly class Password implements JsonSerializable
 {
     private string $hashedValue;
 
@@ -40,6 +41,11 @@ final readonly class Password
     }
 
     public function __toString(): string
+    {
+        return $this->hashedValue;
+    }
+
+    public function jsonSerialize(): string
     {
         return $this->hashedValue;
     }

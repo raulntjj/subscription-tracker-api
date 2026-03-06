@@ -4,6 +4,7 @@ return [
     'subscription_not_found_with_id' => 'Assinatura não encontrada com id: :id',
     'next_billing_date_future' => 'A próxima data de cobrança deve ser no futuro ou hoje.',
     'price_cannot_negative' => 'O preço não pode ser negativo.',
+    'amount_cannot_negative' => 'O valor não pode ser negativo.',
     'amount_paid_cannot_negative' => 'O valor pago não pode ser negativo.',
     'webhook_config_not_found' => 'Configuração de webhook não encontrada.',
     'webhook_url_empty' => 'A URL do webhook não pode estar vazia.',
@@ -16,4 +17,5 @@ return [
 
     'config_created_successefully' => 'Configuração criada com sucesso.',
     'config_not_found' => 'Configuração de webhook não encontrada.',
+    'invalid_webhook_platform' => 'Plataforma de webhook inválida. Permitidas: discord, slack, other.',
 ];

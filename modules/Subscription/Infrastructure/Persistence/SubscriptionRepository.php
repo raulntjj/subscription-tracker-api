@@ -8,8 +8,10 @@ use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Ramsey\Uuid\UuidInterface;
 use Modules\Subscription\Domain\Enums\CurrencyEnum;
+use Modules\Subscription\Domain\ValueObjects\Money;
 use Modules\Subscription\Domain\Entities\Subscription;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
+use Modules\Subscription\Domain\ValueObjects\BillingDate;
 use Modules\Shared\Infrastructure\Persistence\BaseRepository;
 use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
@@ -31,7 +33,7 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
             ['id' => $entity->id()->toString()],
             [
                 'name' => $entity->name(),
-                'price' => $entity->price(),
+                'price' => $entity->price()->toCents(),
                 'currency' => $entity->currency()->value,
                 'billing_cycle' => $entity->billingCycle()->value,
                 'next_billing_date' => $entity->nextBillingDate()->format('Y-m-d'),
@@ -53,7 +55,7 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
         }
 
         $model->name = $entity->name();
-        $model->price = $entity->price();
+        $model->price = $entity->price()->toCents();
         $model->currency = $entity->currency()->value;
         $model->billing_cycle = $entity->billingCycle()->value;
         $model->next_billing_date = $entity->nextBillingDate()->format('Y-m-d');
@@ -286,10 +288,10 @@ final class SubscriptionRepository extends BaseRepository implements Subscriptio
         return new Subscription(
             id: Uuid::fromString($model->id),
             name: $model->name,
-            price: (int) $model->price,
+            price: Money::fromCents((int) $model->price),
             currency: CurrencyEnum::from($model->currency),
             billingCycle: BillingCycleEnum::from($model->billing_cycle),
-            nextBillingDate: new DateTimeImmutable($model->next_billing_date->format('Y-m-d')),
+            nextBillingDate: BillingDate::fromString($model->next_billing_date->format('Y-m-d')),
             category: $model->category,
             status: SubscriptionStatusEnum::from($model->status),
             userId: Uuid::fromString($model->user_id),

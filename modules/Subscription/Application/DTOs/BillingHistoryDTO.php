@@ -29,8 +29,8 @@ final readonly class BillingHistoryDTO
         return new self(
             id: $entity->id()->toString(),
             subscriptionId: $entity->subscriptionId()->toString(),
-            amountPaid: $entity->amountPaid(),
-            amountPaidFormatted: self::formatPrice($entity->amountPaid(), $currency),
+            amountPaid: $entity->amountPaid()->toCents(),
+            amountPaidFormatted: self::formatPrice($entity->amountPaid()->toCents(), $currency),
             paidAt: $entity->paidAt()->format('Y-m-d H:i:s'),
             createdAt: $entity->createdAt()->format('Y-m-d H:i:s'),
         );

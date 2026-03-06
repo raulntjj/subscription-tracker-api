@@ -7,6 +7,8 @@ namespace Modules\Subscription\Application\UseCases;
 use Throwable;
 use Ramsey\Uuid\Uuid;
 use InvalidArgumentException;
+use Modules\Subscription\Domain\ValueObjects\WebhookUrl;
+use Modules\Subscription\Domain\Enums\WebhookPlatformEnum;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Application\DTOs\UpdateWebhookConfigDTO;
@@ -35,11 +37,27 @@ final readonly class UpdateWebhookConfigUseCase
             }
 
             if ($dto->url !== null) {
-                $entity->changeUrl($dto->url);
+                $entity->changeUrl(WebhookUrl::fromString($dto->url));
             }
 
             if ($dto->secret !== null) {
                 $entity->changeSecret($dto->secret);
+            }
+
+            if ($dto->isActive !== null) {
+                $dto->isActive ? $entity->activate() : $entity->deactivate();
+            }
+
+            if ($dto->platform !== null) {
+                $entity->changePlatform(WebhookPlatformEnum::from($dto->platform));
+            }
+
+            if ($dto->botName !== null) {
+                $entity->changeBotName($dto->botName);
+            }
+
+            if ($dto->serverName !== null) {
+                $entity->changeServerName($dto->serverName);
             }
 
             $this->repository->save($entity);
@@ -53,9 +71,11 @@ final readonly class UpdateWebhookConfigUseCase
                 entityType: 'WebhookConfig',
                 entityId: $entity->id()->toString(),
                 context: [
-                    'url' => $entity->url(),
+                    'url' => $entity->url()->value(),
                     'url_updated' => $dto->url !== null,
                     'secret_updated' => $dto->secret !== null,
+                    'is_active_updated' => $dto->isActive !== null,
+                    'is_active' => $entity->isActive(),
                 ],
             );
 

@@ -35,8 +35,8 @@ final readonly class SubscriptionDTO
         return new self(
             id: $entity->id()->toString(),
             name: $entity->name(),
-            price: $entity->price(),
-            priceFormatted: $entity->currency()->format($entity->price()),
+            price: $entity->price()->toCents(),
+            priceFormatted: $entity->currency()->format($entity->price()->toCents()),
             currency: $entity->currency()->value,
             billingCycle: $entity->billingCycle()->value,
             nextBillingDate: $entity->nextBillingDate()->format('Y-m-d'),

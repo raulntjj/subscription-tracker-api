@@ -5,53 +5,45 @@ declare(strict_types=1);
 namespace Modules\Subscription\Domain\Entities;
 
 use DateTimeImmutable;
-use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
+use Modules\Subscription\Domain\ValueObjects\WebhookUrl;
+use Modules\Subscription\Domain\Enums\WebhookPlatformEnum;
 
 final class WebhookConfig
 {
     private UuidInterface $id;
     private UuidInterface $userId;
-    private string $url;
+    private WebhookUrl $url;
     private ?string $secret;
     private bool $isActive;
+    private WebhookPlatformEnum $platform;
+    private ?string $botName;
+    private ?string $serverName;
     private DateTimeImmutable $createdAt;
     private ?DateTimeImmutable $updatedAt;
 
     public function __construct(
         UuidInterface $id,
         UuidInterface $userId,
-        string $url,
+        WebhookUrl $url,
         ?string $secret,
         bool $isActive,
         DateTimeImmutable $createdAt,
         ?DateTimeImmutable $updatedAt = null,
+        WebhookPlatformEnum $platform = WebhookPlatformEnum::OTHER,
+        ?string $botName = null,
+        ?string $serverName = null,
     ) {
-        $this->validateUrl($url);
-
         $this->id = $id;
         $this->userId = $userId;
         $this->url = $url;
         $this->secret = $secret;
         $this->isActive = $isActive;
+        $this->platform = $platform;
+        $this->botName = $botName;
+        $this->serverName = $serverName;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
-    }
-
-    private function validateUrl(string $url): void
-    {
-        if (empty($url)) {
-            throw new InvalidArgumentException(__('Subscription::exception.webhook_url_empty'));
-        }
-
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new InvalidArgumentException(__('Subscription::exception.webhook_url_invalid'));
-        }
-
-        $parsedUrl = parse_url($url);
-        if (!isset($parsedUrl['scheme']) || !in_array($parsedUrl['scheme'], ['http', 'https'])) {
-            throw new InvalidArgumentException(__('Subscription::exception.webhook_url_protocol'));
-        }
     }
 
     // Getters
@@ -65,7 +57,7 @@ final class WebhookConfig
         return $this->userId;
     }
 
-    public function url(): string
+    public function url(): WebhookUrl
     {
         return $this->url;
     }
@@ -90,6 +82,21 @@ final class WebhookConfig
         return $this->updatedAt;
     }
 
+    public function platform(): WebhookPlatformEnum
+    {
+        return $this->platform;
+    }
+
+    public function botName(): ?string
+    {
+        return $this->botName;
+    }
+
+    public function serverName(): ?string
+    {
+        return $this->serverName;
+    }
+
     // Business methods
     public function activate(): void
     {
@@ -101,15 +108,29 @@ final class WebhookConfig
         $this->isActive = false;
     }
 
-    public function changeUrl(string $url): void
+    public function changeUrl(WebhookUrl $url): void
     {
-        $this->validateUrl($url);
         $this->url = $url;
     }
 
     public function changeSecret(?string $secret): void
     {
         $this->secret = $secret;
+    }
+
+    public function changePlatform(WebhookPlatformEnum $platform): void
+    {
+        $this->platform = $platform;
+    }
+
+    public function changeBotName(?string $botName): void
+    {
+        $this->botName = $botName;
+    }
+
+    public function changeServerName(?string $serverName): void
+    {
+        $this->serverName = $serverName;
     }
 
     public function updateTimestamps(): void

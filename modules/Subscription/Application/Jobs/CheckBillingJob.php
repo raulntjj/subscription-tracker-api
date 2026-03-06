@@ -147,7 +147,7 @@ final class CheckBillingJob implements ShouldQueue
         $this->logger()->info(message: 'Processing subscription billing', context: [
             'subscription_id' => $subscription->id()->toString(),
             'subscription_name' => $subscription->name(),
-            'amount' => $subscription->price(),
+            'amount' => $subscription->price()->toCents(),
             'billing_cycle' => $subscription->billingCycle()->value,
         ]);
 
@@ -165,7 +165,7 @@ final class CheckBillingJob implements ShouldQueue
         $this->logger()->info('Billing history created', [
             'billing_history_id' => $billingHistory->id()->toString(),
             'subscription_id' => $subscription->id()->toString(),
-            'amount_paid' => $subscription->price(),
+            'amount_paid' => $subscription->price()->toCents(),
         ]);
 
         // 2. Atualiza a next_billing_date da assinatura

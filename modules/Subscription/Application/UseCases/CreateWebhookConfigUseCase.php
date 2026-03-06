@@ -8,6 +8,8 @@ use Throwable;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Modules\Subscription\Domain\Entities\WebhookConfig;
+use Modules\Subscription\Domain\ValueObjects\WebhookUrl;
+use Modules\Subscription\Domain\Enums\WebhookPlatformEnum;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Application\DTOs\CreateWebhookConfigDTO;
@@ -30,14 +32,21 @@ final readonly class CreateWebhookConfigUseCase
         ]);
 
         try {
+            $platform = $dto->platform
+                ? WebhookPlatformEnum::from($dto->platform)
+                : WebhookPlatformEnum::detectFromUrl($dto->url);
+
             $entity = new WebhookConfig(
                 id: Uuid::uuid4(),
                 userId: Uuid::fromString($dto->userId),
-                url: $dto->url,
+                url: WebhookUrl::fromString($dto->url),
                 secret: $dto->secret,
                 isActive: true,
                 createdAt: new DateTimeImmutable(),
                 updatedAt: new DateTimeImmutable(),
+                platform: $platform,
+                botName: $dto->botName,
+                serverName: $dto->serverName,
             );
 
             $this->repository->save($entity);

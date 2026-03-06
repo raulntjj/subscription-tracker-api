@@ -7,6 +7,7 @@ namespace Modules\Subscription\Infrastructure\Persistence;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
 use Ramsey\Uuid\UuidInterface;
+use Modules\Subscription\Domain\ValueObjects\Money;
 use Modules\Subscription\Domain\Entities\BillingHistory;
 use Modules\Shared\Infrastructure\Persistence\BaseRepository;
 use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
@@ -29,7 +30,7 @@ final class BillingHistoryRepository extends BaseRepository implements BillingHi
             ['id' => $entity->id()->toString()],
             [
                 'subscription_id' => $entity->subscriptionId()->toString(),
-                'amount_paid' => $entity->amountPaid(),
+                'amount_paid' => $entity->amountPaid()->toCents(),
                 'paid_at' => $entity->paidAt(),
                 'created_at' => $entity->createdAt(),
             ],
@@ -78,7 +79,7 @@ final class BillingHistoryRepository extends BaseRepository implements BillingHi
         return new BillingHistory(
             id: Uuid::fromString($model->id),
             subscriptionId: Uuid::fromString($model->subscription_id),
-            amountPaid: (int) $model->amount_paid,
+            amountPaid: Money::fromCents((int) $model->amount_paid),
             paidAt: new DateTimeImmutable($model->paid_at->format('Y-m-d H:i:s')),
             createdAt: new DateTimeImmutable($model->created_at->format('Y-m-d H:i:s')),
         );

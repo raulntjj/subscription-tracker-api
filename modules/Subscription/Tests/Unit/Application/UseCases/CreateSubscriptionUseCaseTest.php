@@ -164,7 +164,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
             ->method('save')
             ->with($this->callback(function (Subscription $subscription) use ($userId, $expectedDate): bool {
                 return $subscription->name() === 'Netflix'
-                    && $subscription->price() === 4990
+                    && $subscription->price()->toCents() === 4990
                     && $subscription->currency()->value === 'BRL'
                     && $subscription->billingCycle()->value === 'monthly'
                     && $subscription->category() === 'Streaming'
@@ -289,7 +289,7 @@ final class CreateSubscriptionUseCaseTest extends SubscriptionTestCase
             ->expects($this->once())
             ->method('save')
             ->with($this->callback(function (Subscription $subscription): bool {
-                return $subscription->price() === 4990; // R$ 49.90 em centavos
+                return $subscription->price()->toCents() === 4990; // R$ 49.90 em centavos
             }));
 
         $dto = new CreateSubscriptionDTO(

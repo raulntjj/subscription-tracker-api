@@ -7,9 +7,10 @@ namespace Modules\Subscription\Interface\Controllers;
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use InvalidArgumentException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use Dotenv\Exception\ValidationException;
+use Illuminate\Validation\ValidationException;
 use Modules\Shared\Interface\Responses\ApiResponse;
 use Modules\Subscription\Application\DTOs\CreateWebhookConfigDTO;
 use Modules\Subscription\Application\DTOs\UpdateWebhookConfigDTO;
@@ -73,6 +74,8 @@ final class WebhookConfigController extends Controller
                 data: $item->toArray(),
                 message: __('Subscription::message.config_retrieved_success'),
             );
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -88,6 +91,9 @@ final class WebhookConfigController extends Controller
             $validated = $request->validate(rules: [
                 'url' => ['required', 'string', 'url', 'max:500'],
                 'secret' => ['nullable', 'string', 'min:8', 'max:255'],
+                'platform' => ['nullable', 'string', 'in:discord,slack,other'],
+                'bot_name' => ['nullable', 'string', 'max:255'],
+                'server_name' => ['nullable', 'string', 'max:255'],
             ]);
 
             $validated['user_id'] = auth(guard: 'api')->id();
@@ -123,13 +129,21 @@ final class WebhookConfigController extends Controller
 
             $validated = $request->validate(rules: [
                 'url' => ['sometimes', 'string', 'url', 'max:500'],
-                'secret' => ['sometimes', 'string', 'min:8', 'max:255'],
+                'secret' => ['sometimes', 'nullable', 'string', 'min:8', 'max:255'],
+                'is_active' => ['sometimes', 'boolean'],
+                'platform' => ['sometimes', 'string', 'in:discord,slack,other'],
+                'bot_name' => ['sometimes', 'nullable', 'string', 'max:255'],
+                'server_name' => ['sometimes', 'nullable', 'string', 'max:255'],
             ]);
 
             $dto = UpdateWebhookConfigDTO::fromArray(data: [
                 'id' => $id,
                 'url' => $validated['url'] ?? null,
                 'secret' => $validated['secret'] ?? null,
+                'is_active' => $validated['is_active'] ?? null,
+                'platform' => $validated['platform'] ?? null,
+                'bot_name' => $validated['bot_name'] ?? null,
+                'server_name' => $validated['server_name'] ?? null,
             ]);
 
             $item = $this->updateUseCase->execute(dto: $dto);
@@ -140,6 +154,8 @@ final class WebhookConfigController extends Controller
             );
         } catch (ValidationException $e) {
             return ApiResponse::validationError(errors: $e->errors());
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -163,6 +179,8 @@ final class WebhookConfigController extends Controller
             $this->deleteUseCase->execute(id: $id);
 
             return ApiResponse::noContent();
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -189,6 +207,8 @@ final class WebhookConfigController extends Controller
                 data: $item->toArray(),
                 message: __('Subscription::message.config_activated_success'),
             );
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }
@@ -215,6 +235,8 @@ final class WebhookConfigController extends Controller
                 data: $item->toArray(),
                 message: __('Subscription::message.config_deactivated_success'),
             );
+        } catch (InvalidArgumentException $e) {
+            return ApiResponse::notFound(message: $e->getMessage());
         } catch (Throwable $e) {
             return ApiResponse::error(exception: $e);
         }

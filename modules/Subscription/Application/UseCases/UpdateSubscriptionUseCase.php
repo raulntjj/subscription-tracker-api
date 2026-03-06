@@ -6,10 +6,11 @@ namespace Modules\Subscription\Application\UseCases;
 
 use Throwable;
 use Ramsey\Uuid\Uuid;
-use DateTimeImmutable;
 use InvalidArgumentException;
 use Modules\Subscription\Domain\Enums\CurrencyEnum;
+use Modules\Subscription\Domain\ValueObjects\Money;
 use Modules\Subscription\Domain\Enums\BillingCycleEnum;
+use Modules\Subscription\Domain\ValueObjects\BillingDate;
 use Modules\Subscription\Application\DTOs\SubscriptionDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Enums\SubscriptionStatusEnum;
@@ -51,13 +52,13 @@ final readonly class UpdateSubscriptionUseCase
 
             // Atualiza todos os campos
             $entity->changeName($dto->name);
-            $entity->changePrice($dto->price);
+            $entity->changePrice(Money::fromCents($dto->price));
             $entity->changeCurrency(CurrencyEnum::from($dto->currency));
             $entity->changeBillingCycle(
                 BillingCycleEnum::from($dto->billingCycle),
             );
             $entity->changeCategory($dto->category);
-            $entity->updateNextBillingDate(new DateTimeImmutable($dto->nextBillingDate));
+            $entity->updateNextBillingDate(BillingDate::fromString($dto->nextBillingDate));
 
             // Atualiza status
             $status = SubscriptionStatusEnum::from($dto->status);
