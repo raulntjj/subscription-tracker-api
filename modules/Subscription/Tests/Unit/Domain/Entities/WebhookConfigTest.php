@@ -11,6 +11,7 @@ use Ramsey\Uuid\UuidInterface;
 use Modules\Subscription\Tests\SubscriptionTestCase;
 use Modules\Subscription\Domain\Entities\WebhookConfig;
 use Modules\Subscription\Domain\ValueObjects\WebhookUrl;
+use Modules\Subscription\Domain\Enums\WebhookPlatformEnum;
 
 final class WebhookConfigTest extends SubscriptionTestCase
 {
@@ -45,6 +46,9 @@ final class WebhookConfigTest extends SubscriptionTestCase
         $this->assertTrue($webhookConfig->isActive());
         $this->assertEquals($this->createdAt, $webhookConfig->createdAt());
         $this->assertNull($webhookConfig->updatedAt());
+        $this->assertEquals(WebhookPlatformEnum::OTHER, $webhookConfig->platform());
+        $this->assertNull($webhookConfig->botName());
+        $this->assertNull($webhookConfig->serverName());
     }
 
     public function test_creates_webhook_config_without_secret(): void
@@ -262,11 +266,106 @@ final class WebhookConfigTest extends SubscriptionTestCase
         $this->assertFalse($webhookConfig->isActive());
     }
 
+    public function test_creates_webhook_config_with_platform(): void
+    {
+        $webhookConfig = $this->createWebhookConfig(platform: WebhookPlatformEnum::DISCORD);
+
+        $this->assertEquals(WebhookPlatformEnum::DISCORD, $webhookConfig->platform());
+    }
+
+    public function test_creates_webhook_config_with_bot_name(): void
+    {
+        $webhookConfig = $this->createWebhookConfig(botName: 'MyBot');
+
+        $this->assertEquals('MyBot', $webhookConfig->botName());
+    }
+
+    public function test_creates_webhook_config_with_server_name(): void
+    {
+        $webhookConfig = $this->createWebhookConfig(serverName: 'My Server');
+
+        $this->assertEquals('My Server', $webhookConfig->serverName());
+    }
+
+    public function test_creates_webhook_config_with_all_platform_fields(): void
+    {
+        $webhookConfig = new WebhookConfig(
+            id: $this->id,
+            userId: $this->userId,
+            url: WebhookUrl::fromString('https://discord.com/api/webhooks/123/abc'),
+            secret: 'secret123',
+            isActive: true,
+            createdAt: $this->createdAt,
+            platform: WebhookPlatformEnum::DISCORD,
+            botName: 'Notify Bot',
+            serverName: 'Dev Server',
+        );
+
+        $this->assertEquals(WebhookPlatformEnum::DISCORD, $webhookConfig->platform());
+        $this->assertEquals('Notify Bot', $webhookConfig->botName());
+        $this->assertEquals('Dev Server', $webhookConfig->serverName());
+    }
+
+    public function test_change_platform_updates_platform(): void
+    {
+        $webhookConfig = $this->createWebhookConfig();
+
+        $webhookConfig->changePlatform(WebhookPlatformEnum::SLACK);
+
+        $this->assertEquals(WebhookPlatformEnum::SLACK, $webhookConfig->platform());
+    }
+
+    public function test_change_bot_name_updates_bot_name(): void
+    {
+        $webhookConfig = $this->createWebhookConfig();
+
+        $webhookConfig->changeBotName('New Bot');
+
+        $this->assertEquals('New Bot', $webhookConfig->botName());
+    }
+
+    public function test_change_bot_name_accepts_null(): void
+    {
+        $webhookConfig = $this->createWebhookConfig(botName: 'Old Bot');
+
+        $webhookConfig->changeBotName(null);
+
+        $this->assertNull($webhookConfig->botName());
+    }
+
+    public function test_change_server_name_updates_server_name(): void
+    {
+        $webhookConfig = $this->createWebhookConfig();
+
+        $webhookConfig->changeServerName('New Server');
+
+        $this->assertEquals('New Server', $webhookConfig->serverName());
+    }
+
+    public function test_change_server_name_accepts_null(): void
+    {
+        $webhookConfig = $this->createWebhookConfig(serverName: 'Old Server');
+
+        $webhookConfig->changeServerName(null);
+
+        $this->assertNull($webhookConfig->serverName());
+    }
+
+    public function test_default_platform_is_other(): void
+    {
+        $webhookConfig = $this->createWebhookConfig();
+
+        $this->assertEquals(WebhookPlatformEnum::OTHER, $webhookConfig->platform());
+    }
+
     private function createWebhookConfig(
         ?string $url = 'https://example.com/webhook',
         ?string $secret = 'secret123',
         ?bool $isActive = true,
         ?DateTimeImmutable $updatedAt = null,
+        WebhookPlatformEnum $platform = WebhookPlatformEnum::OTHER,
+        ?string $botName = null,
+        ?string $serverName = null,
     ): WebhookConfig {
         return new WebhookConfig(
             id: $this->id,
@@ -276,6 +375,9 @@ final class WebhookConfigTest extends SubscriptionTestCase
             isActive: $isActive,
             createdAt: $this->createdAt,
             updatedAt: $updatedAt,
+            platform: $platform,
+            botName: $botName,
+            serverName: $serverName,
         );
     }
 }

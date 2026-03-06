@@ -27,6 +27,9 @@ final class WebhookConfigModel extends Model
         'url',
         'secret',
         'is_active',
+        'platform',
+        'bot_name',
+        'server_name',
     ];
 
     protected $casts = [

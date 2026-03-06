@@ -91,6 +91,9 @@ final class WebhookConfigController extends Controller
             $validated = $request->validate(rules: [
                 'url' => ['required', 'string', 'url', 'max:500'],
                 'secret' => ['nullable', 'string', 'min:8', 'max:255'],
+                'platform' => ['nullable', 'string', 'in:discord,slack,other'],
+                'bot_name' => ['nullable', 'string', 'max:255'],
+                'server_name' => ['nullable', 'string', 'max:255'],
             ]);
 
             $validated['user_id'] = auth(guard: 'api')->id();
@@ -128,6 +131,9 @@ final class WebhookConfigController extends Controller
                 'url' => ['sometimes', 'string', 'url', 'max:500'],
                 'secret' => ['sometimes', 'nullable', 'string', 'min:8', 'max:255'],
                 'is_active' => ['sometimes', 'boolean'],
+                'platform' => ['sometimes', 'string', 'in:discord,slack,other'],
+                'bot_name' => ['sometimes', 'nullable', 'string', 'max:255'],
+                'server_name' => ['sometimes', 'nullable', 'string', 'max:255'],
             ]);
 
             $dto = UpdateWebhookConfigDTO::fromArray(data: [
@@ -135,6 +141,9 @@ final class WebhookConfigController extends Controller
                 'url' => $validated['url'] ?? null,
                 'secret' => $validated['secret'] ?? null,
                 'is_active' => $validated['is_active'] ?? null,
+                'platform' => $validated['platform'] ?? null,
+                'bot_name' => $validated['bot_name'] ?? null,
+                'server_name' => $validated['server_name'] ?? null,
             ]);
 
             $item = $this->updateUseCase->execute(dto: $dto);

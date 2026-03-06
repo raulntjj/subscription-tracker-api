@@ -14,6 +14,9 @@ final readonly class UpdateWebhookConfigDTO
         public ?string $url = null,
         public ?string $secret = null,
         public ?bool $isActive = null,
+        public ?string $platform = null,
+        public ?string $botName = null,
+        public ?string $serverName = null,
     ) {
     }
 
@@ -33,6 +36,9 @@ final readonly class UpdateWebhookConfigDTO
             url: $data['url'] ?? null,
             secret: $secret,
             isActive: isset($data['is_active']) ? (bool) $data['is_active'] : null,
+            platform: $data['platform'] ?? null,
+            botName: $data['bot_name'] ?? null,
+            serverName: $data['server_name'] ?? null,
         );
     }
 
@@ -53,6 +59,18 @@ final readonly class UpdateWebhookConfigDTO
 
         if ($this->isActive !== null) {
             $data['is_active'] = $this->isActive;
+        }
+
+        if ($this->platform !== null) {
+            $data['platform'] = $this->platform;
+        }
+
+        if ($this->botName !== null) {
+            $data['bot_name'] = $this->botName;
+        }
+
+        if ($this->serverName !== null) {
+            $data['server_name'] = $this->serverName;
         }
 
         return $data;

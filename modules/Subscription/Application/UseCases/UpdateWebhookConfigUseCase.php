@@ -8,6 +8,7 @@ use Throwable;
 use Ramsey\Uuid\Uuid;
 use InvalidArgumentException;
 use Modules\Subscription\Domain\ValueObjects\WebhookUrl;
+use Modules\Subscription\Domain\Enums\WebhookPlatformEnum;
 use Modules\Subscription\Application\DTOs\WebhookConfigDTO;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Application\DTOs\UpdateWebhookConfigDTO;
@@ -45,6 +46,18 @@ final readonly class UpdateWebhookConfigUseCase
 
             if ($dto->isActive !== null) {
                 $dto->isActive ? $entity->activate() : $entity->deactivate();
+            }
+
+            if ($dto->platform !== null) {
+                $entity->changePlatform(WebhookPlatformEnum::from($dto->platform));
+            }
+
+            if ($dto->botName !== null) {
+                $entity->changeBotName($dto->botName);
+            }
+
+            if ($dto->serverName !== null) {
+                $entity->changeServerName($dto->serverName);
             }
 
             $this->repository->save($entity);

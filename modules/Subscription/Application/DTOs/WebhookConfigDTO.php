@@ -16,6 +16,9 @@ final readonly class WebhookConfigDTO
         public string $userId,
         public string $url,
         public bool $isActive,
+        public string $platform,
+        public ?string $botName,
+        public ?string $serverName,
         public string $createdAt,
         public string $updatedAt,
     ) {
@@ -31,6 +34,9 @@ final readonly class WebhookConfigDTO
             userId: $entity->userId()->toString(),
             url: $entity->url()->value(),
             isActive: $entity->isActive(),
+            platform: $entity->platform()->value,
+            botName: $entity->botName(),
+            serverName: $entity->serverName(),
             createdAt: $entity->createdAt()->format('Y-m-d H:i:s'),
             updatedAt: $entity->updatedAt()?->format('Y-m-d H:i:s') ?? $entity->createdAt()->format('Y-m-d H:i:s'),
         );
@@ -46,6 +52,9 @@ final readonly class WebhookConfigDTO
             userId: $data->user_id,
             url: $data->url,
             isActive: (bool) $data->is_active,
+            platform: $data->platform ?? 'other',
+            botName: $data->bot_name ?? null,
+            serverName: $data->server_name ?? null,
             createdAt: $data->created_at->format('Y-m-d H:i:s'),
             updatedAt: $data->updated_at?->format('Y-m-d H:i:s') ?? $data->created_at->format('Y-m-d H:i:s'),
         );
@@ -61,6 +70,9 @@ final readonly class WebhookConfigDTO
             userId: $data['user_id'],
             url: $data['url'],
             isActive: (bool) $data['is_active'],
+            platform: $data['platform'] ?? 'other',
+            botName: $data['bot_name'] ?? null,
+            serverName: $data['server_name'] ?? null,
             createdAt: $data['created_at'],
             updatedAt: $data['updated_at'],
         );
@@ -76,6 +88,9 @@ final readonly class WebhookConfigDTO
             'user_id' => $this->userId,
             'url' => $this->url,
             'is_active' => $this->isActive,
+            'platform' => $this->platform,
+            'bot_name' => $this->botName,
+            'server_name' => $this->serverName,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt,
         ];

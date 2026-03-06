@@ -15,4 +15,5 @@ return [
     'webhook_rate_limited' => 'Webhook rate limited: :statusCode',
     'webhook_client_error' => 'Webhook returned client error: :statusCode',
     'webhook_test_failed' => 'Webhook returned status :statusCode',
+    'invalid_webhook_platform' => 'Invalid webhook platform. Allowed: discord, slack, other.',
 ];

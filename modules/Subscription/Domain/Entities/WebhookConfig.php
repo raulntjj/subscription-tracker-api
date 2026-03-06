@@ -7,6 +7,7 @@ namespace Modules\Subscription\Domain\Entities;
 use DateTimeImmutable;
 use Ramsey\Uuid\UuidInterface;
 use Modules\Subscription\Domain\ValueObjects\WebhookUrl;
+use Modules\Subscription\Domain\Enums\WebhookPlatformEnum;
 
 final class WebhookConfig
 {
@@ -15,6 +16,9 @@ final class WebhookConfig
     private WebhookUrl $url;
     private ?string $secret;
     private bool $isActive;
+    private WebhookPlatformEnum $platform;
+    private ?string $botName;
+    private ?string $serverName;
     private DateTimeImmutable $createdAt;
     private ?DateTimeImmutable $updatedAt;
 
@@ -26,12 +30,18 @@ final class WebhookConfig
         bool $isActive,
         DateTimeImmutable $createdAt,
         ?DateTimeImmutable $updatedAt = null,
+        WebhookPlatformEnum $platform = WebhookPlatformEnum::OTHER,
+        ?string $botName = null,
+        ?string $serverName = null,
     ) {
         $this->id = $id;
         $this->userId = $userId;
         $this->url = $url;
         $this->secret = $secret;
         $this->isActive = $isActive;
+        $this->platform = $platform;
+        $this->botName = $botName;
+        $this->serverName = $serverName;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -72,6 +82,21 @@ final class WebhookConfig
         return $this->updatedAt;
     }
 
+    public function platform(): WebhookPlatformEnum
+    {
+        return $this->platform;
+    }
+
+    public function botName(): ?string
+    {
+        return $this->botName;
+    }
+
+    public function serverName(): ?string
+    {
+        return $this->serverName;
+    }
+
     // Business methods
     public function activate(): void
     {
@@ -91,6 +116,21 @@ final class WebhookConfig
     public function changeSecret(?string $secret): void
     {
         $this->secret = $secret;
+    }
+
+    public function changePlatform(WebhookPlatformEnum $platform): void
+    {
+        $this->platform = $platform;
+    }
+
+    public function changeBotName(?string $botName): void
+    {
+        $this->botName = $botName;
+    }
+
+    public function changeServerName(?string $serverName): void
+    {
+        $this->serverName = $serverName;
     }
 
     public function updateTimestamps(): void

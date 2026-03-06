@@ -17,4 +17,5 @@ return [
 
     'config_created_successefully' => 'Configuração criada com sucesso.',
     'config_not_found' => 'Configuração de webhook não encontrada.',
+    'invalid_webhook_platform' => 'Plataforma de webhook inválida. Permitidas: discord, slack, other.',
 ];

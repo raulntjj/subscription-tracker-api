@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use Ramsey\Uuid\UuidInterface;
 use Modules\Subscription\Domain\Entities\WebhookConfig;
 use Modules\Subscription\Domain\ValueObjects\WebhookUrl;
+use Modules\Subscription\Domain\Enums\WebhookPlatformEnum;
 use Modules\Shared\Infrastructure\Persistence\BaseRepository;
 use Modules\Subscription\Domain\Contracts\WebhookConfigRepositoryInterface;
 use Modules\Subscription\Infrastructure\Persistence\Eloquent\WebhookConfigModel;
@@ -37,6 +38,9 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
                 'url' => $webhookConfig->url()->value(),
                 'secret' => $webhookConfig->secret(),
                 'is_active' => $webhookConfig->isActive(),
+                'platform' => $webhookConfig->platform()->value,
+                'bot_name' => $webhookConfig->botName(),
+                'server_name' => $webhookConfig->serverName(),
             ],
         );
     }
@@ -52,6 +56,9 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
         $model->url = $webhookConfig->url()->value();
         $model->secret = $webhookConfig->secret();
         $model->is_active = $webhookConfig->isActive();
+        $model->platform = $webhookConfig->platform()->value;
+        $model->bot_name = $webhookConfig->botName();
+        $model->server_name = $webhookConfig->serverName();
 
         $this->saveModel($model);
     }
@@ -147,6 +154,9 @@ final class WebhookConfigRepository extends BaseRepository implements WebhookCon
             isActive: $model->is_active,
             createdAt: new DateTimeImmutable($model->created_at->toDateTimeString()),
             updatedAt: $model->updated_at ? new DateTimeImmutable($model->updated_at->toDateTimeString()) : null,
+            platform: WebhookPlatformEnum::tryFrom($model->platform ?? '') ?? WebhookPlatformEnum::OTHER,
+            botName: $model->bot_name,
+            serverName: $model->server_name,
         );
     }
 }
