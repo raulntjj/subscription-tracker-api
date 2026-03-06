@@ -166,7 +166,8 @@ final class Subscription
     public function calculateNextBillingDate(): BillingDate
     {
         $months = $this->billingCycle->months();
-        return $this->nextBillingDate->addMonths($months);
+        $today = BillingDate::fromString(date('Y-m-d'));
+        return $today->addMonths($months);
     }
 
     /**

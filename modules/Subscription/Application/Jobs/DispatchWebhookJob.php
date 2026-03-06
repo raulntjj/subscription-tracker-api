@@ -76,7 +76,6 @@ final class DispatchWebhookJob implements ShouldQueue
             'attempt' => $this->attempts(),
         ]);
 
-        // Busca a config de webhook e monta o payload em paralelo via Octane
         [$webhookConfig, $payload] = Octane::concurrently([
             fn () => $repository->findActiveByUserId(Uuid::fromString($this->userId)),
             fn () => $this->buildPayload(),
@@ -90,10 +89,8 @@ final class DispatchWebhookJob implements ShouldQueue
         }
 
         // Serializa payload e gera assinatura
-        // Serializa payload e gera assinatura
         $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-        // Gera assinatura HMAC SHA256 (apenas se secret existir)
         $signature = $webhookConfig->secret()
             ? hash_hmac('sha256', $payloadJson, $webhookConfig->secret())
             : null;
@@ -106,7 +103,6 @@ final class DispatchWebhookJob implements ShouldQueue
         ]);
 
         try {
-            // Executa POST com timeout
             // Executa POST com timeout
             $headers = [
                 'Content-Type' => 'application/json',
@@ -125,7 +121,6 @@ final class DispatchWebhookJob implements ShouldQueue
                 ->post($webhookConfig->url()->value(), $payload);
 
             // Verifica resposta
-            // Verifica resposta
             if ($response->successful()) {
                 $this->logger()->info('Webhook delivered successfully', [
                     'webhook_url' => $webhookConfig->url()->value(),
@@ -138,7 +133,6 @@ final class DispatchWebhookJob implements ShouldQueue
                 $this->handleFailedResponse($response, $webhookConfig->url()->value());
             }
         } catch (ConnectionException $e) {
-            // Erro de conexão (timeout, DNS, etc)
             $this->logger()->error('Webhook connection failed', [
                 'webhook_url' => $webhookConfig->url()->value(),
                 'error' => $e->getMessage(),
@@ -146,10 +140,8 @@ final class DispatchWebhookJob implements ShouldQueue
                 'attempt' => $this->attempts(),
             ]);
 
-            // Retentar automaticamente
             throw $e;
         } catch (Exception $e) {
-            // Outros erros
             $this->logger()->error('Webhook dispatch failed with exception', [
                 'webhook_url' => $webhookConfig->url()->value(),
                 'error' => $e->getMessage(),
@@ -167,13 +159,19 @@ final class DispatchWebhookJob implements ShouldQueue
     private function buildPayload(): array
     {
         $subscriptionName = $this->eventData['subscription_name'];
-        $amount = number_format($this->eventData['amount'] / 100, 2, ',', '.');
+
+        // Suporta tanto o formato antigo (objeto Money) quanto o novo (int em centavos)
+        $amountInCents = $this->eventData['amount'];
+        if (is_object($amountInCents) && method_exists($amountInCents, 'toCents')) {
+            $amountInCents = $amountInCents->toCents();
+        }
+
+        $amount = number_format($amountInCents / 100, 2, ',', '.');
         $currency = strtoupper($this->eventData['currency']);
         $billingDate = \DateTime::createFromFormat('Y-m-d H:i:s', $this->eventData['billing_date'])->format('d/m/Y');
         $nextBillingDate = \DateTime::createFromFormat('Y-m-d', $this->eventData['next_billing_date'])->format('d/m/Y');
         $billingCycle = $this->eventData['billing_cycle'];
 
-        // Traduzir billing cycle para português
         $billingCycleText = match($billingCycle) {
             'monthly' => 'mensal',
             'yearly' => 'anual',
@@ -182,7 +180,6 @@ final class DispatchWebhookJob implements ShouldQueue
             default => $billingCycle,
         };
 
-        // Mensagem amigável
         $message = "💰 Fatura da assinatura {$subscriptionName} processada com sucesso!\n\n" .
                    "Detalhes da cobrança:\n" .
                    "• Valor debitado: {$currency} {$amount}\n" .
@@ -192,14 +189,14 @@ final class DispatchWebhookJob implements ShouldQueue
                    "✅ A data do próximo pagamento foi atualizada automaticamente.";
 
         return [
-            'content' => $message, // Para Discord/Slack
+            'content' => $message,
             'event' => 'subscription.renewed',
             'timestamp' => now()->toIso8601String(),
             'data' => [
                 'subscription' => [
                     'id' => $this->eventData['subscription_id'],
                     'name' => $this->eventData['subscription_name'],
-                    'amount' => $this->eventData['amount'],
+                    'amount' => $amountInCents,
                     'amount_formatted' => "{$currency} {$amount}",
                     'currency' => $this->eventData['currency'],
                     'billing_cycle' => $this->eventData['billing_cycle'],
@@ -212,7 +209,7 @@ final class DispatchWebhookJob implements ShouldQueue
                     'id' => $this->eventData['billing_history_id'],
                     'date' => $this->eventData['billing_date'],
                     'date_formatted' => $billingDate,
-                    'amount' => $this->eventData['amount'],
+                    'amount' => $amountInCents,
                     'amount_formatted' => "{$currency} {$amount}",
                     'currency' => $this->eventData['currency'],
                 ],
@@ -245,7 +242,6 @@ final class DispatchWebhookJob implements ShouldQueue
             'attempt' => $this->attempts(),
         ]);
 
-        // Decidir se deve retentar baseado no status code
         if ($statusCode >= 500) {
             throw new RuntimeException(__('Subscription::exception.webhook_server_error', ['statusCode' => $statusCode]));
         } elseif ($statusCode === 429) {

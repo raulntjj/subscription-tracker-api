@@ -15,6 +15,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Modules\Subscription\Domain\Entities\Subscription;
 use Modules\Subscription\Domain\Entities\BillingHistory;
+use Modules\Subscription\Domain\ValueObjects\BillingDate;
 use Modules\Shared\Infrastructure\Logging\Concerns\Loggable;
 use Modules\Subscription\Domain\Contracts\SubscriptionRepositoryInterface;
 use Modules\Subscription\Domain\Contracts\BillingHistoryRepositoryInterface;
@@ -151,7 +152,6 @@ final class CheckBillingJob implements ShouldQueue
             'billing_cycle' => $subscription->billingCycle()->value,
         ]);
 
-        // 1. Cria o registro no BillingHistory
         $billingHistory = new BillingHistory(
             id: Uuid::uuid4(),
             subscriptionId: $subscription->id(),
@@ -194,7 +194,7 @@ final class CheckBillingJob implements ShouldQueue
     private function dispatchWebhook(
         Subscription $subscription,
         BillingHistory $billingHistory,
-        DateTimeImmutable $nextBillingDate,
+        BillingDate $nextBillingDate,
     ): void {
         try {
             $subscriptionId = $subscription->id()->toString();
@@ -203,7 +203,7 @@ final class CheckBillingJob implements ShouldQueue
             $eventData = [
                 'subscription_id' => $subscriptionId,
                 'subscription_name' => $subscription->name(),
-                'amount' => $subscription->price(),
+                'amount' => $subscription->price()->toCents(),
                 'currency' => $subscription->currency()->value,
                 'billing_cycle' => $subscription->billingCycle()->value,
                 'billing_history_id' => $billingHistory->id()->toString(),
