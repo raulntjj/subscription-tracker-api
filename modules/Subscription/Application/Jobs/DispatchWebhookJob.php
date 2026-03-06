@@ -67,13 +67,6 @@ final class DispatchWebhookJob implements ShouldQueue
         $this->subscriptionId = $subscriptionId;
         $this->billingHistoryId = $billingHistoryId;
     }
-
-    /**
-     * Executa o job
-     *
-     * Utiliza Octane::concurrently para buscar a configuração de webhook
-     * e montar o payload em paralelo, reduzindo a latência total.
-     */
     public function handle(WebhookConfigRepositoryInterface $repository): void
     {
         $this->logger()->info('Processing webhook dispatch', [
@@ -97,6 +90,7 @@ final class DispatchWebhookJob implements ShouldQueue
         }
 
         // Serializa payload e gera assinatura
+        // Serializa payload e gera assinatura
         $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         // Gera assinatura HMAC SHA256 (apenas se secret existir)
@@ -112,6 +106,7 @@ final class DispatchWebhookJob implements ShouldQueue
         ]);
 
         try {
+            // Executa POST com timeout
             // Executa POST com timeout
             $headers = [
                 'Content-Type' => 'application/json',
@@ -129,6 +124,7 @@ final class DispatchWebhookJob implements ShouldQueue
                 ->withHeaders($headers)
                 ->post($webhookConfig->url()->value(), $payload);
 
+            // Verifica resposta
             // Verifica resposta
             if ($response->successful()) {
                 $this->logger()->info('Webhook delivered successfully', [
